@@ -42,11 +42,6 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		user_data: user_data
 	)
 
-	println(gx.white.abgr8())
-	println(gx.black.abgr8())
-	println(gx.white.abgr8() ^ 0x00ffffff)
-	println(gx.black.abgr8() ^ 0x00ffffff)
-
 	return ctx
 }
 
@@ -64,8 +59,8 @@ pub fn (mut ctx Context) run() {
 }
 
 pub fn (mut ctx Context) clear() {
-	for y in 0 .. height {
-		for x in 0 .. width {
+	for y in 0 .. draw_gg.height {
+		for x in 0 .. draw_gg.width {
 			ctx.pixel_buffer[y][x] = u32(gx.white.abgr8())
 		}
 	}
@@ -102,6 +97,8 @@ pub fn (mut ctx Context) draw_pixel_inv(x int, y int) {
 	ctx.pixel_buffer[y][x] = (ctx.pixel_buffer[y][x] ^ 0x00ffffff)
 }
 
+// https://github.com/miloyip/line
+// https://github.com/miloyip/line/blob/master/line_bresenham.c
 pub fn (mut ctx Context) draw_line(x f32, y f32, x1 f32, y1 f32, c gx.Color) {
 	// ctx.gg_ctx.draw_line(x, y, x1, y1, c)
 

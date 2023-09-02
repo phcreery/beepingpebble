@@ -1,0 +1,80 @@
+module main
+
+import gx
+import gg
+import draw_gg
+import libs.font8x8
+
+struct App {
+pub mut:
+	ctx  IBPContext
+	menu Menu
+}
+
+fn draw(mut app App) {
+	app.ctx.begin()
+	app.ctx.clear()
+	// app.ctx.draw_text_def(200, 20, 'hello world!')
+	debug_draw_menu_outline(mut app.ctx)
+	app.ctx.draw_line(0, 0, 20, 30, gx.black)
+	app.menu.draw(mut app.ctx)
+	// app.ctx.draw_line_inv(0, 10, 20, 30)
+	// app.ctx.draw_test_image()
+
+	app.ctx.end()
+}
+
+fn event_manager(mut ev gg.Event, mut app App) {
+	if ev.typ == .key_down {
+		match ev.key_code {
+			.escape {
+				// app.ctx.quit()
+				println('escape')
+			}
+			.right {
+				app.menu.next()
+			}
+			.left {
+				app.menu.prev()
+			}
+			.up {
+				app.menu.up()
+			}
+			.down {
+				app.menu.down()
+			}
+			else {
+				println('key: ')
+			}
+		}
+	}
+}
+
+fn render_string(s string, font [][]int) {
+	a := s.bytes()
+	for l in a {
+		render_letter(font[l])
+	}
+}
+
+fn render_letter(letter []int) {
+	mut set := false
+	for x in 0 .. 8 {
+		for y in 0 .. 8 {
+			set = (letter[x] & (1 << y)) != 0
+			pixel := if set { '#' } else { ' ' }
+			print('${pixel}')
+		}
+		print('\n')
+	}
+}
+
+fn main() {
+	render_letter(font8x8.font8x8_basic['A'[0]])
+	render_string('bc', font8x8.font8x8_basic)
+
+	mut app := App{}
+	app.menu = create_menu(app.ctx)
+	app.ctx = draw_gg.create_context(app, draw, event_manager)
+	app.ctx.run()
+}

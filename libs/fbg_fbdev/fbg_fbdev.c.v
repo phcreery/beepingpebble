@@ -3,12 +3,17 @@ module fbg_fbdev
 
 import libs.fbg
 
-// struct Fb_bitfield { 
+// ----- fbg_fbdev.h ------
+#flag -I @VMODROOT/thirdparty/fbg/custom_backend/fbdev
+#flag @VMODROOT/thirdparty/fbg/src/fbg_fbdev.o
+#include "fbg_fbdev.h"
+
+// struct Fb_bitfield {
 // 	offset u32
 // 	length u32
 // 	msb_right u32
 // }
-// struct Fb_var_screeninfo { 
+// struct Fb_var_screeninfo {
 // 	xres u32
 // 	yres u32
 // 	xres_virtual u32
@@ -39,7 +44,7 @@ import libs.fbg
 // 	colorspace u32
 // 	reserved [4]u32
 // }
-// struct Fb_cmap { 
+// struct Fb_cmap {
 // 	start u32
 // 	len u32
 // 	red &u16
@@ -47,7 +52,7 @@ import libs.fbg
 // 	blue &u16
 // 	transp &u16
 // }
-// struct Fb_con2fbmap { 
+// struct Fb_con2fbmap {
 // 	console u32
 // 	framebuffer u32
 // }
@@ -55,14 +60,14 @@ import libs.fbg
 // const ( // empty enum
 // 	fb_blank_unblank = 0	fb_blank_normal = 0 + 1	fb_blank_vsync_suspend = 1 + 1	fb_blank_hsync_suspend = 2 + 1	fb_blank_powerdown = 3 + 1)
 
-// struct Fb_vblank { 
+// struct Fb_vblank {
 // 	flags u32
 // 	count u32
 // 	vcount u32
 // 	hcount u32
 // 	reserved [4]u32
 // }
-// struct Fb_copyarea { 
+// struct Fb_copyarea {
 // 	dx u32
 // 	dy u32
 // 	width u32
@@ -70,12 +75,12 @@ import libs.fbg
 // 	sx u32
 // 	sy u32
 // }
-// struct Fb_dmacopy { 
+// struct Fb_dmacopy {
 // 	dst voidptr
 // 	src u32
 // 	length u32
 // }
-// struct Fb_fillrect { 
+// struct Fb_fillrect {
 // 	dx u32
 // 	dy u32
 // 	width u32
@@ -83,7 +88,7 @@ import libs.fbg
 // 	color u32
 // 	rop u32
 // }
-// struct Fb_image { 
+// struct Fb_image {
 // 	dx u32
 // 	dy u32
 // 	width u32
@@ -94,11 +99,11 @@ import libs.fbg
 // 	data &i8
 // 	cmap Fb_cmap
 // }
-// struct Fbcurpos { 
+// struct Fbcurpos {
 // 	x u16
 // 	y u16
 // }
-// struct Size_t { 
+// struct Size_t {
 // 	set u16
 // 	enable u16
 // 	rop u16
@@ -109,7 +114,7 @@ import libs.fbg
 // enum __itimer_which {
 // 	itimer_real = 0	itimer_virtual = 1	itimer_prof = 2}
 
-// struct Itimer_which_t { 
+// struct Itimer_which_t {
 // 	it_interval Timeval
 // 	it_value Timeval
 // }
@@ -117,23 +122,23 @@ import libs.fbg
 // const ( // empty enum
 // 	fp_nan = 0	fp_infinite = 1	fp_zero = 2	fp_subnormal = 3	fp_normal = 4)
 
-// struct Fbg_rgb { 
+// struct Fbg_rgb {
 // 	r u8
 // 	g u8
 // 	b u8
 // 	a u8
 // }
-// struct Fbg_hsl { 
+// struct Fbg_hsl {
 // 	h int
 // 	s f32
 // 	l f32
 // }
-// struct Fbg_img { 
+// struct Fbg_img {
 // 	data &u8
 // 	width u32
 // 	height u32
 // }
-// struct Fbg_font { 
+// struct Fbg_font {
 // 	glyph_coord_x &int
 // 	glyph_coord_y &int
 // 	glyph_width int
@@ -141,7 +146,7 @@ import libs.fbg
 // 	first_char u8
 // 	bitmap &fbg_img
 // }
-// struct Fbg { 
+// struct Fbg {
 // 	size int
 // 	disp_buffer &u8
 // 	back_buffer &u8
@@ -175,7 +180,7 @@ import libs.fbg
 // 	user_free fn (&fbg)
 // 	user_context voidptr
 // }
-// struct Fbg_fbdev_context { 
+// struct Fbg_fbdev_context {
 // 	fd int
 // 	buffer &u8
 // 	vinfo Fb_var_screeninfo
@@ -188,4 +193,3 @@ fn C.fbg_fbdevSetup(fb_device &char, page_flipping int) &fbg.Fbg
 pub fn fbg_fbdevsetup(fb_device &char, page_flipping int) &fbg.Fbg {
 	return C.fbg_fbdevSetup(fb_device, page_flipping)
 }
-
