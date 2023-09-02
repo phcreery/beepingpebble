@@ -275,7 +275,7 @@
         struct _fbg_freelist_data *fbg_freelist_data;
 
         //! Temporary task data
-        struct _fbg_freelist_data *tmp_fbg_freelist_data; 
+        struct _fbg_freelist_data *tmp_fbg_freelist_data;
 #endif
 
         //! thread <> main thread synchronization

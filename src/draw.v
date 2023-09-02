@@ -29,6 +29,7 @@ mut:
 	fbg_ctx &fbg.Fbg
 	clear()
 	// draw_test_image()
+	draw_px_inv(x f32, y f32)
 	// draw_rect_empty(x f32, y f32, w f32, h f32, c gx.Color)
 	draw_rect_filled(x f32, y f32, w f32, h f32, c gx.Color)
 	// draw_rect_filled_inv(x f32, y f32, w f32, h f32)

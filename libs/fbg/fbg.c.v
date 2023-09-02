@@ -1,8 +1,8 @@
 [translated]
 module fbg
 
+// import time
 import libs.fbg.c
-import time
 
 const (
 	used_import = c.used_import

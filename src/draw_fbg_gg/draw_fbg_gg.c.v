@@ -9,8 +9,8 @@ const (
 	height = 240
 )
 
-struct Context_fbg_gg {
-mut:
+pub struct Context_fbg_gg {
+pub mut:
 	pixel_buffer [height][width]u32
 	img_id       int
 	gg_ctx       &gg.Context = unsafe { nil }
@@ -19,6 +19,7 @@ mut:
 
 pub fn fbg_gg_setup(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &Context_fbg_gg {
 	mut ctx := &Context_fbg_gg{
+		// pixel_buffer: [height][width]u32{len: draw_fbg_gg.height, init: []u32{len: draw_fbg_gg.width}}
 		img_id: 1
 		gg_ctx: &gg.Context{}
 		fbg_ctx: &fbg.Fbg{}
@@ -29,12 +30,11 @@ pub fn fbg_gg_setup(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.E
 
 	gg_frame_fn := fn [user_data, ctx, frame_fn] (_ voidptr) {
 		fbg.fbg_clear(ctx.fbg_ctx, 0)
-		fbg.fbg_draw(ctx.fbg_ctx) // basically fbg_gg_draw()
 
 		// ctx.pixel_buffer[0][0] = 0xFF000000
 		frame_fn(user_data)
-
 		fbg.fbg_flip(ctx.fbg_ctx)
+		fbg.fbg_draw(ctx.fbg_ctx) // basically fbg_gg_draw()
 	}
 
 	println('2')
@@ -75,10 +75,10 @@ pub fn fbg_gg_draw(fbg_ctx &fbg.Fbg) {
 		for x in 0 .. draw_fbg_gg.width {
 			index := x + y * draw_fbg_gg.width
 
-			red := unsafe { fbg_ctx.disp_buffer[index * fbg_ctx.components] }
-			green := unsafe { fbg_ctx.disp_buffer[index * fbg_ctx.components + 1] }
-			blue := unsafe { fbg_ctx.disp_buffer[index * fbg_ctx.components + 2] }
-			ctx.pixel_buffer[y][x] = (red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24))
+			red := unsafe { fbg_ctx.back_buffer[index * fbg_ctx.components] }
+			green := unsafe { fbg_ctx.back_buffer[index * fbg_ctx.components + 1] }
+			blue := unsafe { fbg_ctx.back_buffer[index * fbg_ctx.components + 2] }
+			// ctx.pixel_buffer[y][x] = (red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24))
 		}
 	}
 
@@ -93,14 +93,38 @@ pub fn fbg_gg_draw(fbg_ctx &fbg.Fbg) {
 	ctx.gg_ctx.end()
 }
 
-pub fn fbg_gg_flip(fbg_ctx &fbg.Fbg) {
-	// ctx.gg_ctx.flip()
-}
-
 pub fn (mut ctx Context_fbg_gg) clear() {
 	fbg.fbg_clear(ctx.fbg_ctx, 0)
 }
 
-pub fn (mut ctx Context_fbg_gg) draw_rect_filled(x int, y int, width int, height int, color gx.Color) {
-	fbg.fbg_rect(ctx.fbg_ctx, x, y, width, height, color)
+pub fn (mut ctx Context_fbg_gg) draw_px_inv(x_ f32, y_ f32) {
+	x := int(x_)
+	y := int(y_)
+
+	// pix_pointer := unsafe {
+	// 	ctx.fbg_ctx.back_buffer + (y * ctx.fbg_ctx.line_length + x * ctx.fbg_ctx.components)
+	// }
+
+	// mut r := *pix_pointer
+	// mut g := *pix_pointer + 1
+	// mut b := *pix_pointer + 2
+
+	// println('r: ${r}, g: ${g}, b: ${b}')
+
+	// r = r ^ 0xFF
+	// g = g ^ 0xFF
+	// b = b ^ 0xFF
+
+	// println('r: ${r}, g: ${g}, b: ${b}')
+
+	// unsafe {
+	// 	*pix_pointer = r
+	// 	*pix_pointer++ = g
+	// 	*pix_pointer++ = b
+	// }
+}
+
+pub fn (mut ctx Context_fbg_gg) draw_rect_filled(x f32, y f32, width f32, height f32, color gx.Color) {
+	fbg.fbg_rect(ctx.fbg_ctx, int(x), int(y), int(width), int(height), color.r, color.g,
+		color.b)
 }
