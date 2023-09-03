@@ -4,6 +4,7 @@ import gg
 import gx
 // import sokol.gfx
 import math
+import time
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
 // change line 472 of gg.c.v to `high_dpi: false`
@@ -20,7 +21,9 @@ const (
 pub struct Context {
 mut:
 	pixel_buffer []u8
+	fps_stopwatch time.Time
 	frames	   int
+	fps 	   int
 	img_id       int
 	gg_ctx       &gg.Context = unsafe { nil }
 }
@@ -46,14 +49,29 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		user_data: user_data
 	)
 
+	ctx.fps_stopwatch = time.now()
+
 	return ctx
+}
+
+pub fn (mut ctx Context) compute_fps() {
+	ctx.frames += 1
+	elapsed := time.since(ctx.fps_stopwatch)
+	// println("elapsed ${elapsed}")
+	if elapsed.nanoseconds() > 1_000_000_000 {
+		ctx.fps = int(ctx.frames)
+		println("fps ${ctx.fps}")
+		ctx.frames = 0
+		ctx.fps_stopwatch = time.now()
+	}
 }
 
 pub fn (ctx &Context) begin() {
 	ctx.gg_ctx.begin()
 }
 
-pub fn (ctx &Context) end() {
+pub fn (mut ctx Context) end() {
+	ctx.compute_fps()
 	ctx.blit()
 	ctx.gg_ctx.end()
 }
