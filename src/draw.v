@@ -163,10 +163,12 @@ pub fn (mut ctx Context) draw_pixel_inv(x_ f32, y_ f32) {
 
 // https://github.com/miloyip/line
 // https://github.com/miloyip/line/blob/master/line_bresenham.c
-pub fn (mut ctx Context) draw_line(x f32, y f32, x1 f32, y1 f32, c gx.Color) {
+pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c gx.Color) {
 
-	mut x0 := x
-	mut y0 := y
+	mut x0 := int(x_0)
+	mut y0 := int(y_0)
+	mut x1 := int(x_1)
+	mut y1 := int(y_1)
 
 	dx := math.abs(x1 - x0)
 	sx := if x0 < x1 { 1 } else { -1 }
@@ -268,34 +270,41 @@ pub fn (mut ctx Context) draw_polygon(points []Point, c gx.Color) {
 }
 
 pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
-	num_coreners := points.len
-	mut vx := []int{}
-	mut vy := []int{}
-	for p in points {
-		vx << int(p.x)
-		vy << int(p.y)
-	}
-	bot := int(arrays.max(vy) or {0})
-	top := int(arrays.min(vy) or {0})
-	right := int(arrays.max(vx) or {0})
-	left := int(arrays.min(vx) or {0})
+	// draw the outline since the filling algorith does not draw the outline
+	ctx.draw_polygon(points, c)
 
-	println("bot ${bot}, top ${top}, right ${right}, left ${left}")
+	num_coreners := points.len
+	mut vx := []f32{}
+	mut vy := []f32{}
+	for p in points {
+		vx << p.x //int(p.x)
+		vy << p.y //int(p.y)
+	}
+	bot := arrays.max(vy) or {0}
+	top := arrays.min(vy) or {0}
+	right := arrays.max(vx) or {0}
+	left := arrays.min(vx) or {0}
+
+	// println("bot ${bot}, top ${top}, right ${right}, left ${left}")
 
 	mut nodes := 0
 	mut j:=0
-	mut nodes_x := [20]int{}
-	for py in int(top) .. int(bot) {
+	mut nodes_x := [20]f32{}
+	// for py in int(top) .. int(bot) {
+	for py:=top-4; py<bot; py+=1 {
+		println("py ${py}")
 		nodes = 0
 		j=num_coreners-1
 		for i in 0 .. num_coreners {
 			if (points[i].y < py && points[j].y >= py) || (points[j].y < py && points[i].y >= py) {
-				nodes_x[nodes] = int(points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
+				nodes_x[nodes] = (points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
 				nodes += 1
 			}
 			j = i
 		}
+		// if py == 1 {
 		// println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
+		// }
 		// bubble sort, smallest to largest
 		mut i:=0
 		for i < nodes - 1 {
@@ -310,7 +319,7 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 				i += 1
 			}
 		}
-		println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
+		// println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
 		// filling pixels between nodes
 		for i=0; i<nodes; i+=2 {
 			if nodes_x[i] >= right {
