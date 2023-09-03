@@ -163,7 +163,7 @@ pub fn (mut ctx Context) draw_pixel_inv(x_ f32, y_ f32) {
 
 // https://github.com/miloyip/line
 // https://github.com/miloyip/line/blob/master/line_bresenham.c
-pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c gx.Color) {
+pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor) {
 
 	mut x0 := int(x_0)
 	mut y0 := int(y_0)
@@ -178,7 +178,11 @@ pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c gx.Colo
 	mut e2 := f32(0)
 
 	for {
-		ctx.draw_pixel(x0, y0, c)
+		if c is bool {
+			ctx.draw_pixel_inv(x0, y0)
+		} else if c is gx.Color {
+			ctx.draw_pixel(x0, y0, c)
+		}
 		if x0 == x1 && y0 == y1 {
 			break
 		}
@@ -194,35 +198,7 @@ pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c gx.Colo
 	}
 }
 
-pub fn (mut ctx Context) draw_line_inv(x f32, y f32, x1 f32, y1 f32) {
-	mut x0 := x
-	mut y0 := y
-
-	dx := math.abs(x1 - x0)
-	sx := if x0 < x1 { 1 } else { -1 }
-	dy := math.abs(y1 - y0)
-	sy := if y0 < y1 { 1 } else { -1 }
-	mut err := (if dx > dy { dx } else { -dy }) / 2
-	mut e2 := f32(0)
-
-	for {
-		ctx.draw_pixel_inv(x0,y0)
-		if x0 == x1 && y0 == y1 {
-			break
-		}
-		e2 = err
-		if e2 > -dx {
-			err -= dy
-			x0 += sx
-		}
-		if e2 < dy {
-			err += dx
-			y0 += sy
-		}
-	}
-}
-
-pub fn (mut ctx Context) draw_rect_filled(x f32, y f32, w f32, h f32, c gx.Color) {
+pub fn (mut ctx Context) draw_rect_filled(x f32, y f32, w f32, h f32, c TColor) {
 	ix := int(x)
 	iy := int(y)
 	iw := int(w)
@@ -231,45 +207,31 @@ pub fn (mut ctx Context) draw_rect_filled(x f32, y f32, w f32, h f32, c gx.Color
 
 	for yy in iy .. iy + ih+1 {
 		for xx in ix .. ix + iw+1 {
-			ctx.draw_pixel(xx, yy, c)
+			if c is bool {
+				ctx.draw_pixel_inv(xx, yy)
+			} else if c is gx.Color {
+				ctx.draw_pixel(xx, yy, c)
+			}
 		}
 	}
 }
 
-pub fn (mut ctx Context) draw_rect_filled_inv(x f32, y f32, w f32, h f32) {
-	ix := int(x)
-	iy := int(y)
-	iw := int(w)
-	ih := int(h)
 
-	for yy in iy .. iy + ih+1 {
-		for xx in ix .. ix + iw+1 {
-			ctx.draw_pixel_inv(xx, yy)
-		}
-	}
-}
-
-pub fn (mut ctx Context) draw_rect_empty(x f32, y f32, w f32, h f32, c gx.Color) {
+pub fn (mut ctx Context) draw_rect_empty(x f32, y f32, w f32, h f32, c TColor) {
 	ctx.draw_line(x, y, x + w, y, c)
 	ctx.draw_line(x + w, y, x + w, y + h, c)
 	ctx.draw_line(x + w, y + h, x, y + h, c)
 	ctx.draw_line(x, y + h, x, y, c)
 }
 
-pub fn (mut ctx Context) draw_rect_empty_inv(x f32, y f32, w f32, h f32) {
-	ctx.draw_line_inv(x, y, x + w, y)
-	ctx.draw_line_inv(x + w, y, x + w, y + h)
-	ctx.draw_line_inv(x + w, y + h, x, y + h)
-	ctx.draw_line_inv(x, y + h, x, y)
-}
 
-pub fn (mut ctx Context) draw_polygon(points []Point, c gx.Color) {
+pub fn (mut ctx Context) draw_polygon(points []Point, c TColor) {
 	for i in 0 .. points.len {
 		ctx.draw_line(points[i].x, points[i].y, points[(i+1)%points.len].x, points[(i+1)%points.len].y, c)
 	}
 }
 
-pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
+pub fn (mut ctx Context) draw_polygon_filled(points []Point, c TColor) {
 	// draw the outline since the filling algorith does not draw the outline
 	ctx.draw_polygon(points, c)
 
@@ -333,7 +295,12 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 					nodes_x[i+1] = right
 				}
 				for xx in int(nodes_x[i]) .. int(nodes_x[i+1]) {
-					ctx.draw_pixel(xx, py, c)
+					if c is bool {
+						ctx.draw_pixel_inv(xx, py)
+					} else if c is gx.Color {
+						ctx.draw_pixel(xx, py, c)
+					}
+					// ctx.draw_pixel(xx, py, c)
 				}
 			}
 		}

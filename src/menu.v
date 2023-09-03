@@ -2,20 +2,26 @@ module main
 
 import gx
 import math.vec
-// import arrays
 import time
 
 pub struct Vertex {
 pub mut:
 	p        vec.Vec2[f32]
 	v        vec.Vec2[f32]
+	in_motion bool = false
 	sw       time.Time = time.now()
 	last_err vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
 	err_sum  vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
 }
 
 fn new_vertex(p vec.Vec2[f32]) Vertex {
-	return Vertex{p, vec.Vec2[f32]{0, 0}, time.now(), vec.Vec2[f32]{0, 0}, vec.Vec2[f32]{0, 0}}
+	return Vertex{
+		p: p
+		v: vec.Vec2[f32]{0, 0}
+		in_motion: false
+		sw: time.now()
+		last_err: vec.Vec2[f32]{0, 0}
+		err_sum: vec.Vec2[f32]{0, 0}}
 }
 
 pub struct Selector {
@@ -37,6 +43,7 @@ pub mut:
 	items              []MenuItem
 	selector           Selector
 	current_item_index int
+	selection_change_sw time.Time = time.now()
 }
 
 fn debug_draw_menu_outline(mut ctx Context) {
@@ -56,6 +63,7 @@ fn create_menu(ctx Context) &Menu {
 	mut menu := Menu{
 		items: []
 		current_item_index: 0
+		selection_change_sw: time.now()
 	}
 
 	item_width := 100
@@ -103,7 +111,7 @@ fn (mut menu Menu) draw(mut ctx Context) {
 			}
 			// println(points)
 			// ctx.draw_polygon(points, gx.green)
-			ctx.draw_polygon_filled(points, gx.orange)
+			ctx.draw_polygon_filled(points, gx.black)
 			// println("drawn")
 		}
 		// ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
@@ -116,17 +124,36 @@ fn (mut menu Menu) update_selector_verts() {
 	kd := f32(10)
 	m:=f32(0.5)
 
-	for i in 0 .. menu.selector.verts.len {
-		// println("i: ${i}")
 
+	for i in 0 .. menu.selector.verts.len {
 		// PID CALCULATIONS
 		// http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/
 		mut vert := &menu.selector.verts[i]
 		mut vert_target := &menu.selector.target_verts[i]
+
+		// give it some ferrofluid feel by delaying the motion of the furthest vertices
+		if vert.in_motion == false {
+			dt := f32(time.since(menu.selection_change_sw).nanoseconds()) / 1000000000
+			dist := vert.p.distance(vec.Vec2[f32]{menu.items[menu.current_item_index].x + menu.items[menu.current_item_index].w/2 , menu.items[menu.current_item_index].y+menu.items[menu.current_item_index].h/2})
+			// println("dist: ${int(dist)}, dt: ${dt}")
+			if dt*4000 > dist {
+				vert.in_motion = true
+			} else if dist > menu.items[menu.current_item_index].w * f32(2.5) {
+				// if its too far away, put it in motion
+				vert.in_motion = true
+			} else {
+				continue
+			}
+		}
+		// if its already at the target, skip calculations
+		if vert.p.distance(vert_target.p) < 1 {
+			vert.in_motion = false
+			continue
+		}
 		vert.sw = time.now()
 		// dt := f32(time.since(vert.sw).nanoseconds()) / 1000000000 // ~ 0.015 s
 		// println("dt: ${dt}")
-		dt:=f32(0.015)
+		dt:=f32(0.015) // 60 fps
 		dt_v := vec.Vec2{dt,dt}
 
 		kp_v := vec.Vec2{kp,kp}
@@ -136,7 +163,6 @@ fn (mut menu Menu) update_selector_verts() {
 		last_err := vert.last_err
 		mut err_sum := vert.err_sum
 
-		// x direction
 		err := vert_target.p - vert.p
 		err_sum = (err * dt_v) + err_sum
 		d_err := (err - last_err) / dt_v
@@ -146,8 +172,7 @@ fn (mut menu Menu) update_selector_verts() {
 		vert.last_err = err
 		vert.err_sum = err_sum
 
-
-		// FORCE ACCEL CALCULATIONS
+		// FORCE/ACCEL CALCULATIONS
 		// https://en.wikipedia.org/wiki/Equations_of_motion
 		f:= output
 		a:= f / vec.Vec2{m,m}
@@ -170,6 +195,7 @@ fn (mut menu Menu) update_target_verts() {
 
 fn (mut menu Menu) next() {
 	menu.current_item_index = (menu.current_item_index + 1) % menu.items.len
+	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) prev() {
@@ -177,10 +203,12 @@ fn (mut menu Menu) prev() {
 	if menu.current_item_index < 0 {
 		menu.current_item_index = menu.items.len - 1
 	}
+	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) down() {
 	menu.current_item_index = (menu.current_item_index + 4) % menu.items.len
+	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) up() {
@@ -188,4 +216,5 @@ fn (mut menu Menu) up() {
 	if menu.current_item_index < 0 {
 		menu.current_item_index += menu.items.len
 	}
+	menu.selection_change_sw = time.now()
 }
