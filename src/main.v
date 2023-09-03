@@ -1,29 +1,56 @@
 module main
 
-import libs.fbg
+import gx
+import gg
+
+struct App {
+pub mut:
+	ctx  Context
+	menu Menu
+}
+
+fn draw(mut app App) {
+	app.ctx.begin()
+	app.ctx.clear()
+	// app.ctx.draw_text_def(200, 20, 'hello world!')
+	debug_draw_menu_outline(mut app.ctx)
+	app.menu.draw(mut app.ctx)
+	app.ctx.draw_line_inv(0, 0, 20, 60)
+	// app.ctx.draw_line_inv(0, 10, 20, 30)
+	// app.ctx.draw_test_image()
+
+	app.ctx.end()
+}
+
+fn event_manager(mut ev gg.Event, mut app App) {
+	if ev.typ == .key_down {
+		match ev.key_code {
+			.escape {
+				// app.ctx.quit()
+				println('escape')
+			}
+			.right {
+				app.menu.next()
+			}
+			.left {
+				app.menu.prev()
+			}
+			.up {
+				app.menu.up()
+			}
+			.down {
+				app.menu.down()
+			}
+			else {
+				println('key: ')
+			}
+		}
+	}
+}
 
 fn main() {
-	println('asdf')
-	fbg_ctx := fbg.fbg_customsetup(400, 200, 3, 1, 0, unsafe { nil }, unsafe { nil },
-		unsafe { nil }, unsafe { nil }, unsafe { nil })
-
-	for {
-		fbg.fbg_clear(fbg_ctx, 0) // can also be replaced by fbg_background(fbg, 0, 0, 0)
-
-		fbg.fbg_draw(fbg_ctx)
-
-		// you can also use fbg_image(fbg, texture, 0, 0)
-		// but you must be sure that your image size fit on the display
-		// fbg_imageClip(fbg, texture, 0, 0, 0, 0, fbg->width, fbg->height)
-
-		// fbg_write(fbg, "Quickstart example\nFPS:", 4, 2)
-		// fbg_write(fbg, fbg->fps_char, 32 + 8, 2 + 8)
-		println('FPS: ${fbg_ctx.fps}')
-
-		// fbg_rect(fbg, fbg->width / 2 - 32, fbg->height / 2 - 32, 16, 16, 0, 255, 0)
-
-		fbg.fbg_pixel(fbg_ctx, fbg_ctx.width / 2, fbg_ctx.height / 2, 255, 0, 0)
-
-		fbg.fbg_flip(fbg_ctx)
-	}
+	mut app := App{}
+	app.menu = create_menu(app.ctx)
+	app.ctx = create_context(app, draw, event_manager)
+	app.ctx.run()
 }

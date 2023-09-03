@@ -16,20 +16,20 @@ pub mut:
 	current_item_index int
 }
 
-fn debug_draw_menu_outline(mut ctx IBPContext) {
-	// item_width := 100
-	// item_height := 100
+fn debug_draw_menu_outline(mut ctx Context) {
+	item_width := 100
+	item_height := 100
 
-	// for j in 0 .. 2 {
-	// 	for i in 0 .. 4 {
-	// 		x := i * item_width
-	// 		y := j * item_height
-	// 		ctx.draw_rect_empty(x + 1, y + 1, item_width - 1, item_height - 1, gx.black)
-	// 	}
-	// }
+	for j in 0 .. 2 {
+		for i in 0 .. 4 {
+			x := i * item_width
+			y := j * item_height
+			ctx.draw_rect_empty(x + 1, y + 1, item_width - 1, item_height - 1, gx.black)
+		}
+	}
 }
 
-fn create_menu(ctx IBPContext) &Menu {
+fn create_menu(ctx Context) &Menu {
 	mut menu := Menu{
 		items: []
 		current_item_index: 0
@@ -48,15 +48,15 @@ fn create_menu(ctx IBPContext) &Menu {
 	return &menu
 }
 
-fn (menu &Menu) draw(mut ctx IBPContext) {
-	// for i in 0 .. menu.items.len {
-	// 	item := menu.items[i]
-	// 	if i == menu.current_item_index {
-	// 		ctx.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
-	// 		// ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.green)
-	// 	}
-	// 	ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
-	// }
+fn (menu &Menu) draw(mut ctx Context) {
+	for i in 0 .. menu.items.len {
+		item := menu.items[i]
+		if i == menu.current_item_index {
+			ctx.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
+			// ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.green)
+		}
+		ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
+	}
 }
 
 fn (mut menu Menu) next() {

@@ -1,3 +1,0 @@
-module fbg
-
-import time
