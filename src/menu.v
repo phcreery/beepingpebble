@@ -55,7 +55,7 @@ fn (menu &Menu) draw(mut ctx Context) {
 			ctx.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 			// ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.green)
 		}
-		ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
+		// ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
 	}
 }
 

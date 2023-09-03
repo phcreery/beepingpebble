@@ -1,11 +1,13 @@
 module main
 
-import gg
+// import gg
 import gx
 // import sokol.gfx
 import math
 import time
 import arrays
+
+import fbdev
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
 // change line 472 of gg.c.v to `high_dpi: false`
@@ -26,29 +28,45 @@ mut:
 	frames	   int
 	fps 	   int
 	img_id       int
-	gg_ctx       &gg.Context = unsafe { nil }
+	// gg_ctx       &gg.Context = unsafe { nil }
+	gg_ctx       &fbdev.Context = unsafe { nil }
 }
 
-pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &Context {
+pub fn create_context(user_data voidptr, frame_fn fn (voidptr)) &Context { //, event_fn fn (&gg.Event, voidptr)
 	mut ctx := &Context{
 		pixel_buffer: []u8{len: line_length*height*components, cap: line_length*height*components, init:0}
-		gg_ctx: &gg.Context{}
+		// gg_ctx: &gg.Context{}
+		gg_ctx: &fbdev.Context{}
 	}
-	ctx.gg_ctx = gg.new_context(
+	// ---- GG ----
+	// ctx.gg_ctx = gg.new_context(
+	// 	bg_color: gx.white
+	// 	width: width
+	// 	height: height
+	// 	create_window: true
+	// 	window_title: 'BEEPINGPEBBLE'
+	// 	// init_fn: init_fn
+	// 	// init_fn: graphics_init
+	// 	init_fn: fn [mut ctx] (_ voidptr) {
+	// 		ctx.gg_ctx.new_streaming_image(width, height, 4, pixel_format: .rgba8)
+	// 	}
+	// 	frame_fn: frame_fn
+	// 	event_fn: event_fn
+	// 	user_data: user_data
+	// )
+
+	// ---- fbdev ----
+	ctx.gg_ctx = fbdev.new_context(
 		bg_color: gx.white
 		width: width
 		height: height
-		create_window: true
-		window_title: 'BEEPINGPEBBLE'
-		// init_fn: init_fn
-		// init_fn: graphics_init
-		init_fn: fn [mut ctx] (_ voidptr) {
-			ctx.gg_ctx.new_streaming_image(width, height, 4, pixel_format: .rgba8)
-		}
+		
 		frame_fn: frame_fn
-		event_fn: event_fn
+		// event_fn: event_fn
 		user_data: user_data
 	)
+
+
 
 	ctx.fps_stopwatch = time.now()
 
@@ -89,26 +107,30 @@ pub fn (mut ctx Context) clear() {
 	}
 }
 
-pub fn (ctx &Context) blit() {
+pub fn (mut ctx Context) blit() {
 
-	// mut buffer := [][]u32{len: height, init: []u32{len: width}}
-	mut buffer := [height][width]u32{}
-	for y in 0 .. height {
-		for x in 0 .. width {
-			// convert from BGRA8 to RGBA8
-			pos := u64(y*line_length+x*components)
-			// println("pos ${pos}")
-			blue := ctx.pixel_buffer[pos+0]
-			green:= ctx.pixel_buffer[pos+1]
-			red:= ctx.pixel_buffer[pos+2]
-			// a: ctx.pixel_buffer[u64((line_length*y+x))+3]
-			buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
+	// ---- gg ----
+	// // mut buffer := [][]u32{len: height, init: []u32{len: width}}
+	// mut buffer := [height][width]u32{}
+	// for y in 0 .. height {
+	// 	for x in 0 .. width {
+	// 		// convert from BGRA8 to RGBA8
+	// 		pos := u64(y*line_length+x*components)
+	// 		// println("pos ${pos}")
+	// 		blue := ctx.pixel_buffer[pos+0]
+	// 		green:= ctx.pixel_buffer[pos+1]
+	// 		red:= ctx.pixel_buffer[pos+2]
+	// 		// a: ctx.pixel_buffer[u64((line_length*y+x))+3]
+	// 		buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
 
-		}
-	}
-	mut img := ctx.gg_ctx.get_cached_image_by_idx(ctx.img_id)
-	img.update_pixel_data(unsafe { &u8(&buffer) })
-	ctx.gg_ctx.draw_image(0, 0, width, height, img)
+	// 	}
+	// }
+	// mut img := ctx.gg_ctx.get_cached_image_by_idx(ctx.img_id)
+	// img.update_pixel_data(unsafe { &u8(&buffer) })
+	// ctx.gg_ctx.draw_image(0, 0, width, height, img)
+
+	// ---- fbdev ----
+	ctx.gg_ctx.blit(ctx.pixel_buffer)
 }
 
 [inline]
@@ -311,13 +333,13 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 	}
 }
 
-pub fn (ctx &Context) draw_text(x int, y int, text string, c gx.Color) {
-	// gx.FontDef{
-	// 	font_size: 8
-	// 	font_path: 'assets/fonts/RobotoMono-Regular.ttf'
-	// })
-	// ctx.gg_ctx.draw_text(x, y, text, c)
-	ctx.gg_ctx.draw_text_def(x, y, text)
-}
+// pub fn (ctx &Context) draw_text(x int, y int, text string, c gx.Color) {
+// 	// gx.FontDef{
+// 	// 	font_size: 8
+// 	// 	font_path: 'assets/fonts/RobotoMono-Regular.ttf'
+// 	// })
+// 	// ctx.gg_ctx.draw_text(x, y, text, c)
+// 	ctx.gg_ctx.draw_text_def(x, y, text)
+// }
 
 

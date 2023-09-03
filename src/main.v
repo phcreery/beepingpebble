@@ -1,7 +1,8 @@
 module main
 
 import gx
-import gg
+// import gg
+// import fbdev as gg
 
 struct App {
 pub mut:
@@ -25,35 +26,35 @@ fn draw(mut app App) {
 	app.ctx.end()
 }
 
-fn event_manager(mut ev gg.Event, mut app App) {
-	if ev.typ == .key_down {
-		match ev.key_code {
-			.escape {
-				// app.ctx.quit()
-				println('escape')
-			}
-			.right {
-				app.menu.next()
-			}
-			.left {
-				app.menu.prev()
-			}
-			.up {
-				app.menu.up()
-			}
-			.down {
-				app.menu.down()
-			}
-			else {
-				println('key: ')
-			}
-		}
-	}
-}
+// fn event_manager(mut ev &gg.Event, mut app App) {
+// 	if ev.typ == .key_down {
+// 		match ev.key_code {
+// 			.escape {
+// 				// app.ctx.quit()
+// 				println('escape')
+// 			}
+// 			.right {
+// 				app.menu.next()
+// 			}
+// 			.left {
+// 				app.menu.prev()
+// 			}
+// 			.up {
+// 				app.menu.up()
+// 			}
+// 			.down {
+// 				app.menu.down()
+// 			}
+// 			else {
+// 				println('key: ')
+// 			}
+// 		}
+// 	}
+// }
 
 fn main() {
 	mut app := App{}
 	app.menu = create_menu(app.ctx)
-	app.ctx = create_context(app, draw, event_manager)
+	app.ctx = create_context(app, draw)
 	app.ctx.run()
 }
