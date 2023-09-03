@@ -18,7 +18,8 @@ fn draw(mut app App) {
 	app.menu.draw(mut app.ctx)
 	app.ctx.draw_line_inv(0, 0, 20, 60)
 	app.ctx.draw_line(20, 60, 20, 160, gx.red)
-	app.ctx.draw_polygon_filled([Point{10, 10}, Point{20, 20}, Point{30, 10}], gx.green)
+	app.ctx.draw_polygon_filled([Point{10, 10}, Point{20, 20},
+		Point{30, 10}], gx.green)
 	app.ctx.draw_polygon([Point{10, 100}, Point{20, 200}, Point{30, 100}], gx.red)
 	// app.ctx.draw_line_inv(0, 10, 20, 30)
 	// app.ctx.draw_test_image()
