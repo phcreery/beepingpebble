@@ -269,31 +269,34 @@ pub fn (mut ctx Context) draw_polygon(points []Point, c gx.Color) {
 
 pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 	num_coreners := points.len
-	mut vx := []f32{}
-	mut vy := []f32{}
+	mut vx := []int{}
+	mut vy := []int{}
 	for p in points {
-		vx << p.x
-		vy << p.y
+		vx << int(p.x)
+		vy << int(p.y)
 	}
-	bot := arrays.max[f32](vy) or {0}
-	top := arrays.min[f32](vy) or {0}
-	left := arrays.min[f32](vx) or {0}
-	right := arrays.max[f32](vx) or {0}
+	bot := int(arrays.max(vy) or {0})
+	top := int(arrays.min(vy) or {0})
+	right := int(arrays.max(vx) or {0})
+	left := int(arrays.min(vx) or {0})
+
+	println("bot ${bot}, top ${top}, right ${right}, left ${left}")
 
 	mut nodes := 0
 	mut j:=0
-	mut nodes_x := [200]f32{}
+	mut nodes_x := [20]int{}
 	for py in int(top) .. int(bot) {
 		nodes = 0
 		j=num_coreners-1
 		for i in 0 .. num_coreners {
 			if (points[i].y < py && points[j].y >= py) || (points[j].y < py && points[i].y >= py) {
+				nodes_x[nodes] = int(points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
 				nodes += 1
-				nodes_x[nodes] = (points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
 			}
 			j = i
 		}
-		// bubble sort
+		// println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
+		// bubble sort, smallest to largest
 		mut i:=0
 		for i < nodes - 1 {
 			if nodes_x[i] > nodes_x[i+1] {
@@ -307,6 +310,7 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 				i += 1
 			}
 		}
+		println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
 		// filling pixels between nodes
 		for i=0; i<nodes; i+=2 {
 			if nodes_x[i] >= right {
