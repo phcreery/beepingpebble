@@ -242,6 +242,12 @@ pub fn (mut ctx Context) draw_rect_empty_inv(x f32, y f32, w f32, h f32) {
 	ctx.draw_line_inv(x, y + h, x, y)
 }
 
+pub fn (mut ctx Context) draw_polygon(points []Point, c gx.Color) {
+	for i in 0 .. points.len {
+		ctx.draw_line(points[i].x, points[i].y, points[(i+1)%points.len].x, points[(i+1)%points.len].y, c)
+	}
+}
+
 pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 	// ctx.gg_ctx.draw_polygon_filled(points, c)
 
