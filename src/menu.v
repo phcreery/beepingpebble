@@ -24,7 +24,7 @@ fn debug_draw_menu_outline(mut ctx Context) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			ctx.draw_rect_empty(x + 1, y + 1, item_width - 1, item_height - 1, gx.black)
+			ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.black)
 		}
 	}
 }
@@ -42,7 +42,7 @@ fn create_menu(ctx Context) &Menu {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			menu.items << MenuItem{'a', x + 1, y + 1, item_width - 1, item_height - 1}
+			menu.items << MenuItem{'a', x + 1, y + 1, item_width - 2, item_height - 2}
 		}
 	}
 	return &menu

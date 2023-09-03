@@ -16,6 +16,7 @@ fn draw(mut app App) {
 	debug_draw_menu_outline(mut app.ctx)
 	app.menu.draw(mut app.ctx)
 	app.ctx.draw_line_inv(0, 0, 20, 60)
+	app.ctx.draw_polygon_filled([Point{10, 10}, Point{20, 20}, Point{30, 10}], gx.green)
 	// app.ctx.draw_line_inv(0, 10, 20, 30)
 	// app.ctx.draw_test_image()
 

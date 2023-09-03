@@ -5,6 +5,7 @@ import gx
 // import sokol.gfx
 import math
 import time
+import arrays
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
 // change line 472 of gg.c.v to `high_dpi: false`
@@ -233,6 +234,77 @@ pub fn (mut ctx Context) draw_rect_empty(x f32, y f32, w f32, h f32, c gx.Color)
 	ctx.draw_line(x, y + h, x, y, c)
 }
 
+pub fn (mut ctx Context) draw_rect_empty_inv(x f32, y f32, w f32, h f32) {
+	// ctx.gg_ctx.draw_rect_empty(x, y, w, h, c)
+	ctx.draw_line_inv(x, y, x + w, y)
+	ctx.draw_line_inv(x + w, y, x + w, y + h)
+	ctx.draw_line_inv(x + w, y + h, x, y + h)
+	ctx.draw_line_inv(x, y + h, x, y)
+}
+
+pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
+	// ctx.gg_ctx.draw_polygon_filled(points, c)
+
+	num_coreners := points.len
+	mut vx := []f32{}
+	mut vy := []f32{}
+	for p in points {
+		vx << p.x
+		vy << p.y
+	}
+	bot := arrays.max[f32](vy) or {0}
+	top := arrays.min[f32](vy) or {0}
+	left := arrays.min[f32](vx) or {0}
+	right := arrays.max[f32](vx) or {0}
+
+	mut nodes := 0
+	mut j:=0
+	mut nodes_x := [200]f32{}
+	for py in int(top) .. int(bot) {
+		nodes = 0
+		j=num_coreners-1
+		for i in 0 .. num_coreners {
+			if (points[i].y < py && points[j].y >= py) || (points[j].y < py && points[i].y >= py) {
+				nodes += 1
+				// nodes_x << (points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
+				nodes_x[nodes] = (points[i].x + (py - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x))
+			}
+			j = i
+		}
+		// bubble sort
+		mut i:=0
+		for i < nodes - 1 {
+			if nodes_x[i] > nodes_x[i+1] {
+				tmp := nodes_x[i]
+				nodes_x[i] = nodes_x[i+1]
+				nodes_x[i+1] = tmp
+				if i > 0 {
+					i -= 1
+				}
+			} else {
+				i += 1
+			}
+		}
+		// filling pixels between nodes
+		for i=0; i<nodes; i+=2 {
+			if nodes_x[i] >= right {
+				break
+			}
+			if nodes_x[i+1] > left {
+				if nodes_x[i] < left {
+					nodes_x[i] = left
+				}
+				if nodes_x[i+1] > right {
+					nodes_x[i+1] = right
+				}
+				for xx in int(nodes_x[i]) .. int(nodes_x[i+1]) {
+					ctx.draw_pixel(xx, py, c)
+				}
+			}
+		}
+	}
+}
+
 pub fn (ctx &Context) draw_text(x int, y int, text string, c gx.Color) {
 	// gx.FontDef{
 	// 	font_size: 8
@@ -241,3 +313,5 @@ pub fn (ctx &Context) draw_text(x int, y int, text string, c gx.Color) {
 	// ctx.gg_ctx.draw_text(x, y, text, c)
 	ctx.gg_ctx.draw_text_def(x, y, text)
 }
+
+
