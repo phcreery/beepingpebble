@@ -17,7 +17,7 @@ pub struct Config {
 	frame_fn		FNCb	= unsafe { nil }
 	init_fn			FNCb	= unsafe { nil }
 	// event_fn		FNEvent = unsafe { nil }
-	
+
 
 	// compability only (not used)
 	width			int
@@ -31,20 +31,21 @@ pub mut:
 	framebuffer		os.File
 	bg_color		gx.Color
 
-	
+
 	width			int
 	height			int
+	width_extended		int
 
 	user_data		voidptr
 	frame_fn		FNCb	= unsafe { nil }
 	init_fn			FNCb	= unsafe { nil }
 	// event_fn		FNEvent = unsafe { nil }
-	
+
 }
 
 pub fn new_context(args Config) &Context {
     if !(
-    		os.exists("/dev/fb1") && 
+    		os.exists("/dev/fb1") &&
     		os.exists("/sys/class/graphics/fb1/virtual_size") &&
     		os.exists("/sys/class/graphics/fb1/stride")
     	){
@@ -62,17 +63,15 @@ pub fn new_context(args Config) &Context {
 		framebuffer:	os.open_file("/dev/fb1","w") or { panic("Unable to open framebuffer device") }
 		width:			screen_width
 		height:			screen_height
-		// width_extended:		screen_width_ext
-		// virtualbuffer:		[]u8{len: screen_width_ext*768*4, cap: screen_width_ext*768*4, init:255}
-		// max_buffer_size:	u64(screen_width_ext*768*4)
-		
+		width_extended:		screen_width_ext
+
 		bg_color:		args.bg_color
 		user_data:		args.user_data
 		frame_fn:		args.frame_fn
 		init_fn:		args.init_fn
 		// event_fn:		args.event_fn
 	}
-	
+
 	return context
 }
 

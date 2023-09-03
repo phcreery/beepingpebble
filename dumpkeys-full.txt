@@ -1,0 +1,352 @@
+keymaps 0-2,4-5,8,12
+keycode   1 = Escape           Escape           Escape           VoidSymbol       VoidSymbol       Escape           VoidSymbol      
+keycode   2 = one              exclam           VoidSymbol       VoidSymbol       VoidSymbol       Meta_one         VoidSymbol      
+keycode   3 = two              at               at               nul              nul              Meta_two         VoidSymbol      
+keycode   4 = three            numbersign       VoidSymbol       Escape           VoidSymbol       Meta_three       VoidSymbol      
+keycode   5 = four             dollar           dollar           Control_backslash VoidSymbol       Meta_four        VoidSymbol      
+keycode   6 = five             percent          VoidSymbol       Control_bracketright VoidSymbol       Meta_five        VoidSymbol      
+keycode   7 = six              asciicircum      VoidSymbol       Control_asciicircum VoidSymbol       Meta_six         VoidSymbol      
+keycode   8 = seven            ampersand        braceleft        Control_underscore VoidSymbol       Meta_seven       VoidSymbol      
+keycode   9 = eight            asterisk         bracketleft      Delete           VoidSymbol       Meta_eight       VoidSymbol      
+keycode  10 = nine             parenleft        bracketright     VoidSymbol       VoidSymbol       Meta_nine        VoidSymbol      
+keycode  11 = asciitilde       parenright       asciitilde       VoidSymbol       VoidSymbol       zero             VoidSymbol      
+keycode  12 = minus            underscore       backslash        Control_underscore Control_underscore Meta_minus       VoidSymbol      
+keycode  13 = equal            plus             VoidSymbol       VoidSymbol       VoidSymbol       Meta_equal       VoidSymbol      
+keycode  14 = Delete           Delete           VoidSymbol       BackSpace        VoidSymbol       Meta_Delete      VoidSymbol      
+keycode  15 = Tab              Tab              VoidSymbol       VoidSymbol       VoidSymbol       Meta_Tab         VoidSymbol      
+keycode  16 = +q               +Q               +q               Control_q        Control_q        numbersign       Meta_Control_q  
+keycode  17 = +w               +W               +w               Control_w        Control_w        one              Meta_Control_w  
+keycode  18 = +e               +E               Hex_E            Control_e        Control_e        two              Meta_Control_e  
+keycode  19 = +r               +R               +r               Control_r        Control_r        three            Meta_Control_r  
+keycode  20 = +t               +T               backslash        Control_t        Control_t        parenleft        Meta_Control_t  
+keycode  21 = +y               +Y               +y               Control_y        Control_y        parenright       Meta_Control_y  
+keycode  22 = +u               +U               asciicircum      Control_u        Control_u        underscore       Meta_Control_u  
+keycode  23 = +i               +I               equal            Tab              Tab              minus            Meta_Tab        
+keycode  24 = +o               +O               braceleft        Control_o        Control_o        plus             Meta_Control_o  
+keycode  25 = +p               +P               braceright       Control_p        Control_p        at               Meta_Control_p  
+keycode  26 = bracketleft      braceleft        VoidSymbol       Escape           VoidSymbol       Meta_bracketleft VoidSymbol      
+keycode  27 = bracketright     braceright       asciitilde       Control_bracketright VoidSymbol       Meta_bracketright VoidSymbol      
+keycode  28 = Return           Return           Return           Return           Return           bar              Return          
+keycode  29 = Control          Control          Control          Control          Control          Control          Control         
+keycode  30 = +a               +A               question         Control_a        Control_a        asterisk         Meta_Control_a  
+keycode  31 = +s               +S               +s               Control_s        Control_s        four             Meta_Control_s  
+keycode  32 = +d               +D               bracketleft      Control_d        Control_d        five             Meta_Control_d  
+keycode  33 = +f               +F               bracketright     Control_f        Control_f        six              Meta_Control_f  
+keycode  34 = +g               +G               +g               Control_g        Control_g        slash            Meta_Control_g  
+keycode  35 = +h               +H               +h               BackSpace        BackSpace        colon            Meta_BackSpace  
+keycode  36 = +j               +J               +j               Linefeed         Linefeed         semicolon        Meta_Linefeed   
+keycode  37 = +k               +K               +k               Control_k        Control_k        apostrophe       Meta_Control_k  
+keycode  38 = +l               +L               +l               Control_l        Control_l        quotedbl         Meta_Control_l  
+keycode  39 = semicolon        colon            VoidSymbol       VoidSymbol       VoidSymbol       Meta_semicolon   VoidSymbol      
+keycode  40 = apostrophe       quotedbl         VoidSymbol       Control_g        VoidSymbol       Meta_apostrophe  VoidSymbol      
+keycode  41 = dollar           asciitilde       dollar           nul              VoidSymbol       grave            VoidSymbol      
+keycode  42 = Shift            Shift            Shift            Shift            Shift            Caps_Lock        Shift           
+keycode  43 = backslash        bar              VoidSymbol       Control_backslash VoidSymbol       Meta_backslash   VoidSymbol      
+keycode  44 = +z               +Z               +z               Control_z        Control_z        seven            Meta_Control_z  
+keycode  45 = +x               +X               +x               Control_x        Control_x        eight            Meta_Control_x  
+keycode  46 = +c               +C               degree           Control_c        Control_c        nine             Meta_Control_c  
+keycode  47 = +v               +V               less             Control_v        Control_v        question         Meta_Control_v  
+keycode  48 = +b               +B               Hex_B            Control_b        Control_b        exclam           Meta_Control_b  
+keycode  49 = +n               +N               greater          Control_n        Control_n        comma            Meta_Control_n  
+keycode  50 = +m               +M               +m               Control_m        Control_m        period           Meta_Control_m  
+keycode  51 = comma            less             VoidSymbol       VoidSymbol       VoidSymbol       Meta_comma       VoidSymbol      
+keycode  52 = period           greater          VoidSymbol       Compose          VoidSymbol       Meta_period      VoidSymbol      
+keycode  53 = slash            question         VoidSymbol       Delete           VoidSymbol       Meta_slash       VoidSymbol      
+keycode  54 = Shift            Shift            Shift            Shift            Shift            Shift            Shift           
+keycode  55 = KP_Multiply      KP_Multiply      KP_Multiply      KP_Multiply      KP_Multiply      KP_Multiply      KP_Multiply     
+keycode  56 = Alt              Alt              Alt              Alt              Alt              Alt              Alt             
+keycode  57 = space            space            ampersand        nul              VoidSymbol       Tab              VoidSymbol      
+keycode  58 = Caps_Lock        Caps_Lock        Caps_Lock        Caps_Lock        Caps_Lock        Caps_Lock        Caps_Lock       
+keycode  59 = F1               F11              Console_13       F1               VoidSymbol       Console_1        Console_1       
+keycode  60 = F2               F12              Console_14       F2               VoidSymbol       Console_2        Console_2       
+keycode  61 = F3               F13              Console_15       F3               VoidSymbol       Console_3        Console_3       
+keycode  62 = F4               F14              Console_16       F4               VoidSymbol       Console_4        Console_4       
+keycode  63 = F5               F15              Console_17       F5               VoidSymbol       Console_5        Console_5       
+keycode  64 = F6               F16              Console_18       F6               VoidSymbol       Console_6        Console_6       
+keycode  65 = F7               F17              Console_19       F7               VoidSymbol       Console_7        Console_7       
+keycode  66 = F8               F18              Console_20       F8               VoidSymbol       Console_8        Console_8       
+keycode  67 = F9               F19              Console_21       F9               VoidSymbol       Console_9        Console_9       
+keycode  68 = F10              F20              Console_22       F10              VoidSymbol       Console_10       Console_10      
+keycode  69 = Num_Lock         Bare_Num_Lock    Num_Lock         Num_Lock         Num_Lock         Num_Lock         Num_Lock        
+keycode  70 = Scroll_Lock      Show_Memory      Show_Registers   Show_State       VoidSymbol       Scroll_Lock      VoidSymbol      
+keycode  71 = KP_7             KP_7             Hex_7            KP_7             KP_7             Ascii_7          KP_7            
+keycode  72 = KP_8             KP_8             Hex_8            KP_8             KP_8             Ascii_8          KP_8            
+keycode  73 = KP_9             KP_9             Hex_9            KP_9             KP_9             Ascii_9          KP_9            
+keycode  74 = KP_Subtract      KP_Subtract      KP_Subtract      KP_Subtract      KP_Subtract      KP_Subtract      KP_Subtract     
+keycode  75 = KP_4             KP_4             Hex_4            KP_4             KP_4             Ascii_4          KP_4            
+keycode  76 = KP_5             KP_5             Hex_5            KP_5             KP_5             Ascii_5          KP_5            
+keycode  77 = KP_6             KP_6             Hex_6            KP_6             KP_6             Ascii_6          KP_6            
+keycode  78 = KP_Add           KP_Add           KP_Add           KP_Add           KP_Add           KP_Add           KP_Add          
+keycode  79 = KP_1             KP_1             Hex_1            KP_1             KP_1             Ascii_1          KP_1            
+keycode  80 = KP_2             KP_2             Hex_2            KP_2             KP_2             Ascii_2          KP_2            
+keycode  81 = KP_3             KP_3             Hex_3            KP_3             KP_3             Ascii_3          KP_3            
+keycode  82 = KP_0             KP_0             Hex_0            KP_0             KP_0             Ascii_0          KP_0            
+keycode  83 = KP_Period        KP_Period        KP_Period        KP_Period        KP_Period        KP_Period        Boot            
+keycode  84 = Last_Console     Last_Console     Last_Console     Last_Console     Last_Console     Last_Console     Last_Console    
+keycode  85 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  86 = less             greater          bar              VoidSymbol       VoidSymbol       Meta_less        VoidSymbol      
+keycode  87 = F11              F11              Console_23       F11              VoidSymbol       Console_11       Console_11      
+keycode  88 = F12              F12              Console_24       F12              VoidSymbol       Console_12       Console_12      
+keycode  89 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  90 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  91 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  92 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  93 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  94 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  95 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode  96 = KP_Enter         KP_Enter         KP_Enter         KP_Enter         KP_Enter         KP_Enter         KP_Enter        
+keycode  97 = Control          Control          Control          Control          Control          Control          Control         
+keycode  98 = KP_Divide        KP_Divide        KP_Divide        KP_Divide        KP_Divide        KP_Divide        KP_Divide       
+keycode  99 = Control_backslash VoidSymbol       VoidSymbol       Control_backslash VoidSymbol       Control_backslash VoidSymbol      
+keycode 100 = AltGr            AltGr            AltGr            AltGr            AltGr            AltGr            AltGr           
+keycode 101 = Break            Break            Break            Break            Break            Break            Break           
+keycode 102 = Find             Find             Find             Find             Find             Find             Find            
+keycode 103 = Up               Up               Up               Up               Up               Up               Up              
+keycode 104 = Prior            Scroll_Backward  Prior            Prior            Prior            Prior            Prior           
+keycode 105 = Left             Left             Left             Left             Left             Decr_Console     Left            
+keycode 106 = Right            Right            Right            Right            Right            Incr_Console     Right           
+keycode 107 = Select           Select           Select           Select           Select           Select           Select          
+keycode 108 = Down             Down             Down             Down             Down             Down             Down            
+keycode 109 = Next             Scroll_Forward   Next             Next             Next             Next             Next            
+keycode 110 = Insert           Insert           Insert           Insert           Insert           Insert           Insert          
+keycode 111 = Remove           Remove           Remove           Remove           Remove           Remove           Boot            
+keycode 112 = Macro            Macro            Macro            Macro            Macro            Macro            Macro           
+keycode 113 = F13              F13              F13              F13              F13              F13              F13             
+keycode 114 = F14              F14              F14              F14              F14              F14              F14             
+keycode 115 = Help             Help             Help             Help             Help             Help             Help            
+keycode 116 = Do               Do               Do               Do               Do               Do               Do              
+keycode 117 = F17              F17              F17              F17              F17              F17              F17             
+keycode 118 = KP_MinPlus       KP_MinPlus       KP_MinPlus       KP_MinPlus       KP_MinPlus       KP_MinPlus       KP_MinPlus      
+keycode 119 = Pause            Pause            Pause            Pause            Pause            Pause            Pause           
+keycode 120 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 121 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 122 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 123 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 124 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 125 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 126 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 127 = VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol       VoidSymbol      
+keycode 128 = nul              nul              nul              nul              nul              nul              nul             
+keycode 129 = nul              nul              nul              nul              nul              nul              nul             
+keycode 130 = nul              nul              nul              nul              nul              nul              nul             
+keycode 131 = nul              nul              nul              nul              nul              nul              nul             
+keycode 132 = nul              nul              nul              nul              nul              nul              nul             
+keycode 133 = nul              nul              nul              nul              nul              nul              nul             
+keycode 134 = nul              nul              nul              nul              nul              nul              nul             
+keycode 135 = nul              nul              nul              nul              nul              nul              nul             
+keycode 136 = nul              nul              nul              nul              nul              nul              nul             
+keycode 137 = nul              nul              nul              nul              nul              nul              nul             
+keycode 138 = nul              nul              nul              nul              nul              nul              nul             
+keycode 139 = nul              nul              nul              nul              nul              nul              nul             
+keycode 140 = nul              nul              nul              nul              nul              nul              nul             
+keycode 141 = nul              nul              nul              nul              nul              nul              nul             
+keycode 142 = nul              nul              nul              nul              nul              nul              nul             
+keycode 143 = nul              nul              nul              nul              nul              nul              nul             
+keycode 144 = nul              nul              nul              nul              nul              nul              nul             
+keycode 145 = nul              nul              nul              nul              nul              nul              nul             
+keycode 146 = nul              nul              nul              nul              nul              nul              nul             
+keycode 147 = nul              nul              nul              nul              nul              nul              nul             
+keycode 148 = nul              nul              nul              nul              nul              nul              nul             
+keycode 149 = nul              nul              nul              nul              nul              nul              nul             
+keycode 150 = nul              nul              nul              nul              nul              nul              nul             
+keycode 151 = nul              nul              nul              nul              nul              nul              nul             
+keycode 152 = nul              nul              nul              nul              nul              nul              nul             
+keycode 153 = nul              nul              nul              nul              nul              nul              nul             
+keycode 154 = nul              nul              nul              nul              nul              nul              nul             
+keycode 155 = nul              nul              nul              nul              nul              nul              nul             
+keycode 156 = nul              nul              nul              nul              nul              nul              nul             
+keycode 157 = nul              nul              nul              nul              nul              nul              nul             
+keycode 158 = nul              nul              nul              nul              nul              nul              nul             
+keycode 159 = nul              nul              nul              nul              nul              nul              nul             
+keycode 160 = nul              nul              nul              nul              nul              nul              nul             
+keycode 161 = nul              nul              nul              nul              nul              nul              nul             
+keycode 162 = nul              nul              nul              nul              nul              nul              nul             
+keycode 163 = nul              nul              nul              nul              nul              nul              nul             
+keycode 164 = nul              nul              nul              nul              nul              nul              nul             
+keycode 165 = nul              nul              nul              nul              nul              nul              nul             
+keycode 166 = nul              nul              nul              nul              nul              nul              nul             
+keycode 167 = nul              nul              nul              nul              nul              nul              nul             
+keycode 168 = nul              nul              nul              nul              nul              nul              nul             
+keycode 169 = nul              nul              nul              nul              nul              nul              nul             
+keycode 170 = nul              nul              nul              nul              nul              nul              nul             
+keycode 171 = nul              nul              nul              nul              nul              nul              nul             
+keycode 172 = nul              nul              nul              nul              nul              nul              nul             
+keycode 173 = nul              nul              nul              nul              nul              nul              nul             
+keycode 174 = nul              nul              nul              nul              nul              nul              nul             
+keycode 175 = nul              nul              nul              nul              nul              nul              nul             
+keycode 176 = nul              nul              nul              nul              nul              nul              nul             
+keycode 177 = nul              nul              nul              nul              nul              nul              nul             
+keycode 178 = nul              nul              nul              nul              nul              nul              nul             
+keycode 179 = nul              nul              nul              nul              nul              nul              nul             
+keycode 180 = nul              nul              nul              nul              nul              nul              nul             
+keycode 181 = nul              nul              nul              nul              nul              nul              nul             
+keycode 182 = nul              nul              nul              nul              nul              nul              nul             
+keycode 183 = nul              nul              nul              nul              nul              nul              nul             
+keycode 184 = nul              nul              nul              nul              nul              nul              nul             
+keycode 185 = nul              nul              nul              nul              nul              nul              nul             
+keycode 186 = nul              nul              nul              nul              nul              nul              nul             
+keycode 187 = nul              nul              nul              nul              nul              nul              nul             
+keycode 188 = nul              nul              nul              nul              nul              nul              nul             
+keycode 189 = nul              nul              nul              nul              nul              nul              nul             
+keycode 190 = nul              nul              nul              nul              nul              nul              nul             
+keycode 191 = nul              nul              nul              nul              nul              nul              nul             
+keycode 192 = nul              nul              nul              nul              nul              nul              nul             
+keycode 193 = nul              nul              nul              nul              nul              nul              nul             
+keycode 194 = nul              nul              nul              nul              nul              nul              nul             
+keycode 195 = nul              nul              nul              nul              nul              nul              nul             
+keycode 196 = nul              nul              nul              nul              nul              nul              nul             
+keycode 197 = nul              nul              nul              nul              nul              nul              nul             
+keycode 198 = nul              nul              nul              nul              nul              nul              nul             
+keycode 199 = nul              nul              nul              nul              nul              nul              nul             
+keycode 200 = nul              nul              nul              nul              nul              nul              nul             
+keycode 201 = nul              nul              nul              nul              nul              nul              nul             
+keycode 202 = nul              nul              nul              nul              nul              nul              nul             
+keycode 203 = nul              nul              nul              nul              nul              nul              nul             
+keycode 204 = nul              nul              nul              nul              nul              nul              nul             
+keycode 205 = nul              nul              nul              nul              nul              nul              nul             
+keycode 206 = nul              nul              nul              nul              nul              nul              nul             
+keycode 207 = nul              nul              nul              nul              nul              nul              nul             
+keycode 208 = nul              nul              nul              nul              nul              nul              nul             
+keycode 209 = nul              nul              nul              nul              nul              nul              nul             
+keycode 210 = nul              nul              nul              nul              nul              nul              nul             
+keycode 211 = nul              nul              nul              nul              nul              nul              nul             
+keycode 212 = nul              nul              nul              nul              nul              nul              nul             
+keycode 213 = nul              nul              nul              nul              nul              nul              nul             
+keycode 214 = nul              nul              nul              nul              nul              nul              nul             
+keycode 215 = nul              nul              nul              nul              nul              nul              nul             
+keycode 216 = nul              nul              nul              nul              nul              nul              nul             
+keycode 217 = nul              nul              nul              nul              nul              nul              nul             
+keycode 218 = nul              nul              nul              nul              nul              nul              nul             
+keycode 219 = nul              nul              nul              nul              nul              nul              nul             
+keycode 220 = nul              nul              nul              nul              nul              nul              nul             
+keycode 221 = nul              nul              nul              nul              nul              nul              nul             
+keycode 222 = nul              nul              nul              nul              nul              nul              nul             
+keycode 223 = nul              nul              nul              nul              nul              nul              nul             
+keycode 224 = nul              nul              nul              nul              nul              nul              nul             
+keycode 225 = nul              nul              nul              nul              nul              nul              nul             
+keycode 226 = nul              nul              nul              nul              nul              nul              nul             
+keycode 227 = nul              nul              nul              nul              nul              nul              nul             
+keycode 228 = nul              nul              nul              nul              nul              nul              nul             
+keycode 229 = nul              nul              nul              nul              nul              nul              nul             
+keycode 230 = nul              nul              nul              nul              nul              nul              nul             
+keycode 231 = nul              nul              nul              nul              nul              nul              nul             
+keycode 232 = nul              nul              nul              nul              nul              nul              nul             
+keycode 233 = nul              nul              nul              nul              nul              nul              nul             
+keycode 234 = nul              nul              nul              nul              nul              nul              nul             
+keycode 235 = nul              nul              nul              nul              nul              nul              nul             
+keycode 236 = nul              nul              nul              nul              nul              nul              nul             
+keycode 237 = nul              nul              nul              nul              nul              nul              nul             
+keycode 238 = nul              nul              nul              nul              nul              nul              nul             
+keycode 239 = nul              nul              nul              nul              nul              nul              nul             
+keycode 240 = nul              nul              nul              nul              nul              nul              nul             
+keycode 241 = nul              nul              nul              nul              nul              nul              nul             
+keycode 242 = nul              nul              nul              nul              nul              nul              nul             
+keycode 243 = nul              nul              nul              nul              nul              nul              nul             
+keycode 244 = nul              nul              nul              nul              nul              nul              nul             
+keycode 245 = nul              nul              nul              nul              nul              nul              nul             
+keycode 246 = nul              nul              nul              nul              nul              nul              nul             
+keycode 247 = nul              nul              nul              nul              nul              nul              nul             
+keycode 248 = nul              nul              nul              nul              nul              nul              nul             
+keycode 249 = nul              nul              nul              nul              nul              nul              nul             
+keycode 250 = nul              nul              nul              nul              nul              nul              nul             
+keycode 251 = nul              nul              nul              nul              nul              nul              nul             
+keycode 252 = nul              nul              nul              nul              nul              nul              nul             
+keycode 253 = nul              nul              nul              nul              nul              nul              nul             
+keycode 254 = nul              nul              nul              nul              nul              nul              nul             
+keycode 255 = nul              nul              nul              nul              nul              nul              nul             
+string F1 = "\033[[A"
+string F2 = "\033[[B"
+string F3 = "\033[[C"
+string F4 = "\033[[D"
+string F5 = "\033[[E"
+string F6 = "\033[17~"
+string F7 = "\033[18~"
+string F8 = "\033[19~"
+string F9 = "\033[20~"
+string F10 = "\033[21~"
+string F11 = "\033[23~"
+string F12 = "\033[24~"
+string F13 = "\033[25~"
+string F14 = "\033[26~"
+string F15 = "\033[28~"
+string F16 = "\033[29~"
+string F17 = "\033[31~"
+string F18 = "\033[32~"
+string F19 = "\033[33~"
+string F20 = "\033[34~"
+string Find = "\033[1~"
+string Insert = "\033[2~"
+string Remove = "\033[3~"
+string Select = "\033[4~"
+string Prior = "\033[5~"
+string Next = "\033[6~"
+string Macro = "\033[M"
+string Pause = "\033[P"
+compose '`' 'A' to Agrave
+compose '`' 'a' to agrave
+compose '\'' 'A' to Aacute
+compose '\'' 'a' to aacute
+compose '^' 'A' to Acircumflex
+compose '^' 'a' to acircumflex
+compose '~' 'A' to Atilde
+compose '~' 'a' to atilde
+compose '"' 'A' to Adiaeresis
+compose '"' 'a' to adiaeresis
+compose 'O' 'A' to Aring
+compose 'o' 'a' to aring
+compose '0' 'A' to Aring
+compose '0' 'a' to aring
+compose 'A' 'A' to Aring
+compose 'a' 'a' to aring
+compose 'A' 'E' to AE
+compose 'a' 'e' to ae
+compose ',' 'C' to Ccedilla
+compose ',' 'c' to ccedilla
+compose '`' 'E' to Egrave
+compose '`' 'e' to egrave
+compose '\'' 'E' to Eacute
+compose '\'' 'e' to eacute
+compose '^' 'E' to Ecircumflex
+compose '^' 'e' to ecircumflex
+compose '"' 'E' to Ediaeresis
+compose '"' 'e' to ediaeresis
+compose '`' 'I' to Igrave
+compose '`' 'i' to igrave
+compose '\'' 'I' to Iacute
+compose '\'' 'i' to iacute
+compose '^' 'I' to Icircumflex
+compose '^' 'i' to icircumflex
+compose '"' 'I' to Idiaeresis
+compose '"' 'i' to idiaeresis
+compose '-' 'D' to ETH
+compose '-' 'd' to eth
+compose '~' 'N' to Ntilde
+compose '~' 'n' to ntilde
+compose '`' 'O' to Ograve
+compose '`' 'o' to ograve
+compose '\'' 'O' to Oacute
+compose '\'' 'o' to oacute
+compose '^' 'O' to Ocircumflex
+compose '^' 'o' to ocircumflex
+compose '~' 'O' to Otilde
+compose '~' 'o' to otilde
+compose '"' 'O' to Odiaeresis
+compose '"' 'o' to odiaeresis
+compose '/' 'O' to Ooblique
+compose '/' 'o' to oslash
+compose '`' 'U' to Ugrave
+compose '`' 'u' to ugrave
+compose '\'' 'U' to Uacute
+compose '\'' 'u' to uacute
+compose '^' 'U' to Ucircumflex
+compose '^' 'u' to ucircumflex
+compose '"' 'U' to Udiaeresis
+compose '"' 'u' to udiaeresis
+compose '\'' 'Y' to Yacute
+compose '\'' 'y' to yacute
+compose 'T' 'H' to THORN
+compose 't' 'h' to thorn
+compose 's' 's' to ssharp
+compose '"' 'y' to ydiaeresis
+compose 's' 'z' to ssharp
+compose 'i' 'j' to ydiaeresis

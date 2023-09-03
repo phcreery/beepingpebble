@@ -20,6 +20,24 @@ move the \*.v files to `libs/fbg/c`
 v -showcc -keepc run ./src/
 ```
 
+## RPI Apps
+
+https://github.com/k5njm/beepy-hacks
+
+100nF hack
+2.2uF hack
+
+There are many different ways to check the battery. Stats are stored at:
+
+```
+/sys/firmware/beepy/battery_percent
+/sys/firmware/beepy/battery_raw
+/sys/firmware/beepy/battery_volts
+```
+
+So you can do (for example):
+`cat /sys/firmware/beepy/battery_percent ; echo "%"`
+
 ## Other
 
 ```

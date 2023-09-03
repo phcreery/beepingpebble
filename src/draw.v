@@ -292,7 +292,7 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c gx.Color) {
 	mut nodes_x := [20]f32{}
 	// for py in int(top) .. int(bot) {
 	for py:=top-4; py<bot; py+=1 {
-		println("py ${py}")
+		// println("py ${py}")
 		nodes = 0
 		j=num_coreners-1
 		for i in 0 .. num_coreners {
