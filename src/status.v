@@ -2,6 +2,7 @@ module main
 
 import gx
 import math.vec
+import time
 
 pub struct StatusBarTextItem {
 pub mut:
@@ -17,46 +18,38 @@ pub mut:
 
 pub fn create_statusbar(dwg &DrawContext) &StatusBar {
 	// padding := 8
-	time_item := StatusBarTextItem{
-		text: '00:00'
-		pos: vec.Vec2[int]{
-			x: width - 8 * 6
-			y: height - 40 / 2 - 8 / 2
+	text_array := [
+		time.now().hhmm12(),
+		'100%',
+		'4.2V',
+		'-***'
+	]
+	mut items := []StatusBarTextItem
+	mut x := width
+	for text_item in text_array {
+		x -= 8 // padding
+		x -= text_item.len * 8 // 8 = font width
+		item := StatusBarTextItem{
+			text: text_item
+			pos: vec.Vec2[int]{
+				x: x
+				y: 40 / 2 - 8 / 2
+			}
 		}
-	}
-	batt_item := StatusBarTextItem{
-		text: '100%'
-		pos: vec.Vec2[int]{
-			x: width - 8 * 6 - 8 * 5
-			y: height - 40 / 2 - 8 / 2
-		}
-	}
-	volt_item := StatusBarTextItem{
-		text: '4.2V'
-		pos: vec.Vec2[int]{
-			x: width - 8 * 6 - 8 * 5 - 8 * 5
-			y: height - 40 / 2 - 8 / 2
-		}
-	}
-	wifi_item := StatusBarTextItem{
-		text: '-***'
-		pos: vec.Vec2[int]{
-			x: width - 8 * 6 - 8 * 5 - 8 * 5 - 8 * 5
-			y: height - 40 / 2 - 8 / 2
-		}
+		items << item
 	}
 	sb := &StatusBar{
 		pos: vec.Vec2[int]{
 			x: 0
-			y: height - 40
+			y: 0
 		}
-		items: [time_item, batt_item, volt_item, wifi_item]
+		items: items
 	}
 	return sb
 }
 
 fn (mut sb StatusBar) draw(mut dwg DrawContext) {
-	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, gx.black)
+	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40-1, gx.black)
 	for item in sb.items {
 		dwg.draw_text(item.pos.x, item.pos.y, item.text, gx.white)
 	}

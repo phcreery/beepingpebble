@@ -18,7 +18,7 @@ fn draw(mut app App) {
 	app.dwg.begin()
 	app.dwg.clear()
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
-	menu_draw_debug_outline(mut app.dwg)
+	// menu_draw_debug_outline(mut app.dwg)
 	// app.dwg.draw_text(10, 10, '!"#', gx.black)
 	app.dwg.draw_text(10, 10, 'helloworld', gx.black)
 	// app.dwg.draw_line_inv(0, 0, 20, 60)
@@ -43,7 +43,7 @@ fn draw(mut app App) {
 fn event_manager(mut ev gg.Event, mut app App) {
 	if ev.typ == .key_down {
 		match ev.key_code {
-			.escape {
+			.escape, .q {
 				app.dwg.quit()
 				println('escape')
 			}

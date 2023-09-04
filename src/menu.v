@@ -51,7 +51,10 @@ pub mut:
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
 	x_i := index % 4
 	y_i := index / 4
-	return vec.Vec2[int]{x_i * (menu.item_width+menu.item_padding+1) + menu.item_padding/2, y_i * (menu.item_height+menu.item_padding+1) + menu.item_padding/2}
+	return vec.Vec2[int]{
+		x: x_i * (menu.item_width+menu.item_padding+1) + menu.item_padding/2
+		y: y_i * (menu.item_height+menu.item_padding+1) + menu.item_padding/2 + 40
+	}
 }
 
 fn menu_draw_debug_outline(mut dwg DrawContext) {
@@ -61,7 +64,7 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 	for j in 0 .. 2 {
 		for i in 0 .. 4 {
 			x := i * item_width
-			y := j * item_height
+			y := j * item_height + 40
 			dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
 			// dwg.draw_pixel_inv(x, y)
@@ -125,31 +128,29 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		h := menu.item_height
 		dwg.draw_text(x + 10, y + h - 16, item.name, gx.black)
 		dwg.draw_image(x + 25, y + 25, dwg.icons[item.icon])
-
-		if i == menu.current_item_index {
-			// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
-
-			// draw the shape where the selector should go
-			// dwg.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
-
-			mut points := []Point{len: 4}
-			// draw the selector target
-			for j in 0 .. menu.selector.target_verts.len {
-				points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
-			}
-			// dwg.draw_polygon(points, gx.orange)
-
-			// draw the selector
-			menu.update_selector_verts()
-			for j in 0 .. menu.selector.verts.len {
-				points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
-			}
-			// println(points)
-			dwg.draw_polygon_filled(points, false) // false
-			dwg.draw_polygon(points, gx.black)
-			// println("drawn")
-		}
 	}
+
+	// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
+
+	// draw the shape where the selector should go
+	// dwg.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
+
+	mut points := []Point{len: 4}
+	// draw the selector target
+	for j in 0 .. menu.selector.target_verts.len {
+		points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
+	}
+	// dwg.draw_polygon(points, gx.orange)
+
+	// draw the selector
+	menu.update_selector_verts()
+	for j in 0 .. menu.selector.verts.len {
+		points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
+	}
+	// println(points)
+	dwg.draw_polygon_filled(points, false) // false
+	// dwg.draw_polygon(points, gx.black)
+	// println("drawn")
 }
 
 fn (mut menu Menu) update_selector_verts() {
