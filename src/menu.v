@@ -35,21 +35,26 @@ pub mut:
 pub struct MenuItem {
 	name string
 	icon string
-	x    int
-	y    int
-	w    int
-	h    int
 }
 
 pub struct Menu {
 pub mut:
 	items               []MenuItem
+	item_width		  int
+	item_height		  int
+	item_padding		  int
 	selector            Selector
 	current_item_index  int
 	selection_change_sw time.Time = time.now()
 }
 
-fn debug_draw_menu_outline(mut dwg DrawContext) {
+fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
+	x_i := index % 4
+	y_i := index / 4
+	return vec.Vec2[int]{x_i * (menu.item_width+menu.item_padding+1) + menu.item_padding/2, y_i * (menu.item_height+menu.item_padding+1) + menu.item_padding/2}
+}
+
+fn menu_draw_debug_outline(mut dwg DrawContext) {
 	item_width := 100
 	item_height := 100
 
@@ -57,7 +62,7 @@ fn debug_draw_menu_outline(mut dwg DrawContext) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			// dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
 			// dwg.draw_pixel_inv(x, y)
 			// dwg.draw_pixel_inv(x + item_width - 1, y)
@@ -76,29 +81,35 @@ fn debug_draw_menu_outline(mut dwg DrawContext) {
 }
 
 fn create_menu(dwg DrawContext) &Menu {
+	padding := 2
 	mut menu := &Menu{
 		items: []
+		item_width: 100-padding-1
+		item_height: 100-padding-1
+		item_padding: padding
 		current_item_index: 0
 		selection_change_sw: time.now()
 	}
 
-	item_width := 100
-	item_height := 100
-
-	for j in 0 .. 2 {
-		for i in 0 .. 4 {
-			x := i * item_width
-			y := j * item_height
-			menu.items << MenuItem{'App Name', 'icons/beeper-icon.png', x + 1, y + 1, item_width - 3, item_height - 3}
-		}
+	for j in 0 .. 8 {
+		pos := menu.loc_from_index(j)
+		x := pos.x
+		y := pos.y
+		w := menu.item_width
+		h := menu.item_height
+		menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
 	}
 
-	init := menu.items[0]
+	init := menu.loc_from_index(0)
+	init_x := init.x
+	init_y := init.y
+	init_w := menu.item_width
+	init_h := menu.item_height
 
-	menu.selector.verts[0] = new_vertex(vec.Vec2[f32]{init.x, init.y})
-	menu.selector.verts[1] = new_vertex(vec.Vec2[f32]{init.x + init.w, init.y})
-	menu.selector.verts[2] = new_vertex(vec.Vec2[f32]{init.x + init.w, init.y + init.h})
-	menu.selector.verts[3] = new_vertex(vec.Vec2[f32]{init.x, init.y + init.h})
+	menu.selector.verts[0] = new_vertex(vec.Vec2[f32]{init_x, init_y})
+	menu.selector.verts[1] = new_vertex(vec.Vec2[f32]{init_x + init_w, init_y})
+	menu.selector.verts[2] = new_vertex(vec.Vec2[f32]{init_x + init_w, init_y + init_h})
+	menu.selector.verts[3] = new_vertex(vec.Vec2[f32]{init_x, init_y + init_h})
 	return menu
 }
 
@@ -107,8 +118,14 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
-		dwg.draw_text(item.x + 10, item.y + item.h - 16, item.name, gx.black)
-		dwg.draw_image(item.x + 25, item.y + 25, dwg.icons[item.icon])
+		pos := menu.loc_from_index(i)
+		x := pos.x
+		y := pos.y
+		w := menu.item_width
+		h := menu.item_height
+		dwg.draw_text(x + 10, y + h - 16, item.name, gx.black)
+		dwg.draw_image(x + 25, y + 25, dwg.icons[item.icon])
+
 		if i == menu.current_item_index {
 			// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 
@@ -147,16 +164,18 @@ fn (mut menu Menu) update_selector_verts() {
 		mut vert := &menu.selector.verts[i]
 		mut vert_target := &menu.selector.target_verts[i]
 
+
+		current_pos := menu.loc_from_index(menu.current_item_index)
 		// give it some ferrofluid feel by delaying the motion of the furthest vertices
 		if vert.in_motion == false {
 			dt := f32(time.since(menu.selection_change_sw).nanoseconds()) / 1000000000
-			dist := vert.p.distance(vec.Vec2[f32]{menu.items[menu.current_item_index].x +
-				menu.items[menu.current_item_index].w / 2, menu.items[menu.current_item_index].y +
-				menu.items[menu.current_item_index].h / 2})
+			dist := vert.p.distance(vec.Vec2[f32]{current_pos.x +
+				menu.item_width / 2, current_pos.y +
+				menu.item_height / 2})
 			// println("dist: ${int(dist)}, dt: ${dt}")
 			if dt * 2000 > dist {
 				vert.in_motion = true
-			} else if dist > menu.items[menu.current_item_index].w * f32(2.5) {
+			} else if dist > menu.item_width * f32(2.5) {
 				// if its too far away, put it in motion
 				vert.in_motion = true
 			} else {
@@ -207,12 +226,17 @@ fn (mut menu Menu) update_selector_verts() {
 }
 
 fn (mut menu Menu) update_target_verts() {
-	target := menu.items[menu.current_item_index]
-	menu.selector.target_verts[0] = new_vertex(vec.Vec2[f32]{target.x, target.y})
-	menu.selector.target_verts[1] = new_vertex(vec.Vec2[f32]{target.x + target.w, target.y})
-	menu.selector.target_verts[2] = new_vertex(vec.Vec2[f32]{target.x + target.w, target.y +
-		target.h})
-	menu.selector.target_verts[3] = new_vertex(vec.Vec2[f32]{target.x, target.y + target.h})
+	// target := menu.items[menu.current_item_index]
+	pos := menu.loc_from_index(menu.current_item_index)
+	target_x := pos.x
+	target_y := pos.y
+	target_w := menu.item_width
+	target_h := menu.item_height
+	menu.selector.target_verts[0] = new_vertex(vec.Vec2[f32]{target_x, target_y})
+	menu.selector.target_verts[1] = new_vertex(vec.Vec2[f32]{target_x + target_w, target_y})
+	menu.selector.target_verts[2] = new_vertex(vec.Vec2[f32]{target_x + target_w, target_y +
+		target_h})
+	menu.selector.target_verts[3] = new_vertex(vec.Vec2[f32]{target_x, target_y + target_h})
 }
 
 fn (mut menu Menu) next() {
