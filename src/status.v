@@ -16,13 +16,26 @@ pub mut:
 	items []StatusBarTextItem
 }
 
-pub fn create_statusbar(dwg &DrawContext) &StatusBar {
-	// padding := 8
+pub fn create_statusbar() &StatusBar {
+	mut sb := &StatusBar{
+		pos: vec.Vec2[int]{
+			x: 0
+			y: 0
+		}
+	}
+	sb.update()
+	return sb
+}
+
+fn (mut sb StatusBar) update() {
 	text_array := [
-		time.now().hhmm12(),
+		// time.now().hhmm12(),
+		time.now().custom_format('M/D/YY hh:mm')
 		'100%',
 		'4.2V',
-		'-***'
+		'-***',
+		// '(((*'
+		get_loading_status_text()
 	]
 	mut items := []StatusBarTextItem
 	mut x := width
@@ -38,19 +51,26 @@ pub fn create_statusbar(dwg &DrawContext) &StatusBar {
 		}
 		items << item
 	}
-	sb := &StatusBar{
-		pos: vec.Vec2[int]{
-			x: 0
-			y: 0
-		}
-		items: items
-	}
-	return sb
+	sb.items = items
 }
 
 fn (mut sb StatusBar) draw(mut dwg DrawContext) {
-	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40-1, gx.black)
+	sb.update()
+	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, gx.black)
 	for item in sb.items {
 		dwg.draw_text(item.pos.x, item.pos.y, item.text, gx.white)
+	}
+}
+
+fn get_loading_status_text() string {
+	t := time.now().unix_time()
+	if t % 4 == 0 {
+		return '-'
+	} else if t % 4 == 1 {
+		return '\\'
+	} else if t % 4 == 2 {
+		return '|'
+	} else {
+		return '/'
 	}
 }

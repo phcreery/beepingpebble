@@ -69,7 +69,7 @@ fn event_manager(mut ev gg.Event, mut app App) {
 fn main() {
 	mut app := App{}
 	app.menu = create_menu(app.dwg)
-	app.sb = create_statusbar(app.dwg)
+	app.sb = create_statusbar()
 	app.dwg = create_context(app, draw, event_manager)
 	app.dwg.run()
 }

@@ -130,13 +130,9 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		dwg.draw_image(x + 25, y + 25, dwg.icons[item.icon])
 	}
 
-	// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 
 	// draw the shape where the selector should go
-	// dwg.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
-
 	mut points := []Point{len: 4}
-	// draw the selector target
 	for j in 0 .. menu.selector.target_verts.len {
 		points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 	}
@@ -150,7 +146,6 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 	// println(points)
 	dwg.draw_polygon_filled(points, false) // false
 	// dwg.draw_polygon(points, gx.black)
-	// println("drawn")
 }
 
 fn (mut menu Menu) update_selector_verts() {
