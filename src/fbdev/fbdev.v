@@ -6,8 +6,8 @@ import gx
 import time
 // import vpng
 // built-in
-// import mouse
-// import keyboard
+import fbdev.mouse
+import fbdev.keyboard
 
 pub type FNCb = fn (data voidptr)
 

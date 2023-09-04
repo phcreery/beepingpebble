@@ -1,23 +1,21 @@
 module main
 
-// $if rpi ? {
-// } $else {
-// import sokol.gfx
 import math
 import time
 import arrays
 import stbi
-import gg
-// }
+import gx
+
+// import hw
+import fbgg as hw
 
 // $if rpi ? {
 // import fbdev
 // } $else {
-import gx
 // }
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
-// change line 472 of gg.c.v to `high_dpi: false`
+// change line 472 of hw.c.v to `high_dpi: false`
 
 // these should be automatically determined from the framebuffer device
 // see: https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c for example
@@ -39,13 +37,13 @@ mut:
 	frames        int
 	fps           int
 	img_id        int
-	gg_ctx        &gg.Context = unsafe { nil }
-	// gg_ctx       &fbdev.Context = unsafe { nil }
+	hw_ctx        &hw.Context = unsafe { nil }
+	// hw_ctx       &fbdev.Context = unsafe { nil }
 	font &Font = unsafe { nil }
 	icons 		map[string]stbi.Image
 }
 
-pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &DrawContext { //, event_fn fn (&gg.Event, voidptr)
+pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voidptr, voidptr)) &DrawContext { //, event_fn fn (&hw.Event, voidptr)
 
 	$if rpi ? {
 		println('Raspberry Pi')
@@ -54,28 +52,28 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
 		width: width
 		height: height
-		gg_ctx: &gg.Context{}
-		// gg_ctx: &fbdev.Context{}
+		hw_ctx: &hw.Context{}
+		// hw_ctx: &fbdev.Context{}
 	}
-	// ---- GG ----
-	dwg.gg_ctx = gg.new_context(
-		bg_color: gx.white
-		width: width
-		height: height
-		create_window: true
-		window_title: 'BEEPINGPEBBLE'
-		// init_fn: init_fn
-		// init_fn: graphics_init
-		init_fn: fn [mut dwg] (_ voidptr) {
-			dwg.img_id = dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
-		}
-		frame_fn: frame_fn
-		event_fn: event_fn
-		user_data: user_data
-	)
+	// ---- gg ----
+	// dwg.gg_ctx = gg.new_context(
+	// 	bg_color: gx.white
+	// 	width: width
+	// 	height: height
+	// 	create_window: true
+	// 	window_title: 'BEEPINGPEBBLE'
+	// 	// init_fn: init_fn
+	// 	// init_fn: graphics_init
+	// 	init_fn: fn [mut dwg] (_ voidptr) {
+	// 		dwg.img_id = dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
+	// 	}
+	// 	frame_fn: frame_fn
+	// 	// event_fn: event_fn
+	// 	user_data: user_data
+	// )
 
 	// ---- fbdev ----
-	// dwg.gg_ctx = fbdev.new_context(
+	// dwg.hw_ctx = fbdev.new_context(
 	// 	bg_color: gx.white
 	// 	width: width
 	// 	height: height
@@ -84,6 +82,17 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 	// 	// event_fn: event_fn
 	// 	user_data: user_data
 	// )
+
+	// ---- genaric ----
+	dwg.hw_ctx = hw.new_context(
+		bg_color: gx.white
+		width: width
+		height: height
+
+		frame_fn: frame_fn
+		event_fn: event_fn
+		user_data: user_data
+	)
 
 	dwg.fps_stopwatch = time.now()
 	dwg.font = default_font()
@@ -97,28 +106,28 @@ pub fn (mut dwg DrawContext) compute_fps() {
 	elapsed := time.since(dwg.fps_stopwatch)
 	if elapsed.nanoseconds() > 1_000_000_000 {
 		dwg.fps = int(dwg.frames)
-		// println('fps ${dwg.fps}')
+		println('fps ${dwg.fps}')
 		dwg.frames = 0
 		dwg.fps_stopwatch = time.now()
 	}
 }
 
 pub fn (dwg &DrawContext) begin() {
-	dwg.gg_ctx.begin()
+	dwg.hw_ctx.begin()
 }
 
 pub fn (mut dwg DrawContext) end() {
 	dwg.compute_fps()
 	dwg.blit()
-	dwg.gg_ctx.end()
+	dwg.hw_ctx.end()
 }
 
 pub fn (mut dwg DrawContext) run() {
-	dwg.gg_ctx.run()
+	dwg.hw_ctx.run()
 }
 
 pub fn (mut dwg DrawContext) quit() {
-	dwg.gg_ctx.quit()
+	dwg.hw_ctx.quit()
 }
 
 pub fn (mut dwg DrawContext) clear() {
@@ -130,29 +139,31 @@ pub fn (mut dwg DrawContext) clear() {
 }
 
 pub fn (mut dwg DrawContext) blit() {
-	// ---- gg ----
-	mut buffer := [height][width]u32{}
-	for y in 0 .. height {
-		for x in 0 .. width {
-			// convert from BGRA8 to RGBA8
-			pos := u64(y * line_length + x * components)
-			// println("pos ${pos}")
-			blue := dwg.pixel_buffer[pos + 0]
-			green := dwg.pixel_buffer[pos + 1]
-			red := dwg.pixel_buffer[pos + 2]
-			// a: dwg.pixel_buffer[u64((line_length*y+x))+3]
-			buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
-		}
-	}
-	// see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/gg/random.v
-	mut img := dwg.gg_ctx.get_cached_image_by_idx(dwg.img_id)
-	img.update_pixel_data(unsafe { &u8(&buffer) })
-	dwg.gg_ctx.draw_image(0, 0, width, height, img)
+	// ---- hw ----
+	// mut buffer := [height][width]u32{}
+	// for y in 0 .. height {
+	// 	for x in 0 .. width {
+	// 		// convert from BGRA8 to RGBA8
+	// 		pos := u64(y * line_length + x * components)
+	// 		// println("pos ${pos}")
+	// 		blue := dwg.pixel_buffer[pos + 0]
+	// 		green := dwg.pixel_buffer[pos + 1]
+	// 		red := dwg.pixel_buffer[pos + 2]
+	// 		// a: dwg.pixel_buffer[u64((line_length*y+x))+3]
+	// 		buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
+	// 	}
+	// }
+	// // see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/hw/random.v
+	// mut img := dwg.hw_ctx.get_cached_image_by_idx(dwg.img_id)
+	// img.update_pixel_data(unsafe { &u8(&buffer) })
+	// dwg.hw_ctx.draw_image(0, 0, width, height, img)
 
 	// ---- fbdev ----
-	// dwg.gg_ctx.blit(dwg.pixel_buffer)
+	// dwg.hw_ctx.blit(dwg.pixel_buffer)
 	// OR
-	// dwg.gg_ctx.framebuffer.write_to(0, dwg.pixel_buffer) or {}
+	// dwg.hw_ctx.framebuffer.write_to(0, dwg.pixel_buffer) or {}
+
+	dwg.hw_ctx.blit(dwg.pixel_buffer)
 }
 
 [inline]

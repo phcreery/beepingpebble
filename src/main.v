@@ -100,5 +100,7 @@ fn main() {
 	app.menu = create_menu(app.dwg)
 	app.sb = create_statusbar()
 	app.dwg = create_context(app, draw, event_manager)
+	// println('app.dwg: ${app.dwg}')
+	println("created app")
 	app.dwg.run()
 }

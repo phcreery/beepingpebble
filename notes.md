@@ -73,3 +73,4 @@ https://avikdas.com/2019/01/23/writing-gui-applications-on-raspberry-pi-without-
 regex, with capitalization
 `(?<!gg_)ctx` -> dwg
 `(?<!\.)Context` -> DrawContext
+(?<!fb)gg
