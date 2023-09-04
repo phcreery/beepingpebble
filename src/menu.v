@@ -99,6 +99,7 @@ fn create_menu(dwg DrawContext) &Menu {
 	// 	menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
 	// }
 	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', ''}
+	menu.items << MenuItem{'Settings', 'icons/settings-icon.png', ''}
 	menu.items << MenuItem{
 		name: 'ls'
 		icon: 'icons/terminal-icon.png'
