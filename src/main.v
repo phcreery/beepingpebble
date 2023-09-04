@@ -59,6 +59,30 @@ fn event_manager(mut ev gg.Event, mut app App) {
 			.down, .s {
 				app.menu.down()
 			}
+			.y {
+				app.menu.goto_index(0)
+			}
+			.u {
+				app.menu.goto_index(1)
+			}
+			.i {
+				app.menu.goto_index(2)
+			}
+			.o {
+				app.menu.goto_index(3)
+			}
+			.h {
+				app.menu.goto_index(4)
+			}
+			.j {
+				app.menu.goto_index(5)
+			}
+			.k {
+				app.menu.goto_index(6)
+			}
+			.l {
+				app.menu.goto_index(7)
+			}
 			else {
 				println('key: ')
 			}

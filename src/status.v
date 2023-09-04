@@ -34,7 +34,7 @@ fn (mut sb StatusBar) update() {
 		'100%',
 		'4.2V',
 		'-***',
-		// '(((*'
+		'*)))'
 		get_loading_status_text()
 	]
 	mut items := []StatusBarTextItem

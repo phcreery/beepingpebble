@@ -269,3 +269,7 @@ fn (mut menu Menu) up() {
 	}
 	menu.selection_change_sw = time.now()
 }
+
+fn (mut menu Menu) goto_index(i int) {
+	menu.current_item_index = i
+}
