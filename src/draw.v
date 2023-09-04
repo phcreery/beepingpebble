@@ -28,9 +28,9 @@ const (
 pub struct DrawContext {
 mut:
 	pixel_buffer  []u8
-	width		 int
-	height		 int
-	components   int
+	width         int
+	height        int
+	components    int
 	fps_stopwatch time.Time
 	frames        int
 	fps           int
@@ -38,6 +38,7 @@ mut:
 	gg_ctx        &gg.Context = unsafe { nil }
 	// gg_ctx       &fbdev.Context = unsafe { nil }
 	font &Font = unsafe { nil }
+	icons 		map[string]stbi.Image
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &DrawContext { //, event_fn fn (&gg.Event, voidptr)
@@ -78,6 +79,7 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 
 	dwg.fps_stopwatch = time.now()
 	dwg.font = default_font()
+	dwg.icons = load_icons()
 
 	return dwg
 }
@@ -377,6 +379,7 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color
 	mut c := 0
 	mut y_ := y
 
+	// TODO: move this so it isn't done every time
 	data := unsafe {
 		arrays.carray_to_varray[u8](dwg.font.bitmap.data, dwg.font.bitmap.width * dwg.font.bitmap.height * dwg.font.bitmap.nr_channels)
 	}
@@ -423,5 +426,48 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color
 		}
 
 		c += 1
+	}
+}
+
+// pub fn load_image() &stbi.Image {
+// 	mut embedded_icon_file := $embed_file('icons/beeper-icon.png')
+// 	// data := embedded_font_file.to_bytes()
+// 	data := embedded_icon_file.data()
+// 	mut img := stbi.load_from_memory(data, embedded_icon_file.len, stbi.LoadParams{
+// 		desired_channels: 4
+// 	}) or { panic('failed to load image') }
+// 	// d := arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
+// 	println("image ${img}")
+// 	// exit(0)
+
+// 	return &img
+// }
+
+pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image) {
+	// TODO: make it faster with a memcpy?
+	// See https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c#L1520C11-L1520C11
+	data := unsafe {
+		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
+	}
+	for yy in 0 .. img.height {
+		for xx in 0 .. img.width {
+			line_length := img.width * img.nr_channels
+			pos := u64(yy * line_length + xx * img.nr_channels)
+			blue := data[pos + 0]
+			green := data[pos + 1]
+			red := data[pos + 2]
+			alpha := data[pos + 3]
+			if alpha < 225 / 2 {
+				continue
+			}
+			greyscale := 0.3 * f32(red) + 0.59 * f32(green) + 0.11 * f32(blue)
+			if greyscale < 255 / 2 {
+				dwg.draw_pixel(x + xx, y + yy, gx.black)
+			} else {
+				// println("greyscale ${greyscale} ${red} ${green} ${blue}")
+				// dwg.draw_pixel(x + xx, y + yy, gx.white)
+			}
+			// dwg.draw_pixel(x + xx, y + yy, gx.Color{r: red, g: green, b: blue})
+		}
 	}
 }

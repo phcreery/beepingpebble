@@ -34,6 +34,7 @@ pub mut:
 
 pub struct MenuItem {
 	name string
+	icon string
 	x    int
 	y    int
 	w    int
@@ -88,7 +89,7 @@ fn create_menu(dwg DrawContext) &Menu {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			menu.items << MenuItem{'App Name', x + 1, y + 1, item_width - 3, item_height - 3}
+			menu.items << MenuItem{'App Name', 'icons/beeper-icon.png', x + 1, y + 1, item_width - 3, item_height - 3}
 		}
 	}
 
@@ -107,7 +108,7 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
 		dwg.draw_text(item.x + 10, item.y + item.h - 16, item.name, gx.black)
-		// app.dwg.draw_text(10, 10, '!"#', gx.black)
+		dwg.draw_image(item.x + 25, item.y + 25, dwg.icons[item.icon])
 		if i == menu.current_item_index {
 			// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 
@@ -153,7 +154,7 @@ fn (mut menu Menu) update_selector_verts() {
 				menu.items[menu.current_item_index].w / 2, menu.items[menu.current_item_index].y +
 				menu.items[menu.current_item_index].h / 2})
 			// println("dist: ${int(dist)}, dt: ${dt}")
-			if dt * 4000 > dist {
+			if dt * 2000 > dist {
 				vert.in_motion = true
 			} else if dist > menu.items[menu.current_item_index].w * f32(2.5) {
 				// if its too far away, put it in motion
@@ -218,7 +219,7 @@ fn (mut menu Menu) next() {
 	// menu.current_item_index = (menu.current_item_index + 1) % menu.items.len
 	// no roll over
 	menu.current_item_index = (menu.current_item_index + 1)
-	if menu.current_item_index % (menu.items.len/2) == 0 {
+	if menu.current_item_index % (menu.items.len / 2) == 0 {
 		menu.current_item_index = menu.current_item_index - 1
 	}
 	menu.selection_change_sw = time.now()
@@ -230,7 +231,7 @@ fn (mut menu Menu) prev() {
 	// 	menu.current_item_index = menu.items.len - 1
 	// }
 	// no roll over
-	if menu.current_item_index % (menu.items.len/2) == 3 || menu.current_item_index < 0 {
+	if menu.current_item_index % (menu.items.len / 2) == 3 || menu.current_item_index < 0 {
 		menu.current_item_index = menu.current_item_index + 1
 	}
 	menu.selection_change_sw = time.now()

@@ -11,7 +11,7 @@ struct App {
 pub mut:
 	dwg  DrawContext
 	menu Menu
-	sb StatusBar
+	sb   StatusBar
 }
 
 fn draw(mut app App) {
@@ -30,6 +30,10 @@ fn draw(mut app App) {
 	// app.dwg.draw_polygon([Point{10, 100}, Point{20, 200}, Point{30, 100}], gx.red)
 	// app.dwg.draw_line_inv(0, 10, 20, 30)
 	// app.dwg.draw_test_image()
+	// icons := load_icons()
+	// app.dwg.draw_image(25, 25, app.dwg.icons['icons/beeper-icon.png'])
+	// app.dwg.draw_image(25, 25 + 100, app.dwg.icons['icons/settings-icon.png'])
+
 	app.menu.draw(mut app.dwg)
 	app.sb.draw(mut app.dwg)
 
