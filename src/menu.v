@@ -48,7 +48,7 @@ pub mut:
 	selection_change_sw time.Time = time.now()
 }
 
-fn debug_draw_menu_outline(mut ctx Context) {
+fn debug_draw_menu_outline(mut dwg DrawContext) {
 	item_width := 100
 	item_height := 100
 
@@ -56,25 +56,25 @@ fn debug_draw_menu_outline(mut ctx Context) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			// ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			// dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
-			// ctx.draw_pixel_inv(x, y)
-			// ctx.draw_pixel_inv(x + item_width - 1, y)
-			// ctx.draw_pixel_inv(x, y + item_height - 1)
-			// ctx.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
+			// dwg.draw_pixel_inv(x, y)
+			// dwg.draw_pixel_inv(x + item_width - 1, y)
+			// dwg.draw_pixel_inv(x, y + item_height - 1)
+			// dwg.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
 			// OR
-			// ctx.draw_line(x-2, y, x + 2, y, gx.black)
-			// ctx.draw_line(x, y-2, x, y + 2, gx.black)
-			// ctx.draw_line(x + item_width-1 - 2, y, x + item_width-1 + 2, y, gx.black)
-			// ctx.draw_line(x + item_width-1, y-2, x + item_width-1, y + 2, gx.black)
-			// ctx.draw_line(x-2, y + item_height-1, x + 2, y + item_height-1, gx.black)
-			// ctx.draw_line(x, y + item_height-1 - 2, x, y + item_height-1 + 2, gx.black)
+			// dwg.draw_line(x-2, y, x + 2, y, gx.black)
+			// dwg.draw_line(x, y-2, x, y + 2, gx.black)
+			// dwg.draw_line(x + item_width-1 - 2, y, x + item_width-1 + 2, y, gx.black)
+			// dwg.draw_line(x + item_width-1, y-2, x + item_width-1, y + 2, gx.black)
+			// dwg.draw_line(x-2, y + item_height-1, x + 2, y + item_height-1, gx.black)
+			// dwg.draw_line(x, y + item_height-1 - 2, x, y + item_height-1 + 2, gx.black)
 			// OR
 		}
 	}
 }
 
-fn create_menu(ctx Context) &Menu {
+fn create_menu(dwg DrawContext) &Menu {
 	mut menu := &Menu{
 		items: []
 		current_item_index: 0
@@ -101,25 +101,25 @@ fn create_menu(ctx Context) &Menu {
 	return menu
 }
 
-fn (mut menu Menu) draw(mut ctx Context) {
+fn (mut menu Menu) draw(mut dwg DrawContext) {
 	menu.update_target_verts()
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
-		ctx.draw_text(item.x + 10, item.y + item.h - 16, item.name, gx.black)
-		// app.ctx.draw_text(10, 10, '!"#', gx.black)
+		dwg.draw_text(item.x + 10, item.y + item.h - 16, item.name, gx.black)
+		// app.dwg.draw_text(10, 10, '!"#', gx.black)
 		if i == menu.current_item_index {
-			// ctx.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
+			// dwg.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 
 			// draw the shape where the selector should go
-			// ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
+			// dwg.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
 
 			mut points := []Point{len: 4}
 			// draw the selector target
 			for j in 0 .. menu.selector.target_verts.len {
 				points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 			}
-			// ctx.draw_polygon(points, gx.orange)
+			// dwg.draw_polygon(points, gx.orange)
 
 			// draw the selector
 			menu.update_selector_verts()
@@ -127,8 +127,8 @@ fn (mut menu Menu) draw(mut ctx Context) {
 				points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 			}
 			// println(points)
-			ctx.draw_polygon_filled(points, false) // false
-			ctx.draw_polygon(points, gx.black)
+			dwg.draw_polygon_filled(points, false) // false
+			dwg.draw_polygon(points, gx.black)
 			// println("drawn")
 		}
 	}

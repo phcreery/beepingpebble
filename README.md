@@ -65,3 +65,7 @@ raygui does not have any means of keyboard navigation
 https://www.raylib.com/index.html
 https://github.com/raysan5/raylib/issues/1370
 https://avikdas.com/2019/01/23/writing-gui-applications-on-raspberry-pi-without-x.html
+
+regex, with capitalization
+`(?<!gg_)ctx` -> dwg
+`(?<!\.)Context` -> DrawContext

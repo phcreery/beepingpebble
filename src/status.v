@@ -13,7 +13,7 @@ pub mut:
 }
 
 
-pub fn create_statusbar(ctx Context) &StatusBar {
+pub fn create_statusbar(dwg DrawContext) &StatusBar {
 	time_item := StatusBarTextItem {
 		text: "00:00"
 	}
@@ -23,8 +23,8 @@ pub fn create_statusbar(ctx Context) &StatusBar {
 	return sb
 }
 
-fn (mut sb StatusBar) draw(mut ctx Context) {
+fn (mut sb StatusBar) draw(mut dwg DrawContext) {
 	for item in sb.items {
-		ctx.draw_text(0, 0,item.text,  gx.black)
+		dwg.draw_text(0, 0,item.text,  gx.black)
 	}
 }

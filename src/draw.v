@@ -24,7 +24,7 @@ const (
 	line_length = width * components
 )
 
-pub struct Context {
+pub struct DrawContext {
 mut:
 	pixel_buffer  []u8
 	fps_stopwatch time.Time
@@ -36,14 +36,14 @@ mut:
 	font &Font = unsafe { nil }
 }
 
-pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &Context { //, event_fn fn (&gg.Event, voidptr)
-	mut ctx := &Context{
+pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &DrawContext { //, event_fn fn (&gg.Event, voidptr)
+	mut dwg := &DrawContext{
 		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
 		gg_ctx: &gg.Context{}
 		// gg_ctx: &fbdev.Context{}
 	}
 	// ---- GG ----
-	ctx.gg_ctx = gg.new_context(
+	dwg.gg_ctx = gg.new_context(
 		bg_color: gx.white
 		width: width
 		height: height
@@ -51,8 +51,8 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		window_title: 'BEEPINGPEBBLE'
 		// init_fn: init_fn
 		// init_fn: graphics_init
-		init_fn: fn [mut ctx] (_ voidptr) {
-			ctx.gg_ctx.new_streaming_image(width, height, 4, pixel_format: .rgba8)
+		init_fn: fn [mut dwg] (_ voidptr) {
+			dwg.gg_ctx.new_streaming_image(width, height, 4, pixel_format: .rgba8)
 		}
 		frame_fn: frame_fn
 		event_fn: event_fn
@@ -60,7 +60,7 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 	)
 
 	// ---- fbdev ----
-	// ctx.gg_ctx = fbdev.new_context(
+	// dwg.gg_ctx = fbdev.new_context(
 	// 	bg_color: gx.white
 	// 	width: width
 	// 	height: height
@@ -70,50 +70,50 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 	// 	user_data: user_data
 	// )
 
-	ctx.fps_stopwatch = time.now()
-	ctx.font = default_font()
+	dwg.fps_stopwatch = time.now()
+	dwg.font = default_font()
 
-	return ctx
+	return dwg
 }
 
-pub fn (mut ctx Context) compute_fps() {
-	ctx.frames += 1
-	elapsed := time.since(ctx.fps_stopwatch)
+pub fn (mut dwg DrawContext) compute_fps() {
+	dwg.frames += 1
+	elapsed := time.since(dwg.fps_stopwatch)
 	if elapsed.nanoseconds() > 1_000_000_000 {
-		ctx.fps = int(ctx.frames)
-		println('fps ${ctx.fps}')
-		ctx.frames = 0
-		ctx.fps_stopwatch = time.now()
+		dwg.fps = int(dwg.frames)
+		println('fps ${dwg.fps}')
+		dwg.frames = 0
+		dwg.fps_stopwatch = time.now()
 	}
 }
 
-pub fn (ctx &Context) begin() {
-	ctx.gg_ctx.begin()
+pub fn (dwg &DrawContext) begin() {
+	dwg.gg_ctx.begin()
 }
 
-pub fn (mut ctx Context) end() {
-	ctx.compute_fps()
-	ctx.blit()
-	ctx.gg_ctx.end()
+pub fn (mut dwg DrawContext) end() {
+	dwg.compute_fps()
+	dwg.blit()
+	dwg.gg_ctx.end()
 }
 
-pub fn (mut ctx Context) run() {
-	ctx.gg_ctx.run()
+pub fn (mut dwg DrawContext) run() {
+	dwg.gg_ctx.run()
 }
 
-pub fn (mut ctx Context) quit() {
-	ctx.gg_ctx.quit()
+pub fn (mut dwg DrawContext) quit() {
+	dwg.gg_ctx.quit()
 }
 
-pub fn (mut ctx Context) clear() {
+pub fn (mut dwg DrawContext) clear() {
 	for y in 0 .. height {
 		for x in 0 .. width {
-			ctx.draw_pixel(x, y, gx.white)
+			dwg.draw_pixel(x, y, gx.white)
 		}
 	}
 }
 
-pub fn (mut ctx Context) blit() {
+pub fn (mut dwg DrawContext) blit() {
 	// ---- gg ----
 	mut buffer := [height][width]u32{}
 	for y in 0 .. height {
@@ -121,26 +121,26 @@ pub fn (mut ctx Context) blit() {
 			// convert from BGRA8 to RGBA8
 			pos := u64(y * line_length + x * components)
 			// println("pos ${pos}")
-			blue := ctx.pixel_buffer[pos + 0]
-			green := ctx.pixel_buffer[pos + 1]
-			red := ctx.pixel_buffer[pos + 2]
-			// a: ctx.pixel_buffer[u64((line_length*y+x))+3]
+			blue := dwg.pixel_buffer[pos + 0]
+			green := dwg.pixel_buffer[pos + 1]
+			red := dwg.pixel_buffer[pos + 2]
+			// a: dwg.pixel_buffer[u64((line_length*y+x))+3]
 			buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
 		}
 	}
 	// see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/gg/random.v
-	mut img := ctx.gg_ctx.get_cached_image_by_idx(ctx.img_id)
+	mut img := dwg.gg_ctx.get_cached_image_by_idx(dwg.img_id)
 	img.update_pixel_data(unsafe { &u8(&buffer) })
-	ctx.gg_ctx.draw_image(0, 0, width, height, img)
+	dwg.gg_ctx.draw_image(0, 0, width, height, img)
 
 	// ---- fbdev ----
-	// ctx.gg_ctx.blit(ctx.pixel_buffer)
+	// dwg.gg_ctx.blit(dwg.pixel_buffer)
 	// OR
-	// ctx.gg_ctx.framebuffer.write_to(0, ctx.pixel_buffer) or {}
+	// dwg.gg_ctx.framebuffer.write_to(0, dwg.pixel_buffer) or {}
 }
 
 [inline]
-pub fn (mut ctx Context) draw_pixel(x_ f32, y_ f32, c gx.Color) {
+pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	x := int(x_)
 	y := int(y_)
 
@@ -148,28 +148,28 @@ pub fn (mut ctx Context) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 		return
 	}
 	pos := u64(y * line_length + x * components)
-	ctx.pixel_buffer[pos] = u8(c.b)
-	ctx.pixel_buffer[pos + 1] = u8(c.g)
-	ctx.pixel_buffer[pos + 2] = u8(c.r)
-	ctx.pixel_buffer[pos + 3] = u8(255)
+	dwg.pixel_buffer[pos] = u8(c.b)
+	dwg.pixel_buffer[pos + 1] = u8(c.g)
+	dwg.pixel_buffer[pos + 2] = u8(c.r)
+	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
-pub fn (mut ctx Context) draw_pixel_inv(x_ f32, y_ f32) {
+pub fn (mut dwg DrawContext) draw_pixel_inv(x_ f32, y_ f32) {
 	x := int(x_)
 	y := int(y_)
 	if x < 0 || x >= width || y < 0 || y >= height {
 		return
 	}
 	pos := u64(y * line_length + x * components)
-	ctx.pixel_buffer[pos] = ctx.pixel_buffer[pos] ^ 0xFF
-	ctx.pixel_buffer[pos + 1] = ctx.pixel_buffer[pos + 1] ^ 0xFF
-	ctx.pixel_buffer[pos + 2] = ctx.pixel_buffer[pos + 2] ^ 0xFF
-	ctx.pixel_buffer[pos + 3] = u8(255)
+	dwg.pixel_buffer[pos] = dwg.pixel_buffer[pos] ^ 0xFF
+	dwg.pixel_buffer[pos + 1] = dwg.pixel_buffer[pos + 1] ^ 0xFF
+	dwg.pixel_buffer[pos + 2] = dwg.pixel_buffer[pos + 2] ^ 0xFF
+	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
 // https://github.com/miloyip/line
 // https://github.com/miloyip/line/blob/master/line_bresenham.c
-pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor) {
+pub fn (mut dwg DrawContext) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor) {
 	mut x0 := int(x_0)
 	mut y0 := int(y_0)
 	mut x1 := int(x_1)
@@ -184,9 +184,9 @@ pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor)
 
 	for {
 		if c is bool {
-			ctx.draw_pixel_inv(x0, y0)
+			dwg.draw_pixel_inv(x0, y0)
 		} else if c is gx.Color {
-			ctx.draw_pixel(x0, y0, c)
+			dwg.draw_pixel(x0, y0, c)
 		}
 		if x0 == x1 && y0 == y1 {
 			break
@@ -203,7 +203,7 @@ pub fn (mut ctx Context) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor)
 	}
 }
 
-pub fn (mut ctx Context) draw_rect_filled(x f32, y f32, w f32, h f32, c TColor) {
+pub fn (mut dwg DrawContext) draw_rect_filled(x f32, y f32, w f32, h f32, c TColor) {
 	ix := int(x)
 	iy := int(y)
 	iw := int(w)
@@ -212,33 +212,33 @@ pub fn (mut ctx Context) draw_rect_filled(x f32, y f32, w f32, h f32, c TColor) 
 	for yy in iy .. iy + ih + 1 {
 		for xx in ix .. ix + iw + 1 {
 			if c is bool {
-				ctx.draw_pixel_inv(xx, yy)
+				dwg.draw_pixel_inv(xx, yy)
 			} else if c is gx.Color {
-				ctx.draw_pixel(xx, yy, c)
+				dwg.draw_pixel(xx, yy, c)
 			}
 		}
 	}
 }
 
-pub fn (mut ctx Context) draw_rect_empty(x f32, y f32, w f32, h f32, c TColor) {
-	ctx.draw_line(x, y, x + w, y, c)
-	ctx.draw_line(x + w, y, x + w, y + h, c)
-	ctx.draw_line(x + w, y + h, x, y + h, c)
-	ctx.draw_line(x, y + h, x, y, c)
+pub fn (mut dwg DrawContext) draw_rect_empty(x f32, y f32, w f32, h f32, c TColor) {
+	dwg.draw_line(x, y, x + w, y, c)
+	dwg.draw_line(x + w, y, x + w, y + h, c)
+	dwg.draw_line(x + w, y + h, x, y + h, c)
+	dwg.draw_line(x, y + h, x, y, c)
 }
 
-pub fn (mut ctx Context) draw_polygon(points []Point, c TColor) {
+pub fn (mut dwg DrawContext) draw_polygon(points []Point, c TColor) {
 	for i in 0 .. points.len {
-		ctx.draw_line(points[i].x, points[i].y, points[(i + 1) % points.len].x, points[(i + 1) % points.len].y,
+		dwg.draw_line(points[i].x, points[i].y, points[(i + 1) % points.len].x, points[(i + 1) % points.len].y,
 			c)
 	}
 }
 
 // https://stackoverflow.com/questions/34794720/filling-a-polygon-in-c-with-point-in-polygon-algorithm
 // http://alienryderflex.com/polygon_fill/
-pub fn (mut ctx Context) draw_polygon_filled(points []Point, c TColor) {
+pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	// draw the outline since the filling algorith does not draw the outline
-	// ctx.draw_polygon(points, c)
+	// dwg.draw_polygon(points, c)
 
 	num_coreners := points.len
 	mut vx := []f32{}
@@ -302,11 +302,11 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c TColor) {
 				}
 				for xx in int(nodes_x[i]) .. int(nodes_x[i + 1]) {
 					if c is bool {
-						ctx.draw_pixel_inv(xx, py)
+						dwg.draw_pixel_inv(xx, py)
 					} else if c is gx.Color {
-						ctx.draw_pixel(xx, py, c)
+						dwg.draw_pixel(xx, py, c)
 					}
-					// ctx.draw_pixel(xx, py, c)
+					// dwg.draw_pixel(xx, py, c)
 				}
 			}
 		}
@@ -367,12 +367,12 @@ pub fn default_font() &Font {
 	return font
 }
 
-pub fn (mut ctx Context) draw_text(x int, y int, text string, color gx.Color) {
+pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color) {
 	mut c := 0
 	mut y_ := y
 
 	data := unsafe {
-		arrays.carray_to_varray[u8](ctx.font.bitmap.data, ctx.font.bitmap.width * ctx.font.bitmap.height * ctx.font.bitmap.nr_channels)
+		arrays.carray_to_varray[u8](dwg.font.bitmap.data, dwg.font.bitmap.width * dwg.font.bitmap.height * dwg.font.bitmap.nr_channels)
 	}
 
 	for i in 0 .. text.len {
@@ -386,32 +386,32 @@ pub fn (mut ctx Context) draw_text(x int, y int, text string, color gx.Color) {
 
 		if glyph == '\n'.bytes()[0] {
 			c = 0
-			y_ += ctx.font.glyph_height
+			y_ += dwg.font.glyph_height
 			continue
 		}
 
-		font_glyph := glyph - ctx.font.first_char
+		font_glyph := glyph - dwg.font.first_char
 
-		gcoordx := ctx.font.glyph_coord_x[font_glyph]
-		gcoordy := ctx.font.glyph_coord_y[font_glyph]
+		gcoordx := dwg.font.glyph_coord_x[font_glyph]
+		gcoordy := dwg.font.glyph_coord_y[font_glyph]
 		// println("font_glyph ${glyph.ascii_str()} ${font_glyph} ${gcoordx} ${gcoordy}")
 
-		for gy in 0 .. ctx.font.glyph_height {
+		for gy in 0 .. dwg.font.glyph_height {
 			ly := gcoordy + gy
-			fly := ly * ctx.font.bitmap.width
+			fly := ly * dwg.font.bitmap.width
 			py := y_ + gy
 
-			for gx in 0 .. ctx.font.glyph_width {
+			for gx in 0 .. dwg.font.glyph_width {
 				lx := gcoordx + gx
-				// println("lx ${lx}, ly ${ly}, fly ${fly}, gx ${gx}, gy ${gy}, ly ${ly} = i ${(fly + lx) * ctx.font.bitmap.nr_channels}")
-				fl := data[(fly + lx) * ctx.font.bitmap.nr_channels]
+				// println("lx ${lx}, ly ${ly}, fly ${fly}, gx ${gx}, gy ${gy}, ly ${ly} = i ${(fly + lx) * dwg.font.bitmap.nr_channels}")
+				fl := data[(fly + lx) * dwg.font.bitmap.nr_channels]
 				// println("fl ${fl}")
 
-				if fl == ctx.font.colorkey {
+				if fl == dwg.font.colorkey {
 					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
 				} else {
 					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
-					ctx.draw_pixel(x + gx + c * ctx.font.glyph_width, py, color)
+					dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
 				}
 			}
 		}
