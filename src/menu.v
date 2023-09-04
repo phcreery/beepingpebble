@@ -7,12 +7,12 @@ import math
 
 pub struct Vertex {
 pub mut:
-	p        vec.Vec2[f32]
-	v        vec.Vec2[f32]
-	in_motion bool = false
-	sw       time.Time = time.now()
-	last_err vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
-	err_sum  vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
+	p         vec.Vec2[f32]
+	v         vec.Vec2[f32]
+	in_motion bool
+	sw        time.Time     = time.now()
+	last_err  vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
+	err_sum   vec.Vec2[f32] = vec.Vec2[f32]{0, 0}
 }
 
 fn new_vertex(p vec.Vec2[f32]) Vertex {
@@ -22,7 +22,8 @@ fn new_vertex(p vec.Vec2[f32]) Vertex {
 		in_motion: false
 		sw: time.now()
 		last_err: vec.Vec2[f32]{0, 0}
-		err_sum: vec.Vec2[f32]{0, 0}}
+		err_sum: vec.Vec2[f32]{0, 0}
+	}
 }
 
 pub struct Selector {
@@ -41,9 +42,9 @@ pub struct MenuItem {
 
 pub struct Menu {
 pub mut:
-	items              []MenuItem
-	selector           Selector
-	current_item_index int
+	items               []MenuItem
+	selector            Selector
+	current_item_index  int
 	selection_change_sw time.Time = time.now()
 }
 
@@ -55,7 +56,7 @@ fn debug_draw_menu_outline(mut ctx Context) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			// ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
 			// ctx.draw_pixel_inv(x, y)
 			// ctx.draw_pixel_inv(x + item_width - 1, y)
@@ -68,6 +69,7 @@ fn debug_draw_menu_outline(mut ctx Context) {
 			// ctx.draw_line(x + item_width-1, y-2, x + item_width-1, y + 2, gx.black)
 			// ctx.draw_line(x-2, y + item_height-1, x + 2, y + item_height-1, gx.black)
 			// ctx.draw_line(x, y + item_height-1 - 2, x, y + item_height-1 + 2, gx.black)
+			// OR
 		}
 	}
 }
@@ -100,7 +102,6 @@ fn create_menu(ctx Context) &Menu {
 }
 
 fn (mut menu Menu) draw(mut ctx Context) {
-
 	menu.update_target_verts()
 
 	for i in 0 .. menu.items.len {
@@ -118,7 +119,7 @@ fn (mut menu Menu) draw(mut ctx Context) {
 			for j in 0 .. menu.selector.target_verts.len {
 				points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 			}
-			ctx.draw_polygon(points, gx.orange)
+			// ctx.draw_polygon(points, gx.orange)
 
 			// draw the selector
 			menu.update_selector_verts()
@@ -126,8 +127,8 @@ fn (mut menu Menu) draw(mut ctx Context) {
 				points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 			}
 			// println(points)
-			// ctx.draw_polygon(points, gx.green)
-			ctx.draw_polygon_filled(points, false)
+			ctx.draw_polygon_filled(points, false) // false
+			ctx.draw_polygon(points, gx.black)
 			// println("drawn")
 		}
 	}
@@ -137,8 +138,7 @@ fn (mut menu Menu) update_selector_verts() {
 	kp := f32(1)
 	ki := f32(0.2)
 	kd := f32(10)
-	m:=f32(0.5)
-
+	m := f32(0.5)
 
 	for i in 0 .. menu.selector.verts.len {
 		// PID CALCULATIONS
@@ -149,9 +149,11 @@ fn (mut menu Menu) update_selector_verts() {
 		// give it some ferrofluid feel by delaying the motion of the furthest vertices
 		if vert.in_motion == false {
 			dt := f32(time.since(menu.selection_change_sw).nanoseconds()) / 1000000000
-			dist := vert.p.distance(vec.Vec2[f32]{menu.items[menu.current_item_index].x + menu.items[menu.current_item_index].w/2 , menu.items[menu.current_item_index].y+menu.items[menu.current_item_index].h/2})
+			dist := vert.p.distance(vec.Vec2[f32]{menu.items[menu.current_item_index].x +
+				menu.items[menu.current_item_index].w / 2, menu.items[menu.current_item_index].y +
+				menu.items[menu.current_item_index].h / 2})
 			// println("dist: ${int(dist)}, dt: ${dt}")
-			if dt*4000 > dist {
+			if dt * 4000 > dist {
 				vert.in_motion = true
 			} else if dist > menu.items[menu.current_item_index].w * f32(2.5) {
 				// if its too far away, put it in motion
@@ -173,12 +175,12 @@ fn (mut menu Menu) update_selector_verts() {
 		vert.sw = time.now()
 		// dt := f32(time.since(vert.sw).nanoseconds()) / 1000000000 // ~ 0.015 s
 		// println("dt: ${dt}")
-		dt:=f32(0.015) // 60 fps
-		dt_v := vec.Vec2{dt,dt}
+		dt := f32(0.015) // 60 fps
+		dt_v := vec.Vec2{dt, dt}
 
-		kp_v := vec.Vec2{kp,kp}
-		ki_v := vec.Vec2{ki,ki}
-		kd_v := vec.Vec2{kd,kd}
+		kp_v := vec.Vec2{kp, kp}
+		ki_v := vec.Vec2{ki, ki}
+		kd_v := vec.Vec2{kd, kd}
 
 		last_err := vert.last_err
 		mut err_sum := vert.err_sum
@@ -194,14 +196,12 @@ fn (mut menu Menu) update_selector_verts() {
 
 		// FORCE/ACCEL CALCULATIONS
 		// https://en.wikipedia.org/wiki/Equations_of_motion
-		f:= output
-		a:= f / vec.Vec2{m,m}
+		f := output
+		a := f / vec.Vec2{m, m}
 		v0 := vert.v
 		p0 := vert.p
-		vert.v= a * dt_v + v0
-		vert.p= p0 + v0 * dt_v + vec.Vec2[f32]{0.5, 0.5} * a * dt_v * dt_v
-
-
+		vert.v = a * dt_v + v0
+		vert.p = p0 + v0 * dt_v + vec.Vec2[f32]{0.5, 0.5} * a * dt_v * dt_v
 	}
 }
 
@@ -209,7 +209,8 @@ fn (mut menu Menu) update_target_verts() {
 	target := menu.items[menu.current_item_index]
 	menu.selector.target_verts[0] = new_vertex(vec.Vec2[f32]{target.x, target.y})
 	menu.selector.target_verts[1] = new_vertex(vec.Vec2[f32]{target.x + target.w, target.y})
-	menu.selector.target_verts[2] = new_vertex(vec.Vec2[f32]{target.x + target.w, target.y + target.h})
+	menu.selector.target_verts[2] = new_vertex(vec.Vec2[f32]{target.x + target.w, target.y +
+		target.h})
 	menu.selector.target_verts[3] = new_vertex(vec.Vec2[f32]{target.x, target.y + target.h})
 }
 

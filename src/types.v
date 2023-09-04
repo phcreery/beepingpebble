@@ -6,7 +6,7 @@ import gx
 // 	inv
 // }
 
-type TColor = gx.Color | bool
+type TColor = bool | gx.Color
 
 pub struct Point {
 mut:

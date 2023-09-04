@@ -11,6 +11,7 @@ struct App {
 pub mut:
 	ctx  Context
 	menu Menu
+	sb StatusBar
 }
 
 fn draw(mut app App) {
@@ -30,6 +31,7 @@ fn draw(mut app App) {
 	// app.ctx.draw_line_inv(0, 10, 20, 30)
 	// app.ctx.draw_test_image()
 	app.menu.draw(mut app.ctx)
+	app.sb.draw(mut app.ctx)
 
 	app.ctx.end()
 }
@@ -63,6 +65,7 @@ fn event_manager(mut ev gg.Event, mut app App) {
 fn main() {
 	mut app := App{}
 	app.menu = create_menu(app.ctx)
+	app.sb = create_statusbar(app.ctx)
 	app.ctx = create_context(app, draw, event_manager)
 	app.ctx.run()
 }
