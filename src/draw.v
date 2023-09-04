@@ -1,15 +1,19 @@
 module main
 
 // $if rpi ? {
-// 	import fbdev as gg
 // } $else {
-import gx
 // import sokol.gfx
 import math
 import time
 import arrays
 import stbi
 import gg
+// }
+
+// $if rpi ? {
+// import fbdev
+// } $else {
+import gx
 // }
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
@@ -42,6 +46,10 @@ mut:
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &DrawContext { //, event_fn fn (&gg.Event, voidptr)
+
+	$if rpi ? {
+		println('Raspberry Pi')
+	}
 	mut dwg := &DrawContext{
 		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
 		width: width
@@ -59,7 +67,7 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		// init_fn: init_fn
 		// init_fn: graphics_init
 		init_fn: fn [mut dwg] (_ voidptr) {
-			dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
+			dwg.img_id = dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
 		}
 		frame_fn: frame_fn
 		event_fn: event_fn
