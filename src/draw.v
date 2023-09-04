@@ -17,6 +17,7 @@ import gg
 
 // these should be automatically determined from the framebuffer device
 // see: https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c for example
+// TODO: remove these globals
 const (
 	width       = 400
 	height      = 240
@@ -27,6 +28,9 @@ const (
 pub struct DrawContext {
 mut:
 	pixel_buffer  []u8
+	width		 int
+	height		 int
+	components   int
 	fps_stopwatch time.Time
 	frames        int
 	fps           int
@@ -39,6 +43,8 @@ mut:
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &DrawContext { //, event_fn fn (&gg.Event, voidptr)
 	mut dwg := &DrawContext{
 		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
+		width: width
+		height: height
 		gg_ctx: &gg.Context{}
 		// gg_ctx: &fbdev.Context{}
 	}
@@ -52,7 +58,7 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 		// init_fn: init_fn
 		// init_fn: graphics_init
 		init_fn: fn [mut dwg] (_ voidptr) {
-			dwg.gg_ctx.new_streaming_image(width, height, 4, pixel_format: .rgba8)
+			dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
 		}
 		frame_fn: frame_fn
 		event_fn: event_fn

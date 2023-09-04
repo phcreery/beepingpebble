@@ -215,14 +215,23 @@ fn (mut menu Menu) update_target_verts() {
 }
 
 fn (mut menu Menu) next() {
-	menu.current_item_index = (menu.current_item_index + 1) % menu.items.len
+	// menu.current_item_index = (menu.current_item_index + 1) % menu.items.len
+	// no roll over
+	menu.current_item_index = (menu.current_item_index + 1)
+	if menu.current_item_index % (menu.items.len/2) == 0 {
+		menu.current_item_index = menu.current_item_index - 1
+	}
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) prev() {
 	menu.current_item_index = (menu.current_item_index - 1)
-	if menu.current_item_index < 0 {
-		menu.current_item_index = menu.items.len - 1
+	// if menu.current_item_index < 0 {
+	// 	menu.current_item_index = menu.items.len - 1
+	// }
+	// no roll over
+	if menu.current_item_index % (menu.items.len/2) == 3 || menu.current_item_index < 0 {
+		menu.current_item_index = menu.current_item_index + 1
 	}
 	menu.selection_change_sw = time.now()
 }
