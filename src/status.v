@@ -37,7 +37,7 @@ fn (mut sb StatusBar) update() {
 		'*)))'
 		get_loading_status_text()
 	]
-	mut items := []StatusBarTextItem
+	mut items := []StatusBarTextItem{}
 	mut x := width
 	for text_item in text_array {
 		x -= 8 // padding

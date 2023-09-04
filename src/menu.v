@@ -94,12 +94,7 @@ fn create_menu(dwg DrawContext) &Menu {
 		selection_change_sw: time.now()
 	}
 
-	for j in 0 .. 8 {
-		pos := menu.loc_from_index(j)
-		x := pos.x
-		y := pos.y
-		w := menu.item_width
-		h := menu.item_height
+	for _ in 0 .. 8 {
 		menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
 	}
 
@@ -124,7 +119,7 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		pos := menu.loc_from_index(i)
 		x := pos.x
 		y := pos.y
-		w := menu.item_width
+		// w := menu.item_width
 		h := menu.item_height
 		dwg.draw_text(x + 10, y + h - 16, item.name, gx.black)
 		dwg.draw_image(x + 25, y + 25, dwg.icons[item.icon])

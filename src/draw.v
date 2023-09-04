@@ -451,8 +451,8 @@ pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image) {
 	}
 	for yy in 0 .. img.height {
 		for xx in 0 .. img.width {
-			line_length := img.width * img.nr_channels
-			pos := u64(yy * line_length + xx * img.nr_channels)
+			img_line_length := img.width * img.nr_channels
+			pos := u64(yy * img_line_length + xx * img.nr_channels)
 			blue := data[pos + 0]
 			green := data[pos + 1]
 			red := data[pos + 2]
