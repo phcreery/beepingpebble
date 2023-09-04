@@ -23,11 +23,11 @@ pub fn create_statusbar() &StatusBar {
 			y: 0
 		}
 	}
-	sb.update()
+	// sb.update()
 	return sb
 }
 
-fn (mut sb StatusBar) update() {
+fn (mut sb StatusBar) update(dwg &DrawContext) {
 	text_array := [
 		// time.now().hhmm12(),
 		time.now().custom_format('M/D/YY hh:mm')
@@ -35,7 +35,8 @@ fn (mut sb StatusBar) update() {
 		'4.2V',
 		'-***',
 		'*)))'
-		get_loading_status_text()
+		get_loading_status_text(),
+		get_fps(dwg)
 	]
 	mut items := []StatusBarTextItem{}
 	mut x := width
@@ -55,7 +56,7 @@ fn (mut sb StatusBar) update() {
 }
 
 fn (mut sb StatusBar) draw(mut dwg DrawContext) {
-	sb.update()
+	sb.update(&dwg)
 	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, gx.black)
 	for item in sb.items {
 		dwg.draw_text(item.pos.x, item.pos.y, item.text, gx.white)
@@ -73,4 +74,8 @@ fn get_loading_status_text() string {
 	} else {
 		return '/'
 	}
+}
+
+fn get_fps(dwg &DrawContext) string {
+	return '${dwg.fps} fps'
 }

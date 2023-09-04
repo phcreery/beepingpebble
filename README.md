@@ -16,6 +16,7 @@ Features:
 - [ ] WIFI status
 - [ ] Light/Dark mode
 - [x] custom graphics library
+- [x] rasterized text to avoid anti-aliased "soft" text
 - [ ] 60fps (untested on beepy)
 - [ ] vsync (untested)
 - [x] direct framebuffer writing

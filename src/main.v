@@ -83,6 +83,11 @@ fn event_manager(mut ev gg.Event, mut app App) {
 			.l {
 				app.menu.goto_index(7)
 			}
+			.enter {
+				item := app.menu.get_selected()
+				println(item.command)
+				exit(0)
+			}
 			else {
 				println('key: ')
 			}

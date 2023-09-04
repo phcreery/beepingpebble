@@ -35,6 +35,7 @@ pub mut:
 pub struct MenuItem {
 	name string
 	icon string
+	command string
 }
 
 pub struct Menu {
@@ -94,8 +95,14 @@ fn create_menu(dwg DrawContext) &Menu {
 		selection_change_sw: time.now()
 	}
 
-	for _ in 0 .. 8 {
-		menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
+	// for _ in 0 .. 8 {
+	// 	menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
+	// }
+	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', ''}
+	menu.items << MenuItem{
+		name: 'ls'
+		icon: 'icons/terminal-icon.png'
+		command: 'ls'
 	}
 
 	init := menu.loc_from_index(0)
@@ -122,7 +129,7 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		// w := menu.item_width
 		h := menu.item_height
 		dwg.draw_text(x + 10, y + h - 16, item.name, gx.black)
-		dwg.draw_image(x + 25, y + 25, dwg.icons[item.icon])
+		dwg.draw_image(x + 25, y + 15, dwg.icons[item.icon])
 	}
 
 
@@ -231,10 +238,10 @@ fn (mut menu Menu) update_target_verts() {
 }
 
 fn (mut menu Menu) next() {
-	// menu.current_item_index = (menu.current_item_index + 1) % menu.items.len
+	// menu.current_item_index = (menu.current_item_index + 1) % 8
 	// no roll over
 	menu.current_item_index = (menu.current_item_index + 1)
-	if menu.current_item_index % (menu.items.len / 2) == 0 {
+	if menu.current_item_index % (8 / 2) == 0 {
 		menu.current_item_index = menu.current_item_index - 1
 	}
 	menu.selection_change_sw = time.now()
@@ -243,28 +250,33 @@ fn (mut menu Menu) next() {
 fn (mut menu Menu) prev() {
 	menu.current_item_index = (menu.current_item_index - 1)
 	// if menu.current_item_index < 0 {
-	// 	menu.current_item_index = menu.items.len - 1
+	// 	menu.current_item_index = 8 - 1
 	// }
 	// no roll over
-	if menu.current_item_index % (menu.items.len / 2) == 3 || menu.current_item_index < 0 {
+	if menu.current_item_index % (8 / 2) == 3 || menu.current_item_index < 0 {
 		menu.current_item_index = menu.current_item_index + 1
 	}
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) down() {
-	menu.current_item_index = (menu.current_item_index + 4) % menu.items.len
+	menu.current_item_index = (menu.current_item_index + 4) % 8
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) up() {
 	menu.current_item_index = (menu.current_item_index - 4)
 	if menu.current_item_index < 0 {
-		menu.current_item_index += menu.items.len
+		menu.current_item_index += 8
 	}
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) goto_index(i int) {
 	menu.current_item_index = i
+	// menu.selection_change_sw = time.now() // disabled to prevent the fluid animation
+}
+
+fn (mut menu Menu) get_selected() MenuItem {
+	return menu.items[menu.current_item_index]
 }
