@@ -3,6 +3,7 @@ module main
 import gx
 import math.vec
 import time
+import math
 
 pub struct Vertex {
 pub mut:
@@ -54,13 +55,18 @@ fn debug_draw_menu_outline(mut ctx Context) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			// ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			// OR
+			ctx.draw_pixel_inv(x, y)
+			ctx.draw_pixel_inv(x + item_width - 1, y)
+			ctx.draw_pixel_inv(x, y + item_height - 1)
+			ctx.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
 		}
 	}
 }
 
 fn create_menu(ctx Context) &Menu {
-	mut menu := Menu{
+	mut menu := &Menu{
 		items: []
 		current_item_index: 0
 		selection_change_sw: time.now()
@@ -73,7 +79,7 @@ fn create_menu(ctx Context) &Menu {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			menu.items << MenuItem{'a', x + 1, y + 1, item_width - 3, item_height - 3}
+			menu.items << MenuItem{'App Name', x + 1, y + 1, item_width - 3, item_height - 3}
 		}
 	}
 
@@ -83,26 +89,29 @@ fn create_menu(ctx Context) &Menu {
 	menu.selector.verts[1] = new_vertex(vec.Vec2[f32]{init.x + init.w, init.y})
 	menu.selector.verts[2] = new_vertex(vec.Vec2[f32]{init.x + init.w, init.y + init.h})
 	menu.selector.verts[3] = new_vertex(vec.Vec2[f32]{init.x, init.y + init.h})
-	return &menu
+	return menu
 }
 
 fn (mut menu Menu) draw(mut ctx Context) {
+
 	menu.update_target_verts()
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
+		ctx.draw_text(item.x + 10, item.y + item.h - 16, item.name, gx.black)
+		// app.ctx.draw_text(10, 10, '!"#', gx.black)
 		if i == menu.current_item_index {
 			// ctx.draw_rect_filled_inv(item.x, item.y, item.w, item.h)
 
 			// draw the shape where the selector should go
-			ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
+			// ctx.draw_rect_empty(item.x, item.y, item.w, item.h, gx.blue)
 
 			mut points := []Point{len: 4}
 			// draw the selector target
 			for j in 0 .. menu.selector.target_verts.len {
 				points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 			}
-			ctx.draw_polygon(points, gx.orange)
+			// ctx.draw_polygon(points, gx.orange)
 
 			// draw the selector
 			menu.update_selector_verts()
@@ -111,10 +120,9 @@ fn (mut menu Menu) draw(mut ctx Context) {
 			}
 			// println(points)
 			// ctx.draw_polygon(points, gx.green)
-			ctx.draw_polygon_filled(points, gx.black)
+			ctx.draw_polygon_filled(points, false)
 			// println("drawn")
 		}
-		// ctx.draw_text(item.x + 10, item.y + 10, item.name, gx.black)
 	}
 }
 
@@ -146,7 +154,9 @@ fn (mut menu Menu) update_selector_verts() {
 			}
 		}
 		// if its already at the target, skip calculations
-		if vert.p.distance(vert_target.p) < 1 {
+		if vert.p.distance(vert_target.p) < 0.5 {
+			vert.p.x = f32(math.round(vert.p.x))
+			vert.p.y = f32(math.round(vert.p.y))
 			vert.in_motion = false
 			continue
 		}

@@ -5,6 +5,7 @@ import gx
 import math
 import time
 import arrays
+import stbi
 
 // $if rpi ? {
 // 	import fbdev as gg
@@ -34,6 +35,7 @@ mut:
 	img_id       int
 	gg_ctx       &gg.Context = unsafe { nil }
 	// gg_ctx       &fbdev.Context = unsafe { nil }
+	font 	   &Font = unsafe { nil }
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg.Event, voidptr)) &Context { //, event_fn fn (&gg.Event, voidptr)
@@ -73,6 +75,7 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (&gg
 
 
 	ctx.fps_stopwatch = time.now()
+	ctx.font = default_font()
 
 	return ctx
 }
@@ -102,6 +105,10 @@ pub fn (mut ctx Context) run() {
 	ctx.gg_ctx.run()
 }
 
+pub fn (mut ctx Context) quit() {
+	ctx.gg_ctx.quit()
+}
+
 pub fn (mut ctx Context) clear() {
 	for y in 0 .. height {
 		for x in 0 .. width {
@@ -127,6 +134,7 @@ pub fn (mut ctx Context) blit() {
 
 		}
 	}
+	// see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/gg/random.v
 	mut img := ctx.gg_ctx.get_cached_image_by_idx(ctx.img_id)
 	img.update_pixel_data(unsafe { &u8(&buffer) })
 	ctx.gg_ctx.draw_image(0, 0, width, height, img)
@@ -231,6 +239,8 @@ pub fn (mut ctx Context) draw_polygon(points []Point, c TColor) {
 	}
 }
 
+// https://stackoverflow.com/questions/34794720/filling-a-polygon-in-c-with-point-in-polygon-algorithm
+// http://alienryderflex.com/polygon_fill/
 pub fn (mut ctx Context) draw_polygon_filled(points []Point, c TColor) {
 	// draw the outline since the filling algorith does not draw the outline
 	ctx.draw_polygon(points, c)
@@ -307,13 +317,116 @@ pub fn (mut ctx Context) draw_polygon_filled(points []Point, c TColor) {
 	}
 }
 
-// pub fn (ctx &Context) draw_text(x int, y int, text string, c gx.Color) {
-// 	// gx.FontDef{
-// 	// 	font_size: 8
-// 	// 	font_path: 'assets/fonts/RobotoMono-Regular.ttf'
-// 	// })
-// 	// ctx.gg_ctx.draw_text(x, y, text, c)
-// 	ctx.gg_ctx.draw_text_def(x, y, text)
+// pub struct Image {
+// mut:
+// 	width int
+// 	height int
+// 	data []u8
 // }
+
+pub struct Font {
+mut:
+	glyph_coord_x []int
+	glyph_coord_y []int
+	glyph_width int
+	glyph_height int
+	first_char u8
+	colorkey u32
+	bitmap stbi.Image
+
+}
+
+pub fn default_font() &Font {
+	println("create_font")
+	mut embedded_font_file := $embed_file('thirdparty/fbg/examples/bbmode1_8x8.png')
+	width := 8
+	height := 8
+	// data := embedded_font_file.to_bytes()
+	data := embedded_font_file.data()
+	mut img := stbi.load_from_memory(data, embedded_font_file.len, stbi.LoadParams{desired_channels:1}) or { panic("failed to load image") }
+	d := arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
+	// println("image ${d}")
+
+	mut font := &Font{
+		glyph_coord_x: []int{len: 256, cap: 256, init:0}
+		glyph_coord_y: []int{len: 256, cap: 256, init:0}
+		glyph_width: width
+		glyph_height: height
+		first_char: 33 // u8
+		colorkey: 0
+		bitmap: img
+	}
+
+	first_char := 33 // u8
+
+	glyph_width:=8
+	glyph_height:=8
+	glyph_count := (img.width / glyph_width) * (img.height / glyph_height)
+	for i in 0..glyph_count {
+    	gcoord := i * glyph_width
+        gcoordx := gcoord % img.width
+        gcoordy := (gcoord / img.width) * glyph_height
+
+        font.glyph_coord_x[i] = gcoordx
+        font.glyph_coord_y[i] = gcoordy
+    }
+
+	return font
+}
+
+
+
+
+pub fn (mut ctx Context) draw_text(x int, y int, text string, color gx.Color) {
+	mut c:=0
+	mut y_ := y
+
+	data := arrays.carray_to_varray[u8](ctx.font.bitmap.data, ctx.font.bitmap.width * ctx.font.bitmap.height * ctx.font.bitmap.nr_channels)
+
+	for i in 0..text.len {
+        glyph := text[i]
+
+        if glyph == ' '.bytes()[0] {
+            // fbg_recta(fbg, x + c * fnt->glyph_width, y, fnt->glyph_width, fnt->glyph_height, fbg->text_background.r, fbg->text_background.g, fbg->text_background.b, fbg->text_alpha)
+            c += 1
+            continue
+        }
+
+        if glyph == '\n'.bytes()[0] {
+            c = 0
+            y_ += ctx.font.glyph_height
+            continue
+        }
+
+        font_glyph := glyph - ctx.font.first_char
+
+        gcoordx := ctx.font.glyph_coord_x[font_glyph]
+        gcoordy := ctx.font.glyph_coord_y[font_glyph]
+		// println("font_glyph ${glyph.ascii_str()} ${font_glyph} ${gcoordx} ${gcoordy}")
+
+        for gy in 0 .. ctx.font.glyph_height {
+            ly := gcoordy + gy
+            fly := ly * ctx.font.bitmap.width
+            py := y_ + gy
+
+            for gx in 0..ctx.font.glyph_width {
+                lx := gcoordx + gx
+				// println("lx ${lx}, ly ${ly}, fly ${fly}, gx ${gx}, gy ${gy}, ly ${ly} = i ${(fly + lx) * ctx.font.bitmap.nr_channels}")
+                fl := data[(fly + lx) * ctx.font.bitmap.nr_channels]
+				// println("fl ${fl}")
+
+                if fl == ctx.font.colorkey {
+                    // fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
+                } else {
+                    // fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
+					ctx.draw_pixel(x + gx + c * ctx.font.glyph_width, py, color)
+                }
+            }
+        }
+
+        c += 1
+    }
+
+}
 
 

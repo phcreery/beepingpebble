@@ -83,6 +83,7 @@ pub fn (context &Context) begin () {
 pub fn (mut context Context) end (){
 }
 
+
 pub fn (mut context Context) blit (virtualbuffer []u8) {
 	context.framebuffer.write_to(0, virtualbuffer) or {}
 }
@@ -98,3 +99,7 @@ pub fn (mut context Context) run (){
 	}
 }
 
+pub fn (mut context Context) quit (){
+	// context.framebuffer.close()
+	exit(0)
+}
