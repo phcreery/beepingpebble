@@ -55,12 +55,19 @@ fn debug_draw_menu_outline(mut ctx Context) {
 		for i in 0 .. 4 {
 			x := i * item_width
 			y := j * item_height
-			// ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
+			ctx.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
-			ctx.draw_pixel_inv(x, y)
-			ctx.draw_pixel_inv(x + item_width - 1, y)
-			ctx.draw_pixel_inv(x, y + item_height - 1)
-			ctx.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
+			// ctx.draw_pixel_inv(x, y)
+			// ctx.draw_pixel_inv(x + item_width - 1, y)
+			// ctx.draw_pixel_inv(x, y + item_height - 1)
+			// ctx.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
+			// OR
+			// ctx.draw_line(x-2, y, x + 2, y, gx.black)
+			// ctx.draw_line(x, y-2, x, y + 2, gx.black)
+			// ctx.draw_line(x + item_width-1 - 2, y, x + item_width-1 + 2, y, gx.black)
+			// ctx.draw_line(x + item_width-1, y-2, x + item_width-1, y + 2, gx.black)
+			// ctx.draw_line(x-2, y + item_height-1, x + 2, y + item_height-1, gx.black)
+			// ctx.draw_line(x, y + item_height-1 - 2, x, y + item_height-1 + 2, gx.black)
 		}
 	}
 }
@@ -111,7 +118,7 @@ fn (mut menu Menu) draw(mut ctx Context) {
 			for j in 0 .. menu.selector.target_verts.len {
 				points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 			}
-			// ctx.draw_polygon(points, gx.orange)
+			ctx.draw_polygon(points, gx.orange)
 
 			// draw the selector
 			menu.update_selector_verts()
@@ -153,10 +160,13 @@ fn (mut menu Menu) update_selector_verts() {
 				continue
 			}
 		}
-		// if its already at the target, skip calculations
-		if vert.p.distance(vert_target.p) < 0.5 {
-			vert.p.x = f32(math.round(vert.p.x))
-			vert.p.y = f32(math.round(vert.p.y))
+		// if its already at the target, snap it into place, and skip calculations
+		if vert.p.distance(vert_target.p) < 5 {
+			vert.p.x = f32(math.round(vert_target.p.x))
+			vert.p.y = f32(math.round(vert_target.p.y))
+			vert.v = vec.Vec2[f32]{0, 0}
+			vert.last_err = vec.Vec2[f32]{0, 0}
+			vert.err_sum = vec.Vec2[f32]{0, 0}
 			vert.in_motion = false
 			continue
 		}
