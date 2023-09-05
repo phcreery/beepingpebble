@@ -1,10 +1,10 @@
 module main
 
 import gx
+import fbdev as gg
 // $if rpi ? {
-// 	import fbdev as gg
 // } $else {
-import gg
+// import gg
 // }
 
 struct App {
@@ -86,6 +86,7 @@ fn event_manager(mut ev gg.Event, mut app App) {
 			.enter {
 				item := app.menu.get_selected()
 				println(item.command)
+				app.dwg.quit()
 				exit(0)
 			}
 			else {

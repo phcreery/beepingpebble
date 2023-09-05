@@ -7,10 +7,10 @@ import stbi
 import gx
 
 // import hw
-import fbgg as hw
+// import fbgg as hw
 
 // $if rpi ? {
-// import fbdev
+import fbdev as hw
 // } $else {
 // }
 
@@ -106,7 +106,7 @@ pub fn (mut dwg DrawContext) compute_fps() {
 	elapsed := time.since(dwg.fps_stopwatch)
 	if elapsed.nanoseconds() > 1_000_000_000 {
 		dwg.fps = int(dwg.frames)
-		println('fps ${dwg.fps}')
+		// println('fps ${dwg.fps}')
 		dwg.frames = 0
 		dwg.fps_stopwatch = time.now()
 	}

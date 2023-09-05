@@ -13,9 +13,6 @@ const (
 	line_length = width * components
 )
 
-pub type FNCb = fn (data voidptr)
-pub type FNEvent = fn (e &gg.Event, data voidptr)
-
 pub struct Config {
 mut:
 	bg_color  gx.Color

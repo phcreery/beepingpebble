@@ -6,17 +6,19 @@ import gx
 import time
 // import vpng
 // built-in
-import fbdev.mouse
+// import fbdev.mouse
 import fbdev.keyboard
 
 pub type FNCb = fn (data voidptr)
+pub type FNEvent = fn (e &Event, data voidptr)
 
 pub struct Config {
 	bg_color  gx.Color
 	user_data voidptr
 	frame_fn  FNCb = unsafe { nil }
 	init_fn   FNCb = unsafe { nil }
-	// event_fn		FNEvent = unsafe { nil }
+	event_fn		FNEvent = unsafe { nil }
+	
 	// compability only (not used)
 	width         int
 	height        int
@@ -36,7 +38,11 @@ pub mut:
 	user_data voidptr
 	frame_fn  FNCb = unsafe { nil }
 	init_fn   FNCb = unsafe { nil }
-	// event_fn		FNEvent = unsafe { nil }
+	event_fn		FNEvent = unsafe { nil }
+	
+	keyboard_manager	&keyboard.Manager = unsafe { nil }
+	keydown_fn		FNKeyDown = unsafe { nil }
+	char_fn			FNChar    = unsafe { nil }
 }
 
 pub fn new_context(args Config) &Context {
@@ -65,8 +71,29 @@ pub fn new_context(args Config) &Context {
 		user_data: args.user_data
 		frame_fn: args.frame_fn
 		init_fn: args.init_fn
-		// event_fn:		args.event_fn
+		event_fn:		args.event_fn
 	}
+
+	context.keyboard_manager = keyboard.new_manager(
+		keyboard_fn: fn [context] (key keyboard.KeyCode) {
+			println(key)
+			if context.event_fn != unsafe { nil } {
+				context.event_fn(&Event{
+					typ: .key_down
+					key_code: key
+				}, context.user_data)
+			}
+			if context.keydown_fn != unsafe { nil } {
+				context.keydown_fn(key, unsafe { Modifier(0) }, context.user_data)
+			}
+			if context.char_fn != unsafe { nil } {
+				if key != .escape && key != .enter && key != .backspace && key != .left &&
+					key != .right && key != .up && key != .down {
+						context.char_fn(u32(key), context.user_data)
+				}
+			}
+		}
+	)
 
 	return context
 }
@@ -88,11 +115,12 @@ pub fn (mut context Context) run() {
 	}
 	for {
 		context.frame_fn(context.user_data)
-		time.sleep(1000 / 30 * time.millisecond)
+		// time.sleep(1000 / 30 * time.millisecond)
 	}
 }
 
 pub fn (mut context Context) quit() {
+	keyboard.restore_term()
 	// context.framebuffer.close()
 	exit(0)
 }
