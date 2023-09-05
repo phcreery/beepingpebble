@@ -4,8 +4,10 @@ import gx
 // import fbdev as gg
 // $if rpi ? {
 // } $else {
-import gg
+// import gg
 // }
+import hw
+// import gg as hw
 
 struct Theme {
 pub mut:
@@ -27,7 +29,7 @@ fn draw(mut app App) {
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
 	// menu_draw_debug_outline(mut app.dwg)
 	// app.dwg.draw_text(10, 10, '!"#', gx.black)
-	app.dwg.draw_text(10, 10, 'helloworld', gx.black)
+	// app.dwg.draw_text(10, 10, 'helloworld', gx.black)
 	// app.dwg.draw_line_inv(0, 0, 20, 60)
 	// app.dwg.draw_line(20, 60, 20, 160, gx.red)
 	// app.dwg.draw_polygon_filled([Point{10, 10}, Point{20, 20},
@@ -47,7 +49,8 @@ fn draw(mut app App) {
 	app.dwg.end()
 }
 
-fn event_manager(mut ev gg.Event, mut app App) {
+fn event_manager(mut ev hw.Event, mut app App) {
+	// println('event_manager called with event: ${ev}')
 	if ev.typ == .key_down {
 		match ev.key_code {
 			.escape, .q {
@@ -97,7 +100,7 @@ fn event_manager(mut ev gg.Event, mut app App) {
 				exit(0)
 			}
 			else {
-				println('key: ')
+				println('key: ${ev.key_code}')
 			}
 		}
 	}

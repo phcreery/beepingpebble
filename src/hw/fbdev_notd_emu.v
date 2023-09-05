@@ -1,4 +1,4 @@
-module fbdev
+module hw
 
 import os
 import gx
@@ -7,10 +7,10 @@ import time
 // import vpng
 // built-in
 // import fbdev.mouse
-import fbdev.keyboard
+import hw.keyboard
 
-pub type FNCb = fn (data voidptr)
-pub type FNEvent = fn (e &Event, data voidptr)
+// pub type FNCb = fn (data voidptr)
+// pub type FNEvent = fn (e &Event, data voidptr)
 
 pub struct Config {
 	bg_color  gx.Color
@@ -18,7 +18,7 @@ pub struct Config {
 	frame_fn  FNCb = unsafe { nil }
 	init_fn   FNCb = unsafe { nil }
 	event_fn		FNEvent = unsafe { nil }
-	
+
 	// compability only (not used)
 	width         int
 	height        int
@@ -39,7 +39,7 @@ pub mut:
 	frame_fn  FNCb = unsafe { nil }
 	init_fn   FNCb = unsafe { nil }
 	event_fn		FNEvent = unsafe { nil }
-	
+
 	keyboard_manager	&keyboard.Manager = unsafe { nil }
 	keydown_fn		FNKeyDown = unsafe { nil }
 	char_fn			FNChar    = unsafe { nil }

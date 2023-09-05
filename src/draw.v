@@ -12,8 +12,9 @@ import gx
 // $if rpi ? {
 // import fbdev as hw
 // } $else {
-import fbgg as hw
+// import fbgg as hw
 // }
+import hw
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
 // change line 472 of hw.c.v to `high_dpi: false`

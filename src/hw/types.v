@@ -1,8 +1,8 @@
-module fbdev
+module hw
 
 // import os
 // import gx
-import keyboard
+import hw.keyboard
 
 
 pub type FNCb = fn (data voidptr)
@@ -23,7 +23,7 @@ pub type KeyCode = keyboard.KeyCode
 // 	frame_fn		FNCb	= unsafe { nil }
 // 	init_fn			FNCb	= unsafe { nil }
 // 	event_fn		FNEvent = unsafe { nil }
-	
+
 // 	click_fn		FNClick   = unsafe { nil }
 // 	move_fn			FNMove    = unsafe { nil }
 // 	unclick_fn		FNUnClick = unsafe { nil }
@@ -72,7 +72,7 @@ pub type KeyCode = keyboard.KeyCode
 // 	text_config		gx.TextCfg = gx.TextCfg {size: 16}
 // 	allowed_area		Rect = Rect{x:0, y:0, width: -1, height: -1}
 // 	active_cursor		Image
-	
+
 // 	// compability only (not used)
 // 	frame u64
 // 	scale f32 = 1.0
@@ -94,22 +94,51 @@ pub mut:
 	height	int
 }
 
+// pub enum EventType {
+// 	key_down
+// 	// mouse_up
+// 	// mouse_down
+// 	// mouse_scroll //
+// 	// touches_began // compability only (not used)
+// 	// touches_moved // compability only (not used)
+// 	// touches_end // compability only (not used)
+// 	// touches_ended // compability only (not used)
+// 	// resized // compability only (not used)
+// 	// restored // compability only (not used)
+// 	// resumed // compability only (not used)
+// 	// iconified // compability only (not used)
+// 	// quit_requested // compability only (not used)
+// 	// files_droped // compability only (not used)
+// 	// files_dropped // compability only (not used)
+// }
+
 pub enum EventType {
+	invalid
 	key_down
-	// mouse_up
-	// mouse_down
-	// mouse_scroll //
-	// touches_began // compability only (not used)
-	// touches_moved // compability only (not used)
-	// touches_end // compability only (not used)
-	// touches_ended // compability only (not used)
-	// resized // compability only (not used)
-	// restored // compability only (not used)
-	// resumed // compability only (not used)
-	// iconified // compability only (not used)
-	// quit_requested // compability only (not used)
-	// files_droped // compability only (not used)
-	// files_dropped // compability only (not used)
+	key_up
+	char
+	mouse_down
+	mouse_up
+	mouse_scroll
+	mouse_move
+	mouse_enter
+	mouse_leave
+	touches_began
+	touches_moved
+	touches_ended
+	touches_cancelled
+	resized
+	iconified
+	restored
+	focused
+	unfocused
+	suspended
+	resumed
+	quit_requested
+	clipboard_pasted
+	files_dropped
+	num
+	files_droped  [deprecated: 'use files_dropped instead'; deprecated_after: '2023-08-21']
 }
 
 pub struct Event {

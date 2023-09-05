@@ -21,3 +21,19 @@ Features:
 - [ ] vsync (untested)
 - [x] direct framebuffer writing
 - [x] framebuffer emulation for development on windows & linux
+
+## Developing
+
+Dependencies: vlang installed
+
+Emulation on Windows/Mac/Linux:
+
+```
+v -d emu run .
+```
+
+Build for Pi (note, this has to be run raspberry pi zero hardware):
+
+```
+
+```

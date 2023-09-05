@@ -1,4 +1,4 @@
-module fbgg
+module hw
 
 import os
 import gx
@@ -12,6 +12,7 @@ const (
 	components  = 4
 	line_length = width * components
 )
+
 
 pub type FNCb = fn (data voidptr)
 pub type FNEvent = fn (e &gg.Event, data voidptr)
