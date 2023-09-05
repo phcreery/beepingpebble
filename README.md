@@ -17,7 +17,7 @@ Features:
 - [ ] Light/Dark mode
 - [x] custom graphics library
 - [x] rasterized text to avoid anti-aliased "soft" text
-- [ ] 60fps (untested on beepy)
+- [ ] 30/60fps (currently ~10fps with hight cpu usage on rpi zero 2)
 - [ ] vsync (untested)
 - [x] direct framebuffer writing
 - [x] framebuffer emulation for development on windows & linux
