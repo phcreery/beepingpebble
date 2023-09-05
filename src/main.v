@@ -1,14 +1,21 @@
 module main
 
 import gx
-import fbdev as gg
+// import fbdev as gg
 // $if rpi ? {
 // } $else {
-// import gg
+import gg
 // }
+
+struct Theme {
+pub mut:
+	bg_color gx.Color
+	statusbar_bg_color gx.Color
+}
 
 struct App {
 pub mut:
+	theme Theme
 	dwg  DrawContext
 	menu Menu
 	sb   StatusBar
@@ -16,7 +23,7 @@ pub mut:
 
 fn draw(mut app App) {
 	app.dwg.begin()
-	app.dwg.clear()
+	app.dwg.clear(app.theme.bg_color)
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
 	// menu_draw_debug_outline(mut app.dwg)
 	// app.dwg.draw_text(10, 10, '!"#', gx.black)
@@ -34,8 +41,8 @@ fn draw(mut app App) {
 	// app.dwg.draw_image(25, 25, app.dwg.icons['icons/beeper-icon.png'])
 	// app.dwg.draw_image(25, 25 + 100, app.dwg.icons['icons/settings-icon.png'])
 
-	app.menu.draw(mut app.dwg)
-	app.sb.draw(mut app.dwg)
+	app.menu.draw(mut app)
+	app.sb.draw(mut app)
 
 	app.dwg.end()
 }
@@ -98,6 +105,10 @@ fn event_manager(mut ev gg.Event, mut app App) {
 
 fn main() {
 	mut app := App{}
+	app.theme = Theme{
+		bg_color: gx.white,
+		statusbar_bg_color: gx.white,
+	}
 	app.menu = create_menu(app.dwg)
 	app.sb = create_statusbar()
 	app.dwg = create_context(app, draw, event_manager)

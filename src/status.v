@@ -55,11 +55,12 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 	sb.items = items
 }
 
-fn (mut sb StatusBar) draw(mut dwg DrawContext) {
-	sb.update(&dwg)
-	dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, gx.black)
+fn (mut sb StatusBar) draw(mut app App) {
+	sb.update(&app.dwg)
+	app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, app.theme.statusbar_bg_color)
+	app.dwg.draw_line(sb.pos.x-1, sb.pos.y+40, width, sb.pos.y+40, false)
 	for item in sb.items {
-		dwg.draw_text(item.pos.x, item.pos.y, item.text, gx.white)
+		app.dwg.draw_text(item.pos.x, item.pos.y, item.text, false)
 	}
 }
 

@@ -7,11 +7,12 @@ import stbi
 import gx
 
 // import hw
-// import fbgg as hw
+
 
 // $if rpi ? {
-import fbdev as hw
+// import fbdev as hw
 // } $else {
+import fbgg as hw
 // }
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
@@ -130,10 +131,10 @@ pub fn (mut dwg DrawContext) quit() {
 	dwg.hw_ctx.quit()
 }
 
-pub fn (mut dwg DrawContext) clear() {
+pub fn (mut dwg DrawContext) clear(c gx.Color) {
 	for y in 0 .. height {
 		for x in 0 .. width {
-			dwg.draw_pixel(x, y, gx.white)
+			dwg.draw_pixel(x, y, c)
 		}
 	}
 }
@@ -181,6 +182,7 @@ pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
+// [inline]
 pub fn (mut dwg DrawContext) draw_pixel_inv(x_ f32, y_ f32) {
 	x := int(x_)
 	y := int(y_)
@@ -394,7 +396,7 @@ pub fn default_font() &Font {
 	return font
 }
 
-pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color) {
+pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) {
 	mut c := 0
 	mut y_ := y
 
@@ -439,7 +441,12 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color
 					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
 				} else {
 					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
-					dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
+					if color is bool {
+						dwg.draw_pixel_inv(x + gx + c * dwg.font.glyph_width, py)
+					} else if color is gx.Color {
+						dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
+					}
+					// dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
 				}
 			}
 		}
@@ -462,7 +469,7 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color gx.Color
 // 	return &img
 // }
 
-pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image) {
+pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TColor) {
 	// TODO: make it faster with a memcpy?
 	// See https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c#L1520C11-L1520C11
 	data := unsafe {
@@ -481,7 +488,12 @@ pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image) {
 			}
 			greyscale := 0.3 * f32(red) + 0.59 * f32(green) + 0.11 * f32(blue)
 			if greyscale < 255 / 2 {
-				dwg.draw_pixel(x + xx, y + yy, gx.black)
+				// dwg.draw_pixel(x + xx, y + yy, gx.black)
+				if color is bool {
+					dwg.draw_pixel_inv(x + xx, y + yy)
+				} else if color is gx.Color {
+					dwg.draw_pixel(x + xx, y + yy, color)
+				}
 			} else {
 				// println("greyscale ${greyscale} ${red} ${green} ${blue}")
 				// dwg.draw_pixel(x + xx, y + yy, gx.white)

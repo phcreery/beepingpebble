@@ -119,7 +119,7 @@ fn create_menu(dwg DrawContext) &Menu {
 	return menu
 }
 
-fn (mut menu Menu) draw(mut dwg DrawContext) {
+fn (mut menu Menu) draw(mut app App) {
 	menu.update_target_verts()
 
 	for i in 0 .. menu.items.len {
@@ -129,8 +129,8 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		y := pos.y
 		// w := menu.item_width
 		h := menu.item_height
-		dwg.draw_text(x + 10, y + h - 16, item.name, gx.black)
-		dwg.draw_image(x + 25, y + 15, dwg.icons[item.icon])
+		app.dwg.draw_text(x + 10, y + h - 16, item.name, false)
+		app.dwg.draw_image(x + 25, y + 15, app.dwg.icons[item.icon], false)
 	}
 
 
@@ -139,7 +139,7 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 	for j in 0 .. menu.selector.target_verts.len {
 		points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 	}
-	// dwg.draw_polygon(points, gx.orange)
+	// app.dwg.draw_polygon(points, gx.orange)
 
 	// draw the selector
 	menu.update_selector_verts()
@@ -147,7 +147,7 @@ fn (mut menu Menu) draw(mut dwg DrawContext) {
 		points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 	}
 	// println(points)
-	dwg.draw_polygon_filled(points, false) // false
+	app.dwg.draw_polygon_filled(points, false) // false
 	// dwg.draw_polygon(points, gx.black)
 }
 
