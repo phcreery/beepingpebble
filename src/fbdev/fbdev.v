@@ -60,7 +60,7 @@ pub fn new_context(args Config) &Context {
 		panic('Unable to get extended width')
 	}.int() / 4)
 
-	println('${screen_width}, ${screen_height} (${virtual_size} ${screen_width_ext})')
+	// println('${screen_width}, ${screen_height} (${virtual_size} ${screen_width_ext})')
 
 	mut context := &Context{
 		framebuffer: os.open_file('/dev/fb1', 'w') or { panic('Unable to open framebuffer device') }
