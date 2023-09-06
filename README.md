@@ -12,8 +12,8 @@ Features:
 
 - [ ] load app config from text file
 - [ ] launch apps
-- [ ] Battery status
-- [ ] WIFI status
+- [x] Battery status
+- [x] WIFI status
 - [x] Light/Dark mode
 - [x] custom graphics library
 - [x] rasterized text to avoid anti-aliased "soft" text
