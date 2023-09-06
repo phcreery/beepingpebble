@@ -30,10 +30,11 @@ Emulation on Windows/Mac/Linux:
 
 ```
 v -d emu run .
+v -d emu -profile profile.txt run .
 ```
 
 Build for Pi (note, this has to be run raspberry pi zero hardware):
 
 ```
-
+v -prod .
 ```

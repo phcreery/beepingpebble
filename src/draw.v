@@ -6,14 +6,6 @@ import arrays
 import stbi
 import gx
 
-// import hw
-
-
-// $if rpi ? {
-// import fbdev as hw
-// } $else {
-// import fbgg as hw
-// }
 import hw
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
@@ -55,35 +47,8 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voi
 		width: width
 		height: height
 		hw_ctx: &hw.Context{}
-		// hw_ctx: &fbdev.Context{}
 	}
-	// ---- gg ----
-	// dwg.gg_ctx = gg.new_context(
-	// 	bg_color: gx.white
-	// 	width: width
-	// 	height: height
-	// 	create_window: true
-	// 	window_title: 'BEEPINGPEBBLE'
-	// 	// init_fn: init_fn
-	// 	// init_fn: graphics_init
-	// 	init_fn: fn [mut dwg] (_ voidptr) {
-	// 		dwg.img_id = dwg.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
-	// 	}
-	// 	frame_fn: frame_fn
-	// 	// event_fn: event_fn
-	// 	user_data: user_data
-	// )
 
-	// ---- fbdev ----
-	// dwg.hw_ctx = fbdev.new_context(
-	// 	bg_color: gx.white
-	// 	width: width
-	// 	height: height
-
-	// 	frame_fn: frame_fn
-	// 	// event_fn: event_fn
-	// 	user_data: user_data
-	// )
 
 	// ---- genaric ----
 	dwg.hw_ctx = hw.new_context(
@@ -132,6 +97,8 @@ pub fn (mut dwg DrawContext) quit() {
 	dwg.hw_ctx.quit()
 }
 
+
+[direct_array_access]
 pub fn (mut dwg DrawContext) clear(c gx.Color) {
 	for y in 0 .. height {
 		for x in 0 .. width {
@@ -141,34 +108,11 @@ pub fn (mut dwg DrawContext) clear(c gx.Color) {
 }
 
 pub fn (mut dwg DrawContext) blit() {
-	// ---- hw ----
-	// mut buffer := [height][width]u32{}
-	// for y in 0 .. height {
-	// 	for x in 0 .. width {
-	// 		// convert from BGRA8 to RGBA8
-	// 		pos := u64(y * line_length + x * components)
-	// 		// println("pos ${pos}")
-	// 		blue := dwg.pixel_buffer[pos + 0]
-	// 		green := dwg.pixel_buffer[pos + 1]
-	// 		red := dwg.pixel_buffer[pos + 2]
-	// 		// a: dwg.pixel_buffer[u64((line_length*y+x))+3]
-	// 		buffer[y][x] = u32((red | (u32(green) << 8) | (u32(blue) << 16) | (0xFF << 24)))
-	// 	}
-	// }
-	// // see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/hw/random.v
-	// mut img := dwg.hw_ctx.get_cached_image_by_idx(dwg.img_id)
-	// img.update_pixel_data(unsafe { &u8(&buffer) })
-	// dwg.hw_ctx.draw_image(0, 0, width, height, img)
-
-	// ---- fbdev ----
-	// dwg.hw_ctx.blit(dwg.pixel_buffer)
-	// OR
-	// dwg.hw_ctx.framebuffer.write_to(0, dwg.pixel_buffer) or {}
-
 	dwg.hw_ctx.blit(dwg.pixel_buffer)
 }
 
 [inline]
+[direct_array_access]
 pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	x := int(x_)
 	y := int(y_)
@@ -183,7 +127,8 @@ pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
-// [inline]
+[inline]
+[direct_array_access]
 pub fn (mut dwg DrawContext) draw_pixel_inv(x_ f32, y_ f32) {
 	x := int(x_)
 	y := int(y_)
@@ -266,10 +211,10 @@ pub fn (mut dwg DrawContext) draw_polygon(points []Point, c TColor) {
 
 // https://stackoverflow.com/questions/34794720/filling-a-polygon-in-c-with-point-in-polygon-algorithm
 // http://alienryderflex.com/polygon_fill/
+[direct_array_access]
 pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	// draw the outline since the filling algorith does not draw the outline
 	// dwg.draw_polygon(points, c)
-
 	num_coreners := points.len
 	mut vx := []f32{}
 	mut vy := []f32{}
@@ -336,19 +281,19 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 					} else if c is gx.Color {
 						dwg.draw_pixel(xx, py, c)
 					}
-					// dwg.draw_pixel(xx, py, c)
 				}
 			}
 		}
 	}
 }
 
-// pub struct Image {
-// mut:
-// 	width int
-// 	height int
-// 	data []u8
-// }
+
+// wrapper withe pre-converted data
+pub struct STBIImageWrapper {
+mut:
+	stbiimg &stbi.Image
+	data []u8
+}
 
 pub struct Font {
 mut:
@@ -358,7 +303,7 @@ mut:
 	glyph_height  int
 	first_char    u8
 	colorkey      u32
-	bitmap        stbi.Image
+	bitmap        &STBIImageWrapper// &stbi.Image
 }
 
 pub fn default_font() &Font {
@@ -368,10 +313,14 @@ pub fn default_font() &Font {
 	first_char := u8(33) // u8
 	// data := embedded_font_file.to_bytes()
 	data := embedded_font_file.data()
-	mut img := stbi.load_from_memory(data, embedded_font_file.len, stbi.LoadParams{
+	mut stbiimg := stbi.load_from_memory(data, embedded_font_file.len, stbi.LoadParams{
 		desired_channels: 1
 	}) or { panic('failed to load image') }
-	// d := arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
+	d := arrays.carray_to_varray[u8](stbiimg.data, stbiimg.width * stbiimg.height * stbiimg.nr_channels)
+	img := &STBIImageWrapper{
+		stbiimg: &stbiimg
+		data: d
+	}
 	// println("image ${d}")
 
 	mut font := &Font{
@@ -384,11 +333,11 @@ pub fn default_font() &Font {
 		bitmap: img
 	}
 
-	glyph_count := (img.width / glyph_width) * (img.height / glyph_height)
+	glyph_count := (img.stbiimg.width / glyph_width) * (img.stbiimg.height / glyph_height)
 	for i in 0 .. glyph_count {
 		gcoord := i * glyph_width
-		gcoordx := gcoord % img.width
-		gcoordy := (gcoord / img.width) * glyph_height
+		gcoordx := gcoord % img.stbiimg.width
+		gcoordy := (gcoord / img.stbiimg.width) * glyph_height
 
 		font.glyph_coord_x[i] = gcoordx
 		font.glyph_coord_y[i] = gcoordy
@@ -397,19 +346,17 @@ pub fn default_font() &Font {
 	return font
 }
 
+[direct_array_access]
 pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) {
 	mut c := 0
 	mut y_ := y
 
-	// TODO: move this so it isn't done every time
-	data := unsafe {
-		arrays.carray_to_varray[u8](dwg.font.bitmap.data, dwg.font.bitmap.width * dwg.font.bitmap.height * dwg.font.bitmap.nr_channels)
-	}
 
 	for i in 0 .. text.len {
 		glyph := text[i]
 
 		if glyph == ' '.bytes()[0] {
+			// draw a backdrop rectangle
 			// fbg_recta(fbg, x + c * fnt->glyph_width, y, fnt->glyph_width, fnt->glyph_height, fbg->text_background.r, fbg->text_background.g, fbg->text_background.b, fbg->text_alpha)
 			c += 1
 			continue
@@ -429,16 +376,15 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 
 		for gy in 0 .. dwg.font.glyph_height {
 			ly := gcoordy + gy
-			fly := ly * dwg.font.bitmap.width
+			fly := ly * dwg.font.bitmap.stbiimg.width
 			py := y_ + gy
 
 			for gx in 0 .. dwg.font.glyph_width {
 				lx := gcoordx + gx
-				// println("lx ${lx}, ly ${ly}, fly ${fly}, gx ${gx}, gy ${gy}, ly ${ly} = i ${(fly + lx) * dwg.font.bitmap.nr_channels}")
-				fl := data[(fly + lx) * dwg.font.bitmap.nr_channels]
-				// println("fl ${fl}")
+				fl := dwg.font.bitmap.data[(fly + lx) * dwg.font.bitmap.stbiimg.nr_channels]
 
 				if fl == dwg.font.colorkey {
+					// draw a backdrop pixel
 					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
 				} else {
 					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
@@ -447,7 +393,6 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 					} else if color is gx.Color {
 						dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
 					}
-					// dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
 				}
 			}
 		}
@@ -456,50 +401,41 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 	}
 }
 
-// pub fn load_image() &stbi.Image {
-// 	mut embedded_icon_file := $embed_file('icons/beeper-icon.png')
-// 	// data := embedded_font_file.to_bytes()
-// 	data := embedded_icon_file.data()
-// 	mut img := stbi.load_from_memory(data, embedded_icon_file.len, stbi.LoadParams{
-// 		desired_channels: 4
-// 	}) or { panic('failed to load image') }
-// 	// d := arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
-// 	println("image ${img}")
-// 	// exit(0)
-
-// 	return &img
-// }
-
+// [direct_array_access]
 pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TColor) {
 	// TODO: make it faster with a memcpy?
 	// See https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c#L1520C11-L1520C11
 	data := unsafe {
 		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
 	}
+	img_line_length := img.width * img.nr_channels
+	mut greyscale:=f32(0)
+	mut pos:=u64(0)
+	mut blue:=u8(0)
+	mut green:=u8(0)
+	mut red:=u8(0)
+	mut alpha:=u8(0)
 	for yy in 0 .. img.height {
 		for xx in 0 .. img.width {
-			img_line_length := img.width * img.nr_channels
-			pos := u64(yy * img_line_length + xx * img.nr_channels)
-			blue := data[pos + 0]
-			green := data[pos + 1]
-			red := data[pos + 2]
-			alpha := data[pos + 3]
+			pos = u64(yy * img_line_length + xx * img.nr_channels)
+			blue = data[pos + 0]
+			green = data[pos + 1]
+			red = data[pos + 2]
+			alpha = data[pos + 3]
 			if alpha < 225 / 2 {
 				continue
 			}
-			greyscale := 0.3 * f32(red) + 0.59 * f32(green) + 0.11 * f32(blue)
+			greyscale = 0.3 * f32(red) + 0.59 * f32(green) + 0.11 * f32(blue)
 			if greyscale < 255 / 2 {
-				// dwg.draw_pixel(x + xx, y + yy, gx.black)
 				if color is bool {
 					dwg.draw_pixel_inv(x + xx, y + yy)
 				} else if color is gx.Color {
 					dwg.draw_pixel(x + xx, y + yy, color)
 				}
 			} else {
-				// println("greyscale ${greyscale} ${red} ${green} ${blue}")
+				// background
 				// dwg.draw_pixel(x + xx, y + yy, gx.white)
 			}
-			// dwg.draw_pixel(x + xx, y + yy, gx.Color{r: red, g: green, b: blue})
 		}
 	}
 }

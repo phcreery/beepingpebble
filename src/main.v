@@ -1,13 +1,8 @@
 module main
 
 import gx
-// import fbdev as gg
-// $if rpi ? {
-// } $else {
-// import gg
-// }
 import hw
-// import gg as hw
+import time
 
 struct Theme {
 pub mut:
@@ -43,7 +38,10 @@ fn draw(mut app App) {
 	// app.dwg.draw_image(25, 25, app.dwg.icons['icons/beeper-icon.png'])
 	// app.dwg.draw_image(25, 25 + 100, app.dwg.icons['icons/settings-icon.png'])
 
+
+	// sw := time.new_stopwatch()
 	app.menu.draw(mut app)
+	// println('app.menu.draw took: ${f32(sw.elapsed().nanoseconds())/ 1_000_000}ms')
 	app.sb.draw(mut app)
 
 	app.dwg.end()

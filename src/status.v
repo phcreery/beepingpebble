@@ -14,6 +14,7 @@ pub struct StatusBar {
 pub mut:
 	pos   vec.Vec2[int]
 	items []StatusBarTextItem
+	sw	time.Time
 }
 
 pub fn create_statusbar() &StatusBar {
@@ -56,7 +57,10 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 }
 
 fn (mut sb StatusBar) draw(mut app App) {
-	sb.update(&app.dwg)
+	if time.since(sb.sw).seconds() > 1 {
+		sb.sw = time.now()
+		sb.update(&app.dwg)
+	}
 	app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, app.theme.statusbar_bg_color)
 	app.dwg.draw_line(sb.pos.x-1, sb.pos.y+40, width, sb.pos.y+40, false)
 	for item in sb.items {

@@ -125,12 +125,12 @@ fn (mut menu Menu) draw(mut app App) {
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
 		pos := menu.loc_from_index(i)
-		x := pos.x
-		y := pos.y
+		// x := pos.x
+		// y := pos.y
 		// w := menu.item_width
-		h := menu.item_height
-		app.dwg.draw_text(x + 10, y + h - 16, item.name, false)
-		app.dwg.draw_image(x + 25, y + 15, app.dwg.icons[item.icon], false)
+		// h := menu.item_height
+		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
+		app.dwg.draw_image(pos.x + 25, pos.y + 15, app.dwg.icons[item.icon], false)
 	}
 
 
@@ -142,7 +142,10 @@ fn (mut menu Menu) draw(mut app App) {
 	// app.dwg.draw_polygon(points, gx.orange)
 
 	// draw the selector
+
+	// sw := time.new_stopwatch()
 	menu.update_selector_verts()
+	// println('update_selector_verts took: ${f32(sw.elapsed().nanoseconds())/ 1_000_000}ms')
 	for j in 0 .. menu.selector.verts.len {
 		points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 	}
@@ -191,6 +194,7 @@ fn (mut menu Menu) update_selector_verts() {
 			vert.in_motion = false
 			continue
 		}
+
 		vert.sw = time.now()
 		// dt := f32(time.since(vert.sw).nanoseconds()) / 1000000000 // ~ 0.015 s
 		// println("dt: ${dt}")
