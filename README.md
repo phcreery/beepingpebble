@@ -14,10 +14,10 @@ Features:
 - [ ] launch apps
 - [ ] Battery status
 - [ ] WIFI status
-- [ ] Light/Dark mode
+- [x] Light/Dark mode
 - [x] custom graphics library
 - [x] rasterized text to avoid anti-aliased "soft" text
-- [ ] 30/60fps (currently ~10fps with hight cpu usage on rpi zero 2)
+- [ ] 30/60fps (currently ~52fps with 100% cpu usage on rpi zero 2)
 - [ ] vsync (untested)
 - [x] direct framebuffer writing
 - [x] framebuffer emulation for development on windows & linux
@@ -31,6 +31,12 @@ Emulation on Windows/Mac/Linux:
 ```
 v -d emu run .
 v -d emu -profile profile.txt run .
+```
+
+Dev on pi
+
+```
+v run .
 ```
 
 Build for Pi (note, this has to be run raspberry pi zero hardware):
