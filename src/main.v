@@ -98,7 +98,7 @@ fn event_manager(mut ev hw.Event, mut app App) {
 				exit(0)
 			}
 			else {
-				println('key: ${ev.key_code}')
+				println('unused key: ${ev.key_code}')
 			}
 		}
 	}

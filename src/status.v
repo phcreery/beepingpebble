@@ -3,6 +3,7 @@ module main
 import gx
 import math.vec
 import time
+import hw
 
 pub struct StatusBarTextItem {
 pub mut:
@@ -32,10 +33,10 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 	text_array := [
 		// time.now().hhmm12(),
 		time.now().custom_format('M/D/YY hh:mm')
-		'100%',
-		'4.2V',
-		'-***',
-		'*)))'
+		'${hw.get_bett_percent()}%', //'100%',
+		'${hw.get_batt_volts()}V', //'4.2V',
+		'${hw.get_wifi_strength()}', //'-***',
+		// '*)))'
 		get_loading_status_text(),
 		get_fps(dwg)
 	]
