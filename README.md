@@ -14,7 +14,7 @@ Features:
 - [ ] launch apps
 - [ ] Battery status
 - [ ] WIFI status
-- [ ] Light/Dark mode
+- [x] Light/Dark mode
 - [x] custom graphics library
 - [x] rasterized text to avoid anti-aliased "soft" text
 - [ ] 30/60fps (currently ~10fps with hight cpu usage on rpi zero 2)
