@@ -76,7 +76,7 @@ pub fn new_context(args Config) &Context {
 
 	context.keyboard_manager = keyboard.new_manager(
 		keyboard_fn: fn [context] (key keyboard.KeyCode) {
-			println(key)
+			// println(key)
 			if context.event_fn != unsafe { nil } {
 				context.event_fn(&Event{
 					typ: .key_down
