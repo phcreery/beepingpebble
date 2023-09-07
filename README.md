@@ -30,7 +30,8 @@ Emulation on Windows/Mac/Linux:
 
 ```
 v -d emu run .
-v -d emu -profile profile.txt run .
+v -d emu -profile profile.txt -keepc -showcc run .
+v -d emu -printfn blit -o ./dbg.c .
 ```
 
 Dev on pi

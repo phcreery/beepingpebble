@@ -20,7 +20,7 @@ pub mut:
 
 fn draw(mut app App) {
 	app.dwg.begin()
-	app.dwg.clear(app.theme.bg_color)
+	// app.dwg.clear(app.theme.bg_color)
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
 	// menu_draw_debug_outline(mut app.dwg)
 	// app.dwg.draw_text(10, 10, '!"#', gx.black)
@@ -35,8 +35,14 @@ fn draw(mut app App) {
 	// app.dwg.draw_line_inv(0, 10, 20, 30)
 	// app.dwg.draw_test_image()
 	// icons := load_icons()
-	// app.dwg.draw_image(25, 25, app.dwg.icons['icons/beeper-icon.png'])
-	// app.dwg.draw_image(25, 25 + 100, app.dwg.icons['icons/settings-icon.png'])
+	// app.dwg.draw_image(25, 25, app.dwg.icons['icons/beeper-icon.png'], gx.white)
+	// app.dwg.draw_image(25, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(35, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(45, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(55, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(65, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(75, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+	// app.dwg.draw_image(85, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
 
 
 	// sw := time.new_stopwatch()
@@ -98,7 +104,7 @@ fn event_manager(mut ev hw.Event, mut app App) {
 				exit(0)
 			}
 			else {
-				println('unused key: ${ev.key_code}')
+				println('unused key: ${ev} ${ev.key_code} ${ev.key_code}')
 			}
 		}
 	}
@@ -107,13 +113,11 @@ fn event_manager(mut ev hw.Event, mut app App) {
 fn main() {
 	mut app := App{}
 	app.theme = Theme{
-		bg_color: gx.white,
-		statusbar_bg_color: gx.white,
+		bg_color: gx.black,
+		statusbar_bg_color: gx.black,
 	}
 	app.menu = create_menu(app.dwg)
 	app.sb = create_statusbar()
 	app.dwg = create_context(app, draw, event_manager)
-	// println('app.dwg: ${app.dwg}')
-	println("created app")
 	app.dwg.run()
 }

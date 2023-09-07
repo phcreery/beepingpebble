@@ -71,7 +71,7 @@ pub fn new_context(args Config) &Context {
 		user_data: args.user_data
 		frame_fn: args.frame_fn
 		init_fn: args.init_fn
-		event_fn:		args.event_fn
+		event_fn: args.event_fn
 	}
 
 	context.keyboard_manager = keyboard.new_manager(
@@ -113,9 +113,16 @@ pub fn (mut context Context) run() {
 	if context.init_fn != unsafe { nil } {
 		context.init_fn(context.user_data)
 	}
+	unlimited_fps := true
+	fps_limit := 60
 	for {
+		start_time := time.now()
 		context.frame_fn(context.user_data)
-		// time.sleep(1000 / 30 * time.millisecond)
+		end_time := time.now()
+		$if !unlimited_fps? {
+			frame_draw_time := end_time - start_time
+			time.sleep(int(f32(1000)/fps_limit*1000000)*time.nanosecond - frame_draw_time)
+		}
 	}
 }
 

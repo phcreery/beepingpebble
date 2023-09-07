@@ -61,11 +61,11 @@ fn (mut sb StatusBar) draw(mut app App) {
 	if time.since(sb.sw).seconds() > 1 {
 		sb.sw = time.now()
 		sb.update(&app.dwg)
-	}
-	app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, app.theme.statusbar_bg_color)
-	app.dwg.draw_line(sb.pos.x-1, sb.pos.y+40, width, sb.pos.y+40, false)
-	for item in sb.items {
-		app.dwg.draw_text(item.pos.x, item.pos.y, item.text, false)
+		app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, app.theme.statusbar_bg_color)
+		app.dwg.draw_line(sb.pos.x-1, sb.pos.y+40, width, sb.pos.y+40, false)
+		for item in sb.items {
+			app.dwg.draw_text(item.pos.x, item.pos.y, item.text, false)
+		}
 	}
 }
 

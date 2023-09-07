@@ -32,16 +32,12 @@ mut:
 	fps           int
 	img_id        int
 	hw_ctx        &hw.Context = unsafe { nil }
-	// hw_ctx       &fbdev.Context = unsafe { nil }
 	font &Font = unsafe { nil }
 	icons 		map[string]stbi.Image
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voidptr, voidptr)) &DrawContext { //, event_fn fn (&hw.Event, voidptr)
 
-	$if rpi ? {
-		println('Raspberry Pi')
-	}
 	mut dwg := &DrawContext{
 		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
 		width: width

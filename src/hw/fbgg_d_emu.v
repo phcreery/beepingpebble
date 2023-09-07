@@ -109,6 +109,7 @@ pub fn (mut context Context) end() {
 	context.gg_ctx.end()
 }
 
+[direct_array_access]
 pub fn (mut context Context) blit(virtualbuffer []u8) {
 	mut buffer := [height][width]u32{}
 	for y in 0 .. height {

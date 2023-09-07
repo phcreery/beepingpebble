@@ -46,6 +46,7 @@ pub mut:
 	item_padding		  int
 	selector            Selector
 	current_item_index  int
+	need_update 	   bool
 	selection_change_sw time.Time = time.now()
 }
 
@@ -93,6 +94,7 @@ fn create_menu(dwg DrawContext) &Menu {
 		item_padding: padding
 		current_item_index: 0
 		selection_change_sw: time.now()
+		need_update: true
 	}
 
 	// for _ in 0 .. 8 {
@@ -120,15 +122,18 @@ fn create_menu(dwg DrawContext) &Menu {
 }
 
 fn (mut menu Menu) draw(mut app App) {
+
+	if !menu.need_update {
+		return
+	}
+
+	app.dwg.draw_rect_filled(0, 41, 400, 200, app.theme.statusbar_bg_color)
+
 	menu.update_target_verts()
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
 		pos := menu.loc_from_index(i)
-		// x := pos.x
-		// y := pos.y
-		// w := menu.item_width
-		// h := menu.item_height
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
 		app.dwg.draw_image(pos.x + 25, pos.y + 15, app.dwg.icons[item.icon], false)
 	}
@@ -160,6 +165,7 @@ fn (mut menu Menu) update_selector_verts() {
 	kd := f32(10)
 	m := f32(0.5)
 
+	mut resting_verts := 0
 	for i in 0 .. menu.selector.verts.len {
 		// PID CALCULATIONS
 		// http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/
@@ -192,6 +198,7 @@ fn (mut menu Menu) update_selector_verts() {
 			vert.last_err = vec.Vec2[f32]{0, 0}
 			vert.err_sum = vec.Vec2[f32]{0, 0}
 			vert.in_motion = false
+			resting_verts += 1
 			continue
 		}
 
@@ -226,6 +233,9 @@ fn (mut menu Menu) update_selector_verts() {
 		vert.v = a * dt_v + v0
 		vert.p = p0 + v0 * dt_v + vec.Vec2[f32]{0.5, 0.5} * a * dt_v * dt_v
 	}
+	if resting_verts >= menu.selector.verts.len {
+		menu.need_update = false
+	}
 }
 
 fn (mut menu Menu) update_target_verts() {
@@ -249,6 +259,7 @@ fn (mut menu Menu) next() {
 	if menu.current_item_index % (8 / 2) == 0 {
 		menu.current_item_index = menu.current_item_index - 1
 	}
+	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
@@ -261,11 +272,13 @@ fn (mut menu Menu) prev() {
 	if menu.current_item_index % (8 / 2) == 3 || menu.current_item_index < 0 {
 		menu.current_item_index = menu.current_item_index + 1
 	}
+	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) down() {
 	menu.current_item_index = (menu.current_item_index + 4) % 8
+	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
@@ -274,11 +287,13 @@ fn (mut menu Menu) up() {
 	if menu.current_item_index < 0 {
 		menu.current_item_index += 8
 	}
+	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) goto_index(i int) {
 	menu.current_item_index = i
+	menu.need_update = true
 	// menu.selection_change_sw = time.now() // disabled to prevent the fluid animation
 }
 
