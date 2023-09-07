@@ -111,12 +111,11 @@ pub fn (mut context Context) end() {
 
 [direct_array_access]
 pub fn (mut context Context) blit(virtualbuffer []u8) {
+	// convert from []BGRA8 to [][]RGBA32
 	mut buffer := [height][width]u32{}
 	for y in 0 .. height {
 		for x in 0 .. width {
-			// convert from BGRA8 to RGBA8
 			pos := u64(y * line_length + x * components)
-			// println("pos ${pos}")
 			blue := virtualbuffer[pos + 0]
 			green := virtualbuffer[pos + 1]
 			red := virtualbuffer[pos + 2]

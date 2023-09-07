@@ -46,6 +46,7 @@ So you can do (for example):
 
 ```
 fbset -fb /dev/fb1 -g 400 240 400 240 24 -vsync high
+setterm -cursor off > /dev/tty0
 cat /dev/urandom >/dev/fb1
 ```
 
