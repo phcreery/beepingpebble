@@ -3,6 +3,7 @@ module bmfont
 import os
 import stbi
 import arrays
+import math
 
 // info face="CozetteVector" size=-13 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=1,1 outline=0
 // common lineHeight=13 base=10 scaleW=256 scaleH=256 pages=1 packed=0 alphaChnl=0 redChnl=0 greenChnl=0 blueChnl=0
@@ -23,8 +24,8 @@ pub mut:
 	// stretchH int
 	// smooth bool
 	// aa bool
-	// padding [4]int
-	// spacing [2]int
+	padding []int // (left, right, top, bottom) ??
+	spacing []int // (horizontal, vertical) ??
 	// outline int
 }
 
@@ -91,7 +92,17 @@ pub fn load_fnt(font_file string) &Font {
 	info_line := lines[0]
 	info := FontInfo{
 		face: info_line.split('face=')[1].split(' ')[0].trim('"'),
-		size: info_line.split('size=')[1].split(' ')[0].int(),
+		size: math.abs(info_line.split('size=')[1].split(' ')[0].int()),
+		// bold: info_line.split('bold=')[1].split(' ')[0].int() == 1,
+		// italic: info_line.split('italic=')[1].split(' ')[0].int() == 1,
+		// charset: info_line.split('charset=')[1].split(' ')[0].trim('"'),
+		// unicode: info_line.split('unicode=')[1].split(' ')[0].int() == 1,
+		// stretchH: info_line.split('stretchH=')[1].split(' ')[0].int(),
+		// smooth: info_line.split('smooth=')[1].split(' ')[0].int() == 1,
+		// aa: info_line.split('aa=')[1].split(' ')[0].int() == 1,
+		padding: info_line.split('padding=')[1].split(' ')[0].split(',').map(fn (s string) int { return s.int() } ),
+		spacing: info_line.split('spacing=')[1].split(' ')[0].split(',').map(fn (s string) int { return s.int() } ),
+		// outline: info_line.split('outline=')[1].split(' ')[0].int(),
 	}
 	// TODO: parse other info fields
 

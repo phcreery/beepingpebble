@@ -344,19 +344,27 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 [direct_array_access]
 pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) int {
 	mut xadvance_tracker := 0
+	mut yadvance_tracker := 0
 
 	// println('asdf'.bytes().bytestr())
 	// for ch in text.bytes() {
 	for ru in text.runes() {
+
+		if ru == '\n'.bytes()[0] {
+			xadvance_tracker = 0
+			yadvance_tracker = yadvance_tracker + dwg.font.info.size + dwg.font.info.spacing[1]
+			continue
+		}
+
 		ch := int(ru.bytes().utf8_to_utf32() or { 0 })
 		character := dwg.font.chars[ch]
 		for local_y in 0..character.height {
 			for local_x in 0..character.width {
 				if dwg.font.get_pixel(0, local_x + character.x, local_y + character.y) > 127 {
 					if color is bool {
-						dwg.draw_pixel_inv(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset)
+						dwg.draw_pixel_inv(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset + yadvance_tracker)
 					} else if color is gx.Color {
-						dwg.draw_pixel(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset, color)
+						dwg.draw_pixel(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset + yadvance_tracker, color)
 					}
 				} else {
 					// print(' ')
@@ -365,6 +373,7 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 			// println('')
 		}
 		xadvance_tracker += character.xadvance
+		xadvance_tracker += dwg.font.info.spacing[0]
 	}
 	return xadvance_tracker
 }

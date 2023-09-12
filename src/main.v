@@ -47,6 +47,7 @@ fn draw(mut app App) {
 
 	// app.dwg.draw_bmfont_text(10, 10, '! " # $ 06:38', app.font, false)
 	// app.dwg.draw_text(10, 20, '! " # $ 06:38', false)
+	// app.dwg.draw_text(10, 20, 'a\nb', false)
 	// app.dwg.draw_bmfont_text(10, 30, '\uf242', app.font, false)
 
 
