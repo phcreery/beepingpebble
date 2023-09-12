@@ -25,7 +25,6 @@ pub fn create_statusbar() &StatusBar {
 			y: 0
 		}
 	}
-	// sb.update()
 	return sb
 }
 
@@ -33,11 +32,10 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 	text_array := [
 		// time.now().hhmm12(),
 		time.now().custom_format('M/D/YY hh:mm')
-		'${hw.get_bett_percent()}%', //'100%',
+		'${hw.get_batt_percent()}%', //'100%',
 		'${hw.get_batt_volts()}V', //'4.2V',
 		'${hw.get_wifi_strength()}', //'-***',
-		// '*)))'
-		get_loading_status_text(),
+		// get_loading_status_text(),
 		get_fps(dwg)
 	]
 	mut items := []StatusBarTextItem{}
@@ -83,5 +81,5 @@ fn get_loading_status_text() string {
 }
 
 fn get_fps(dwg &DrawContext) string {
-	return '${dwg.fps} fps'
+	return '${dwg.fps}fps'
 }

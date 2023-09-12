@@ -2,7 +2,7 @@ module hw
 
 import os
 
-pub fn get_bett_percent() string {
+pub fn get_batt_percent() string {
 	percent := os.read_file('/sys/firmware/beepy/battery_percent') or {
 		'0'
 	}

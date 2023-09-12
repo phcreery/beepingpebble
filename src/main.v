@@ -3,6 +3,7 @@ module main
 import gx
 import hw
 import time
+import bmfont
 
 struct Theme {
 pub mut:
@@ -23,7 +24,7 @@ fn draw(mut app App) {
 	// app.dwg.clear(app.theme.bg_color)
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
 	// menu_draw_debug_outline(mut app.dwg)
-	// app.dwg.draw_text(10, 10, '!"#', gx.black)
+	// app.dwg.draw_text(10, 10, '! " # $ ${int(char(0x0f57a))} _ \u00b0 \xb0 \xa1 ${int(0xa1)} ', gx.white)
 	// app.dwg.draw_text(10, 10, 'helloworld', gx.black)
 	// app.dwg.draw_line_inv(0, 0, 20, 60)
 	// app.dwg.draw_line(20, 60, 20, 160, gx.red)
@@ -43,6 +44,10 @@ fn draw(mut app App) {
 	// app.dwg.draw_image(65, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
 	// app.dwg.draw_image(75, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
 	// app.dwg.draw_image(85, 25 + 100, app.dwg.icons['icons/settings-icon.png'], gx.white)
+
+	// app.dwg.draw_bmfont_text(10, 10, '! " # $ 06:38', app.font, false)
+	// app.dwg.draw_text(10, 20, '! " # $ 06:38', false)
+	// app.dwg.draw_bmfont_text(10, 30, '\uf242', app.font, false)
 
 
 	// sw := time.new_stopwatch()

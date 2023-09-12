@@ -5,6 +5,7 @@ import time
 import arrays
 import stbi
 import gx
+import bmfont
 
 import hw
 
@@ -32,7 +33,7 @@ mut:
 	fps           int
 	img_id        int
 	hw_ctx        &hw.Context = unsafe { nil }
-	font &Font = unsafe { nil }
+	font 		&bmfont.Font = unsafe { nil }
 	icons 		map[string]stbi.Image
 }
 
@@ -58,7 +59,8 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voi
 	)
 
 	dwg.fps_stopwatch = time.now()
-	dwg.font = default_font()
+	// dwg.font = default_font()
+	dwg.font = bmfont.load_fnt('test')
 	dwg.icons = load_icons()
 
 	return dwg
@@ -283,119 +285,90 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	}
 }
 
+// [deprecated: 'use draw_bmfont_text() instead']
+// [direct_array_access]
+// pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) {
+// 	mut c := 0
+// 	mut y_ := y
 
-// wrapper withe pre-converted data
-pub struct STBIImageWrapper {
-mut:
-	stbiimg &stbi.Image
-	data []u8
-}
 
-pub struct Font {
-mut:
-	glyph_coord_x []int
-	glyph_coord_y []int
-	glyph_width   int
-	glyph_height  int
-	first_char    u8
-	colorkey      u32
-	bitmap        &STBIImageWrapper// &stbi.Image
-}
+// 	for i in 0 .. text.len {
+// 		glyph := text[i]
 
-pub fn default_font() &Font {
-	mut embedded_font_file := $embed_file('thirdparty/fbg/examples/bbmode1_8x8.png')
-	glyph_width := 8
-	glyph_height := 8
-	first_char := u8(33) // u8
-	// data := embedded_font_file.to_bytes()
-	data := embedded_font_file.data()
-	mut stbiimg := stbi.load_from_memory(data, embedded_font_file.len, stbi.LoadParams{
-		desired_channels: 1
-	}) or { panic('failed to load image') }
-	d := arrays.carray_to_varray[u8](stbiimg.data, stbiimg.width * stbiimg.height * stbiimg.nr_channels)
-	img := &STBIImageWrapper{
-		stbiimg: &stbiimg
-		data: d
-	}
-	// println("image ${d}")
+// 		if glyph == ' '.bytes()[0] {
+// 			// draw a backdrop rectangle
+// 			// fbg_recta(fbg, x + c * fnt->glyph_width, y, fnt->glyph_width, fnt->glyph_height, fbg->text_background.r, fbg->text_background.g, fbg->text_background.b, fbg->text_alpha)
+// 			c += 1
+// 			continue
+// 		}
 
-	mut font := &Font{
-		glyph_coord_x: []int{len: 256, cap: 256, init: 0}
-		glyph_coord_y: []int{len: 256, cap: 256, init: 0}
-		glyph_width: glyph_width
-		glyph_height: glyph_height
-		first_char: first_char // u8
-		colorkey: 0
-		bitmap: img
-	}
+// 		if glyph == '\n'.bytes()[0] {
+// 			c = 0
+// 			y_ += dwg.font.glyph_height
+// 			continue
+// 		}
 
-	glyph_count := (img.stbiimg.width / glyph_width) * (img.stbiimg.height / glyph_height)
-	for i in 0 .. glyph_count {
-		gcoord := i * glyph_width
-		gcoordx := gcoord % img.stbiimg.width
-		gcoordy := (gcoord / img.stbiimg.width) * glyph_height
+// 		font_glyph := glyph - dwg.font.first_char
 
-		font.glyph_coord_x[i] = gcoordx
-		font.glyph_coord_y[i] = gcoordy
-	}
+// 		gcoordx := dwg.font.glyph_coord_x[font_glyph]
+// 		gcoordy := dwg.font.glyph_coord_y[font_glyph]
+// 		// println("font_glyph ${glyph.ascii_str()} ${font_glyph} ${gcoordx} ${gcoordy}")
 
-	return font
-}
+// 		for gy in 0 .. dwg.font.glyph_height {
+// 			ly := gcoordy + gy
+// 			fly := ly * dwg.font.bitmap.stbiimg.width
+// 			py := y_ + gy
+
+// 			for gx in 0 .. dwg.font.glyph_width {
+// 				lx := gcoordx + gx
+// 				fl := dwg.font.bitmap.data[(fly + lx) * dwg.font.bitmap.stbiimg.nr_channels]
+
+// 				if fl == dwg.font.colorkey {
+// 					// draw a backdrop pixel
+// 					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
+// 				} else {
+// 					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
+// 					if color is bool {
+// 						dwg.draw_pixel_inv(x + gx + c * dwg.font.glyph_width, py)
+// 					} else if color is gx.Color {
+// 						dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
+// 					}
+// 				}
+// 			}
+// 		}
+
+// 		c += 1
+// 	}
+// }
 
 [direct_array_access]
-pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) {
-	mut c := 0
-	mut y_ := y
+pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) int {
+	mut xadvance_tracker := 0
 
-
-	for i in 0 .. text.len {
-		glyph := text[i]
-
-		if glyph == ' '.bytes()[0] {
-			// draw a backdrop rectangle
-			// fbg_recta(fbg, x + c * fnt->glyph_width, y, fnt->glyph_width, fnt->glyph_height, fbg->text_background.r, fbg->text_background.g, fbg->text_background.b, fbg->text_alpha)
-			c += 1
-			continue
-		}
-
-		if glyph == '\n'.bytes()[0] {
-			c = 0
-			y_ += dwg.font.glyph_height
-			continue
-		}
-
-		font_glyph := glyph - dwg.font.first_char
-
-		gcoordx := dwg.font.glyph_coord_x[font_glyph]
-		gcoordy := dwg.font.glyph_coord_y[font_glyph]
-		// println("font_glyph ${glyph.ascii_str()} ${font_glyph} ${gcoordx} ${gcoordy}")
-
-		for gy in 0 .. dwg.font.glyph_height {
-			ly := gcoordy + gy
-			fly := ly * dwg.font.bitmap.stbiimg.width
-			py := y_ + gy
-
-			for gx in 0 .. dwg.font.glyph_width {
-				lx := gcoordx + gx
-				fl := dwg.font.bitmap.data[(fly + lx) * dwg.font.bitmap.stbiimg.nr_channels]
-
-				if fl == dwg.font.colorkey {
-					// draw a backdrop pixel
-					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
-				} else {
-					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
+	// println('asdf'.bytes().bytestr())
+	// for ch in text.bytes() {
+	for ru in text.runes() {
+		ch := int(ru.bytes().utf8_to_utf32() or { 0 })
+		character := dwg.font.chars[ch]
+		for local_y in 0..character.height {
+			for local_x in 0..character.width {
+				if dwg.font.get_pixel(0, local_x + character.x, local_y + character.y) > 127 {
 					if color is bool {
-						dwg.draw_pixel_inv(x + gx + c * dwg.font.glyph_width, py)
+						dwg.draw_pixel_inv(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset)
 					} else if color is gx.Color {
-						dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
+						dwg.draw_pixel(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset, color)
 					}
+				} else {
+					// print(' ')
 				}
 			}
+			// println('')
 		}
-
-		c += 1
+		xadvance_tracker += character.xadvance
 	}
+	return xadvance_tracker
 }
+
 
 // [direct_array_access]
 pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TColor) {
