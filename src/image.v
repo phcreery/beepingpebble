@@ -1,6 +1,7 @@
 module main
 
 import stbi
+import os
 
 // wrapper withe pre-converted data
 pub struct STBIImageWrapper {
@@ -9,7 +10,7 @@ mut:
 	data    []u8
 }
 
-pub fn load_icons() map[string]stbi.Image {
+pub fn load_internal_icons() map[string]stbi.Image {
 	mut icon_array := [
 		$embed_file('icons/beeper-icon.png'),
 		$embed_file('icons/cal-icon.png'),
@@ -34,4 +35,17 @@ pub fn load_icons() map[string]stbi.Image {
 	// println("image ${img}")
 
 	return icons
+}
+
+pub fn load_image(image_path string) stbi.Image {
+	// mut icon := os.open('icons/beeper-icon.png') or { panic('failed to open image') }
+	// println("icon ${icon}")
+	// data := icon.read_bytes()
+	buffer := os.read_bytes(image_path) or { panic('failed to read image') }
+	// buffer.data is a pointer to the heap memory
+	mut img := stbi.load_from_memory(buffer.data, buffer.len, stbi.LoadParams{
+		desired_channels: 4
+	}) or { panic('failed to load image') }
+	println("image ${img}")
+	return img
 }

@@ -1,6 +1,5 @@
 module bmfont
 
-import os
 import stbi
 import arrays
 import math
@@ -74,15 +73,10 @@ pub:
 
 pub fn load_fnt(font_file string) &Font {
 	mut embedded_font_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont.fnt')
-	mut embedded_bitmap_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont_0.png')
-
-	println('embedded_font_file:  ${embedded_font_file}')
+	// mut embedded_bitmap_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont_0.png')
 
 	path := embedded_font_file.path.rsplit_nth('/', 2)[1]
-	println('path: ${path}')
-
 	fnt := embedded_font_file.to_string()
-	// fn read_file(path string) !string
 
 	// get lines
 	lines := fnt.split('\n')

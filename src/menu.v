@@ -4,6 +4,7 @@ import gx
 import math.vec
 import time
 import math
+import stbi
 
 pub struct Vertex {
 pub mut:
@@ -48,6 +49,7 @@ pub mut:
 	current_item_index  int
 	need_update         bool
 	selection_change_sw time.Time = time.now()
+	cached_icons		map[string]stbi.Image
 }
 
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
@@ -86,6 +88,8 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 }
 
 fn create_menu(dwg DrawContext) &Menu {
+
+
 	padding := 2
 	mut menu := &Menu{
 		items: []
@@ -95,6 +99,7 @@ fn create_menu(dwg DrawContext) &Menu {
 		current_item_index: 0
 		selection_change_sw: time.now()
 		need_update: true
+		cached_icons: load_internal_icons()
 	}
 
 	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', ''}
@@ -131,7 +136,7 @@ fn (mut menu Menu) draw(mut app App) {
 		item := menu.items[i]
 		pos := menu.loc_from_index(i)
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
-		app.dwg.draw_image(pos.x + 25, pos.y + 15, app.dwg.icons[item.icon], false)
+		app.dwg.draw_image(pos.x + 25, pos.y + 15, menu.cached_icons[item.icon], false)
 	}
 
 	// draw the shape where the selector should go
@@ -252,6 +257,7 @@ fn menu_item_from_desktop_entry(entry DesktopEntry) MenuItem {
 		command: entry.exec
 	}
 }
+
 fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
 	mut items := []MenuItem{len: entries.len}
 	for i in 0 .. entries.len {
@@ -259,13 +265,17 @@ fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
 	}
 	return items
 }
+
 fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
+
 	items := menu_items_from_desktop_entries(entries)
-	for i in 0 .. items.len {
-		menu.items << items[i]
+	for item in items {
+		// TODO: check if icon exists, if not, load default
+		icon := load_image(item.icon)
+		menu.cached_icons[item.icon] = icon
+		menu.items << item
 	}
 }
-
 
 fn (mut menu Menu) next() {
 	// menu.current_item_index = (menu.current_item_index + 1) % 8

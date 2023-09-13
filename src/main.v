@@ -2,8 +2,6 @@ module main
 
 import gx
 import hw
-import time
-import bmfont
 
 struct Theme {
 pub mut:
@@ -123,7 +121,7 @@ fn main() {
 	}
 	app.menu = create_menu(app.dwg)
 
-	apps:=get_desktop_entries()
+	apps := get_desktop_entries()
 	app.menu.add_desktop_entries_to_menu(apps)
 
 	app.sb = create_statusbar()

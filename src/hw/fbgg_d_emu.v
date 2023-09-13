@@ -1,9 +1,7 @@
 module hw
 
-import os
 import gx
 import gg
-// import time
 
 const (
 	width       = 400

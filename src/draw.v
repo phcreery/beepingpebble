@@ -33,20 +33,12 @@ mut:
 	img_id        int
 	hw_ctx        &hw.Context  = unsafe { nil }
 	font          &bmfont.Font = unsafe { nil }
-	icons         map[string]stbi.Image
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voidptr, voidptr)) &DrawContext { //, event_fn fn (&hw.Event, voidptr)
 
-	mut dwg := &DrawContext{
-		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
-		width: width
-		height: height
-		hw_ctx: &hw.Context{}
-	}
-
 	// ---- genaric ----
-	dwg.hw_ctx = hw.new_context(
+	hw_ctx := hw.new_context(
 		bg_color: gx.white
 		width: width
 		height: height
@@ -55,10 +47,14 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voi
 		user_data: user_data
 	)
 
-	dwg.fps_stopwatch = time.now()
-	// dwg.font = default_font()
-	dwg.font = bmfont.load_fnt('test')
-	dwg.icons = load_icons()
+	mut dwg := &DrawContext{
+		pixel_buffer: []u8{len: line_length * height * components, cap: line_length * height * components, init: 0}
+		width: width
+		height: height
+		fps_stopwatch: time.now()
+		hw_ctx: hw_ctx
+		font: bmfont.load_fnt('test')
+	}
 
 	return dwg
 }

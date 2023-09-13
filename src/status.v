@@ -1,6 +1,5 @@
 module main
 
-import gx
 import math.vec
 import time
 import hw

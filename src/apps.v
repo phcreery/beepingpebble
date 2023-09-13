@@ -44,21 +44,18 @@ fn get_value(key string, file_contents string) string {
 
 fn parse_desktop_file(file string) &DesktopEntry {
 	file_contents := os.read_file(file) or { panic('Could not read app file') }
-	type_ := get_value('Type', file_contents)
-
 	de := &DesktopEntry{
-		type_: get_value('Type', file_contents),
-		version: get_value('Version', file_contents),
-		name: get_value('Name', file_contents),
-		generic_name: get_value('GenericName', file_contents),
-		comment: get_value('Comment', file_contents),
-		icon: get_value('Icon', file_contents),
-		exec: get_value('Exec', file_contents),
-		path: get_value('Path', file_contents),
-		terminal: get_value('Terminal', file_contents) == 'true',
-		categories: get_value('Categories', file_contents).split(';'),
+		type_: get_value('Type', file_contents)
+		version: get_value('Version', file_contents)
+		name: get_value('Name', file_contents)
+		generic_name: get_value('GenericName', file_contents)
+		comment: get_value('Comment', file_contents)
+		icon: get_value('Icon', file_contents)
+		exec: get_value('Exec', file_contents)
+		path: get_value('Path', file_contents)
+		terminal: get_value('Terminal', file_contents) == 'true'
+		categories: get_value('Categories', file_contents).split(';')
 	}
-	println(de)
 	return de
 	// find line that starts with Type=
 }
