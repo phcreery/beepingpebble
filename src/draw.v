@@ -6,7 +6,6 @@ import arrays
 import stbi
 import gx
 import bmfont
-
 import hw
 
 // NOTE: in order to simulate the pixelated screen of 400x240, you need to
@@ -32,9 +31,9 @@ mut:
 	frames        int
 	fps           int
 	img_id        int
-	hw_ctx        &hw.Context = unsafe { nil }
-	font 		&bmfont.Font = unsafe { nil }
-	icons 		map[string]stbi.Image
+	hw_ctx        &hw.Context  = unsafe { nil }
+	font          &bmfont.Font = unsafe { nil }
+	icons         map[string]stbi.Image
 }
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voidptr, voidptr)) &DrawContext { //, event_fn fn (&hw.Event, voidptr)
@@ -46,13 +45,11 @@ pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voi
 		hw_ctx: &hw.Context{}
 	}
 
-
 	// ---- genaric ----
 	dwg.hw_ctx = hw.new_context(
 		bg_color: gx.white
 		width: width
 		height: height
-
 		frame_fn: frame_fn
 		event_fn: event_fn
 		user_data: user_data
@@ -95,7 +92,6 @@ pub fn (mut dwg DrawContext) quit() {
 	dwg.hw_ctx.quit()
 }
 
-
 [direct_array_access]
 pub fn (mut dwg DrawContext) clear(c gx.Color) {
 	for y in 0 .. height {
@@ -109,8 +105,7 @@ pub fn (mut dwg DrawContext) blit() {
 	dwg.hw_ctx.blit(dwg.pixel_buffer)
 }
 
-[inline]
-[direct_array_access]
+[direct_array_access; inline]
 pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	x := int(x_)
 	y := int(y_)
@@ -125,8 +120,7 @@ pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
-[inline]
-[direct_array_access]
+[direct_array_access; inline]
 pub fn (mut dwg DrawContext) draw_pixel_inv(x_ f32, y_ f32) {
 	x := int(x_)
 	y := int(y_)
@@ -291,7 +285,6 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 // 	mut c := 0
 // 	mut y_ := y
 
-
 // 	for i in 0 .. text.len {
 // 		glyph := text[i]
 
@@ -349,7 +342,6 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 	// println('asdf'.bytes().bytestr())
 	// for ch in text.bytes() {
 	for ru in text.runes() {
-
 		if ru == '\n'.bytes()[0] {
 			xadvance_tracker = 0
 			yadvance_tracker = yadvance_tracker + dwg.font.info.size + dwg.font.info.spacing[1]
@@ -358,13 +350,15 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 
 		ch := int(ru.bytes().utf8_to_utf32() or { 0 })
 		character := dwg.font.chars[ch]
-		for local_y in 0..character.height {
-			for local_x in 0..character.width {
+		for local_y in 0 .. character.height {
+			for local_x in 0 .. character.width {
 				if dwg.font.get_pixel(0, local_x + character.x, local_y + character.y) > 127 {
 					if color is bool {
-						dwg.draw_pixel_inv(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset + yadvance_tracker)
+						dwg.draw_pixel_inv(x + local_x + character.xoffset + xadvance_tracker,
+							y + local_y + character.yoffset + yadvance_tracker)
 					} else if color is gx.Color {
-						dwg.draw_pixel(x + local_x + character.xoffset + xadvance_tracker, y + local_y + character.yoffset + yadvance_tracker, color)
+						dwg.draw_pixel(x + local_x + character.xoffset + xadvance_tracker,
+							y + local_y + character.yoffset + yadvance_tracker, color)
 					}
 				} else {
 					// print(' ')
@@ -378,7 +372,6 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 	return xadvance_tracker
 }
 
-
 // [direct_array_access]
 pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TColor) {
 	// TODO: make it faster with a memcpy?
@@ -387,12 +380,12 @@ pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TCo
 		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
 	}
 	img_line_length := img.width * img.nr_channels
-	mut greyscale:=f32(0)
-	mut pos:=u64(0)
-	mut blue:=u8(0)
-	mut green:=u8(0)
-	mut red:=u8(0)
-	mut alpha:=u8(0)
+	mut greyscale := f32(0)
+	mut pos := u64(0)
+	mut blue := u8(0)
+	mut green := u8(0)
+	mut red := u8(0)
+	mut alpha := u8(0)
 	for yy in 0 .. img.height {
 		for xx in 0 .. img.width {
 			pos = u64(yy * img_line_length + xx * img.nr_channels)

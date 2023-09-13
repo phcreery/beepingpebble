@@ -15,10 +15,9 @@ import hw.keyboard
 pub struct Config {
 	bg_color  gx.Color
 	user_data voidptr
-	frame_fn  FNCb = unsafe { nil }
-	init_fn   FNCb = unsafe { nil }
-	event_fn		FNEvent = unsafe { nil }
-
+	frame_fn  FNCb    = unsafe { nil }
+	init_fn   FNCb    = unsafe { nil }
+	event_fn  FNEvent = unsafe { nil }
 	// compability only (not used)
 	width         int
 	height        int
@@ -36,13 +35,13 @@ pub mut:
 	width_extended int
 
 	user_data voidptr
-	frame_fn  FNCb = unsafe { nil }
-	init_fn   FNCb = unsafe { nil }
-	event_fn		FNEvent = unsafe { nil }
+	frame_fn  FNCb    = unsafe { nil }
+	init_fn   FNCb    = unsafe { nil }
+	event_fn  FNEvent = unsafe { nil }
 
-	keyboard_manager	&keyboard.Manager = unsafe { nil }
-	keydown_fn		FNKeyDown = unsafe { nil }
-	char_fn			FNChar    = unsafe { nil }
+	keyboard_manager &keyboard.Manager = unsafe { nil }
+	keydown_fn       FNKeyDown = unsafe { nil }
+	char_fn          FNChar    = unsafe { nil }
 }
 
 pub fn new_context(args Config) &Context {
@@ -87,9 +86,9 @@ pub fn new_context(args Config) &Context {
 				context.keydown_fn(key, unsafe { Modifier(0) }, context.user_data)
 			}
 			if context.char_fn != unsafe { nil } {
-				if key != .escape && key != .enter && key != .backspace && key != .left &&
-					key != .right && key != .up && key != .down {
-						context.char_fn(u32(key), context.user_data)
+				if key != .escape && key != .enter && key != .backspace && key != .left
+					&& key != .right && key != .up && key != .down {
+					context.char_fn(u32(key), context.user_data)
 				}
 			}
 		}
@@ -119,9 +118,9 @@ pub fn (mut context Context) run() {
 		start_time := time.now()
 		context.frame_fn(context.user_data)
 		end_time := time.now()
-		$if !unlimited_fps? {
+		$if !unlimited_fps ? {
 			frame_draw_time := end_time - start_time
-			time.sleep(int(f32(1000)/fps_limit*1000000)*time.nanosecond - frame_draw_time)
+			time.sleep(int(f32(1000) / fps_limit * 1000000) * time.nanosecond - frame_draw_time)
 		}
 	}
 }

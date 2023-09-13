@@ -4,16 +4,16 @@ fn C.getchar() u8
 
 pub struct Config {
 pub mut:
-	keyboard_fn	fn (KeyCode) = unsafe { nil }
+	keyboard_fn fn (KeyCode) = unsafe { nil }
 }
 
 pub struct Manager {
 pub mut:
-	keyboard_fn	fn (KeyCode) = unsafe { nil }
+	keyboard_fn fn (KeyCode) = unsafe { nil }
 }
 
-fn (mut manager Manager) controller () {
-	for ;; {
+fn (mut manager Manager) controller() {
+	for ; true; {
 		key := wait_key()
 		// if key == 27 {
 		// 	unsafe {
@@ -22,21 +22,20 @@ fn (mut manager Manager) controller () {
 		// 		manager.keyboard_fn(x_key)
 		// 	}
 		// } else {
-			unsafe {
-				manager.keyboard_fn(KeyCode(key))
-			}
+		unsafe {
+			manager.keyboard_fn(KeyCode(key))
+		}
 		// }
 	}
 }
 
-pub fn new_manager (args Config) &Manager {
+pub fn new_manager(args Config) &Manager {
 	mut manager := &Manager{
 		keyboard_fn: args.keyboard_fn
 	}
 	go manager.controller()
 	return manager
 }
-
 
 // https://modules.vlang.io/gg.html#KeyCode
 pub enum KeyCode {
@@ -207,12 +206,11 @@ pub enum KeyCode {
 // }
 
 fn translate_alternate_keys(key u8) u8 {
-
 	// The ASCII value of A is 65 and Z is 90
 	match int(key) {
 		// 65...90 { return key + 32 } // to lowercase a-z
 		97...122 { return key - 32 } // to uppercase A-Z
-		else {return key}
+		else { return key }
 	}
 }
 

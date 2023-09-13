@@ -2,14 +2,12 @@ module main
 
 import stbi
 
-
 // wrapper withe pre-converted data
 pub struct STBIImageWrapper {
 mut:
 	stbiimg &stbi.Image
-	data []u8
+	data    []u8
 }
-
 
 pub fn load_icons() map[string]stbi.Image {
 	mut icon_array := [
@@ -37,4 +35,3 @@ pub fn load_icons() map[string]stbi.Image {
 
 	return icons
 }
-

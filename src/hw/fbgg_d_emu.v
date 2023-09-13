@@ -5,7 +5,6 @@ import gx
 import gg
 // import time
 
-
 const (
 	width       = 400
 	height      = 240
@@ -13,17 +12,17 @@ const (
 	line_length = width * components
 )
 
-
 pub type FNCb = fn (data voidptr)
+
 pub type FNEvent = fn (e &gg.Event, data voidptr)
 
 pub struct Config {
 mut:
 	bg_color  gx.Color
 	user_data voidptr
-	frame_fn  FNCb = unsafe { nil }
-	init_fn   FNCb = unsafe { nil }
-	event_fn FNEvent = unsafe { nil }
+	frame_fn  FNCb    = unsafe { nil }
+	init_fn   FNCb    = unsafe { nil }
+	event_fn  FNEvent = unsafe { nil }
 	// compability only (not used)
 	width         int
 	height        int
@@ -36,12 +35,11 @@ mut:
 	gg_ctx &gg.Context
 	img_id int
 pub mut:
-	bg_color    gx.Color
+	bg_color gx.Color
 
-	width          int
-	height         int
+	width  int
+	height int
 	// width_extended int
-
 	// user_data voidptr
 	// frame_fn  FNCb = unsafe { nil }
 	// init_fn   FNCb = unsafe { nil }
@@ -51,12 +49,10 @@ pub mut:
 pub fn new_context(args Config) &Context {
 	mut context := &Context{
 		gg_ctx: &gg.Context{}
-
 		width: args.width
 		height: args.height
 		// width_extended: screen_width_ext
 		bg_color: args.bg_color
-
 		// user_data: args.user_data
 		// frame_fn: args.frame_fn
 		// init_fn: args.init_fn
@@ -87,7 +83,9 @@ pub fn new_context(args Config) &Context {
 		create_window: true
 		window_title: 'BEEPINGPEBBLE'
 		init_fn: fn [mut context] (_ voidptr) {
-			context.img_id = context.gg_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
+			context.img_id = context.gg_ctx.new_streaming_image(hw.width, hw.height, hw.components,
+				pixel_format: .rgba8
+			)
 		}
 		frame_fn: args.frame_fn
 		event_fn: args.event_fn
@@ -96,7 +94,6 @@ pub fn new_context(args Config) &Context {
 	context.gg_ctx = gg_ctx
 
 	// println("gg_ctx ${gg_ctx}")
-
 
 	return context
 }
@@ -112,10 +109,10 @@ pub fn (mut context Context) end() {
 [direct_array_access]
 pub fn (mut context Context) blit(virtualbuffer []u8) {
 	// convert from []BGRA8 to [][]RGBA32
-	mut buffer := [height][width]u32{}
-	for y in 0 .. height {
-		for x in 0 .. width {
-			pos := u64(y * line_length + x * components)
+	mut buffer := [hw.height][width]u32{}
+	for y in 0 .. hw.height {
+		for x in 0 .. hw.width {
+			pos := u64(y * hw.line_length + x * hw.components)
 			blue := virtualbuffer[pos + 0]
 			green := virtualbuffer[pos + 1]
 			red := virtualbuffer[pos + 2]
@@ -126,7 +123,7 @@ pub fn (mut context Context) blit(virtualbuffer []u8) {
 	// see https://github.com/vlang/v/blob/007519e1300ef42a36380307cbbd248bb2940937/examples/gg/random.v
 	mut img := context.gg_ctx.get_cached_image_by_idx(context.img_id)
 	img.update_pixel_data(unsafe { &u8(&buffer) })
-	context.gg_ctx.draw_image(0, 0, width, height, img)
+	context.gg_ctx.draw_image(0, 0, hw.width, hw.height, img)
 }
 
 pub fn (mut context Context) run() {

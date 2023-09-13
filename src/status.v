@@ -15,7 +15,7 @@ pub struct StatusBar {
 pub mut:
 	pos   vec.Vec2[int]
 	items []StatusBarTextItem
-	sw	time.Time
+	sw    time.Time
 }
 
 pub fn create_statusbar() &StatusBar {
@@ -31,12 +31,12 @@ pub fn create_statusbar() &StatusBar {
 fn (mut sb StatusBar) update(dwg &DrawContext) {
 	text_array := [
 		// time.now().hhmm12(),
-		time.now().custom_format('M/D/YY hh:mm')
+		time.now().custom_format('M/D/YY hh:mm'),
 		'${hw.get_batt_percent()}%', //'100%',
 		'${hw.get_batt_volts()}V', //'4.2V',
 		'${hw.get_wifi_strength()}', //'-***',
 		// get_loading_status_text(),
-		get_fps(dwg)
+		get_fps(dwg),
 	]
 	mut items := []StatusBarTextItem{}
 	mut x := width
@@ -47,7 +47,7 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 			text: text_item
 			pos: vec.Vec2[int]{
 				x: x
-				y: 40 / 2 - 8 / 2
+				y: 40 / 2 - int(dwg.font.info.size / 2)
 			}
 		}
 		items << item
@@ -60,7 +60,7 @@ fn (mut sb StatusBar) draw(mut app App) {
 		sb.sw = time.now()
 		sb.update(&app.dwg)
 		app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, 40, app.theme.statusbar_bg_color)
-		app.dwg.draw_line(sb.pos.x-1, sb.pos.y+40, width, sb.pos.y+40, false)
+		app.dwg.draw_line(sb.pos.x - 1, sb.pos.y + 40, width, sb.pos.y + 40, false)
 		for item in sb.items {
 			app.dwg.draw_text(item.pos.x, item.pos.y, item.text, false)
 		}

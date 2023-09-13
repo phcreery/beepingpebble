@@ -4,17 +4,20 @@ module hw
 // import gx
 import hw.keyboard
 
-
 pub type FNCb = fn (data voidptr)
+
 pub type FNEvent = fn (e &Event, data voidptr)
+
 pub type FNMove = fn (x f32, y f32, data voidptr)
+
 // pub type FNUnClick = fn (x f32, y f32, button MouseButton, data voidptr)
 // pub type FNClick = fn (x f32, y f32, button MouseButton, data voidptr)
 pub type FNKeyDown = fn (c KeyCode, m Modifier, data voidptr)
+
 pub type FNChar = fn (c u32, data voidptr)
 
-
 pub type KeyCode = keyboard.KeyCode
+
 // pub type Image = vpng.PngFile
 
 // pub struct Config {
@@ -45,7 +48,6 @@ pub type KeyCode = keyboard.KeyCode
 // 	enable_dragndrop bool
 // 	max_dropped_file_path_length int
 // }
-
 
 // pub struct Context {
 // pub mut:
@@ -79,19 +81,18 @@ pub type KeyCode = keyboard.KeyCode
 // 	key_modifiers Modifier
 // }
 
-
 pub struct Size {
 pub mut:
-	width	int
-	height	int
+	width  int
+	height int
 }
 
 pub struct Rect {
 pub mut:
-	x	int
-	y	int
-	width	int
-	height	int
+	x      int
+	y      int
+	width  int
+	height int
 }
 
 // pub enum EventType {
@@ -143,20 +144,20 @@ pub enum EventType {
 
 pub struct Event {
 pub mut:
-	frame_count        u64
-	typ                EventType
-	key_code           KeyCode
-	char_code          u32
-	key_repeat         bool
-	modifiers          u32
-//	mouse_button       MouseButton
-	mouse_x            f32
-	mouse_y            f32
-	mouse_dx           f32
-	mouse_dy           f32
-	scroll_x           f32
-	scroll_y           f32
-	num_touches        int
+	frame_count u64
+	typ         EventType
+	key_code    KeyCode
+	char_code   u32
+	key_repeat  bool
+	modifiers   u32
+	//	mouse_button       MouseButton
+	mouse_x     f32
+	mouse_y     f32
+	mouse_dx    f32
+	mouse_dy    f32
+	scroll_x    f32
+	scroll_y    f32
+	num_touches int
 	// touches            [8]TouchPoint
 	window_width       int
 	window_height      int

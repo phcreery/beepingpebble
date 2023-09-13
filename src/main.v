@@ -7,16 +7,16 @@ import bmfont
 
 struct Theme {
 pub mut:
-	bg_color gx.Color
+	bg_color           gx.Color
 	statusbar_bg_color gx.Color
 }
 
 struct App {
 pub mut:
 	theme Theme
-	dwg  DrawContext
-	menu Menu
-	sb   StatusBar
+	dwg   DrawContext
+	menu  Menu
+	sb    StatusBar
 }
 
 fn draw(mut app App) {
@@ -49,7 +49,6 @@ fn draw(mut app App) {
 	// app.dwg.draw_text(10, 20, '! " # $ 06:38', false)
 	// app.dwg.draw_text(10, 20, 'a\nb', false)
 	// app.dwg.draw_bmfont_text(10, 30, '\uf242', app.font, false)
-
 
 	// sw := time.new_stopwatch()
 	app.menu.draw(mut app)
@@ -119,10 +118,14 @@ fn event_manager(mut ev hw.Event, mut app App) {
 fn main() {
 	mut app := App{}
 	app.theme = Theme{
-		bg_color: gx.black,
-		statusbar_bg_color: gx.black,
+		bg_color: gx.black
+		statusbar_bg_color: gx.black
 	}
 	app.menu = create_menu(app.dwg)
+
+	apps:=get_desktop_entries()
+	app.menu.add_desktop_entries_to_menu(apps)
+
 	app.sb = create_statusbar()
 	app.dwg = create_context(app, draw, event_manager)
 	app.dwg.run()

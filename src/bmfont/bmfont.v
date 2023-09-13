@@ -30,57 +30,56 @@ pub mut:
 }
 
 struct FontCommon {
-	base int
-	scale_w int
-	scale_h int
-	pages int
-	packed bool
+	base       int
+	scale_w    int
+	scale_h    int
+	pages      int
+	packed     bool
 	alpha_chnl int
-	red_chnl int
+	red_chnl   int
 	green_chnl int
-	blue_chnl int
+	blue_chnl  int
 pub:
 	line_height int
 }
 
 struct FontPage {
-	id int
-	file string
+	id     int
+	file   string
 	bitmap &stbi.Image
-	data []u8
+	data   []u8
 }
 
 struct FontChar {
 pub:
-	id int
-	x int // where the character is on the page
-	y int // where the character is on the page
-	width int // how wide the character is on the page
-	height int // how tall the character is on the page
-	xoffset int // RENDERING: how far in px the character is from the left edge relative to the cursor
-	yoffset int // RENDERING: how far in px the character is from the top edge relative to the cursor
+	id       int
+	x        int // where the character is on the page
+	y        int // where the character is on the page
+	width    int // how wide the character is on the page
+	height   int // how tall the character is on the page
+	xoffset  int // RENDERING: how far in px the character is from the left edge relative to the cursor
+	yoffset  int // RENDERING: how far in px the character is from the top edge relative to the cursor
 	xadvance int // RENDERING: how far in px the next character should be from the cursor
-	page int // which page the character is on
-	chnl int
+	page     int // which page the character is on
+	chnl     int
 }
 
 pub struct Font {
 pub:
-	info FontInfo
+	info   FontInfo
 	common FontCommon
-	pages map[int]FontPage // OR []FontPage
-	chars map[int]FontChar // = []map[int]FontChar{} OR []FontChar
+	pages  map[int]FontPage // OR []FontPage
+	chars  map[int]FontChar // = []map[int]FontChar{} OR []FontChar
 }
-
 
 pub fn load_fnt(font_file string) &Font {
 	mut embedded_font_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont.fnt')
 	mut embedded_bitmap_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont_0.png')
 
-	println("embedded_font_file:  ${embedded_font_file}")
+	println('embedded_font_file:  ${embedded_font_file}')
 
-	path := embedded_font_file.path.rsplit_nth('/',2)[1]
-	println("path: ${path}")
+	path := embedded_font_file.path.rsplit_nth('/', 2)[1]
+	println('path: ${path}')
 
 	fnt := embedded_font_file.to_string()
 	// fn read_file(path string) !string
@@ -91,8 +90,8 @@ pub fn load_fnt(font_file string) &Font {
 	// parse info line
 	info_line := lines[0]
 	info := FontInfo{
-		face: info_line.split('face=')[1].split(' ')[0].trim('"'),
-		size: math.abs(info_line.split('size=')[1].split(' ')[0].int()),
+		face: info_line.split('face=')[1].split(' ')[0].trim('"')
+		size: math.abs(info_line.split('size=')[1].split(' ')[0].int())
 		// bold: info_line.split('bold=')[1].split(' ')[0].int() == 1,
 		// italic: info_line.split('italic=')[1].split(' ')[0].int() == 1,
 		// charset: info_line.split('charset=')[1].split(' ')[0].trim('"'),
@@ -100,8 +99,12 @@ pub fn load_fnt(font_file string) &Font {
 		// stretchH: info_line.split('stretchH=')[1].split(' ')[0].int(),
 		// smooth: info_line.split('smooth=')[1].split(' ')[0].int() == 1,
 		// aa: info_line.split('aa=')[1].split(' ')[0].int() == 1,
-		padding: info_line.split('padding=')[1].split(' ')[0].split(',').map(fn (s string) int { return s.int() } ),
-		spacing: info_line.split('spacing=')[1].split(' ')[0].split(',').map(fn (s string) int { return s.int() } ),
+		padding: info_line.split('padding=')[1].split(' ')[0].split(',').map(fn (s string) int {
+			return s.int()
+		})
+		spacing: info_line.split('spacing=')[1].split(' ')[0].split(',').map(fn (s string) int {
+			return s.int()
+		})
 		// outline: info_line.split('outline=')[1].split(' ')[0].int(),
 	}
 	// TODO: parse other info fields
@@ -109,16 +112,16 @@ pub fn load_fnt(font_file string) &Font {
 	// parse common line
 	common_line := lines[1]
 	common := FontCommon{
-		line_height: common_line.split('lineHeight=')[1].split(' ')[0].int(),
-		base: common_line.split('base=')[1].split(' ')[0].int(),
-		scale_w: common_line.split('scaleW=')[1].split(' ')[0].int(),
-		scale_h: common_line.split('scaleH=')[1].split(' ')[0].int(),
-		pages: common_line.split('pages=')[1].split(' ')[0].int(),
-		packed: common_line.split('packed=')[1].split(' ')[0].int() == 1,
-		alpha_chnl: common_line.split('alphaChnl=')[1].split(' ')[0].int(),
-		red_chnl: common_line.split('redChnl=')[1].split(' ')[0].int(),
-		green_chnl: common_line.split('greenChnl=')[1].split(' ')[0].int(),
-		blue_chnl: common_line.split('blueChnl=')[1].split(' ')[0].int(),
+		line_height: common_line.split('lineHeight=')[1].split(' ')[0].int()
+		base: common_line.split('base=')[1].split(' ')[0].int()
+		scale_w: common_line.split('scaleW=')[1].split(' ')[0].int()
+		scale_h: common_line.split('scaleH=')[1].split(' ')[0].int()
+		pages: common_line.split('pages=')[1].split(' ')[0].int()
+		packed: common_line.split('packed=')[1].split(' ')[0].int() == 1
+		alpha_chnl: common_line.split('alphaChnl=')[1].split(' ')[0].int()
+		red_chnl: common_line.split('redChnl=')[1].split(' ')[0].int()
+		green_chnl: common_line.split('greenChnl=')[1].split(' ')[0].int()
+		blue_chnl: common_line.split('blueChnl=')[1].split(' ')[0].int()
 	}
 
 	// parse page line
@@ -126,8 +129,8 @@ pub fn load_fnt(font_file string) &Font {
 	mut pages := map[int]FontPage{}
 	page_file := page_line.split('file=')[1].split(' ')[0].trim('"')
 	mut img := stbi.load('${path}/${page_file}', stbi.LoadParams{
-			desired_channels: 1
-		}) or { panic('failed to load image') }
+		desired_channels: 1
+	}) or { panic('failed to load image') }
 	// println('img.width:  ${img.width}')
 	// println('img.height: ${img.height}')
 	// println('img.nr_channels: ${img.nr_channels}')
@@ -135,10 +138,10 @@ pub fn load_fnt(font_file string) &Font {
 		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
 	}
 	page := FontPage{
-		id: page_line.split('id=')[1].split(' ')[0].int(),
-		file: page_file,
-		bitmap: &img,
-		data: d,
+		id: page_line.split('id=')[1].split(' ')[0].int()
+		file: page_file
+		bitmap: &img
+		data: d
 	}
 	// TODO: parse multiple pages
 	pages[page.id] = page
@@ -151,21 +154,21 @@ pub fn load_fnt(font_file string) &Font {
 
 	// read rest of lines
 	mut font_chars := map[int]FontChar{}
-	for l in 0..chars_count {
-		char_line := lines[l+next_line]
+	for l in 0 .. chars_count {
+		char_line := lines[l + next_line]
 
 		// parse char line
 		mut font_char := FontChar{
-			id: char_line.split('id=')[1].split(' ')[0].int(),
-			x: char_line.split('x=')[1].split(' ')[0].int(),
-			y: char_line.split('y=')[1].split(' ')[0].int(),
-			width: char_line.split('width=')[1].split(' ')[0].int(),
-			height: char_line.split('height=')[1].split(' ')[0].int(),
-			xoffset: char_line.split('xoffset=')[1].split(' ')[0].int(),
-			yoffset: char_line.split('yoffset=')[1].split(' ')[0].int(),
-			xadvance: char_line.split('xadvance=')[1].split(' ')[0].int(),
-			page: char_line.split('page=')[1].split(' ')[0].int(),
-			chnl: char_line.split('chnl=')[1].split(' ')[0].int(),
+			id: char_line.split('id=')[1].split(' ')[0].int()
+			x: char_line.split('x=')[1].split(' ')[0].int()
+			y: char_line.split('y=')[1].split(' ')[0].int()
+			width: char_line.split('width=')[1].split(' ')[0].int()
+			height: char_line.split('height=')[1].split(' ')[0].int()
+			xoffset: char_line.split('xoffset=')[1].split(' ')[0].int()
+			yoffset: char_line.split('yoffset=')[1].split(' ')[0].int()
+			xadvance: char_line.split('xadvance=')[1].split(' ')[0].int()
+			page: char_line.split('page=')[1].split(' ')[0].int()
+			chnl: char_line.split('chnl=')[1].split(' ')[0].int()
 		}
 
 		font_chars[font_char.id] = font_char
@@ -175,10 +178,10 @@ pub fn load_fnt(font_file string) &Font {
 
 	// build font
 	mut font := &Font{
-		info: info,
-		common: common,
-		pages: pages,
-		chars: font_chars,
+		info: info
+		common: common
+		pages: pages
+		chars: font_chars
 	}
 
 	return font

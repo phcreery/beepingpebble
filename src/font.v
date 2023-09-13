@@ -13,7 +13,7 @@ mut:
 	glyph_height  int
 	first_char    u8
 	colorkey      u32
-	bitmap        &STBIImageWrapper// &stbi.Image
+	bitmap        &STBIImageWrapper // &stbi.Image
 }
 
 [deprecated: 'use bmfont.load_fnt() instead']

@@ -33,20 +33,20 @@ pub mut:
 }
 
 pub struct MenuItem {
-	name string
-	icon string
+	name    string
+	icon    string
 	command string
 }
 
 pub struct Menu {
 pub mut:
 	items               []MenuItem
-	item_width		  int
-	item_height		  int
-	item_padding		  int
+	item_width          int
+	item_height         int
+	item_padding        int
 	selector            Selector
 	current_item_index  int
-	need_update 	   bool
+	need_update         bool
 	selection_change_sw time.Time = time.now()
 }
 
@@ -54,8 +54,8 @@ fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
 	x_i := index % 4
 	y_i := index / 4
 	return vec.Vec2[int]{
-		x: x_i * (menu.item_width+menu.item_padding+1) + menu.item_padding/2
-		y: y_i * (menu.item_height+menu.item_padding+1) + menu.item_padding/2 + 40
+		x: x_i * (menu.item_width + menu.item_padding + 1) + menu.item_padding / 2
+		y: y_i * (menu.item_height + menu.item_padding + 1) + menu.item_padding / 2 + 40
 	}
 }
 
@@ -89,17 +89,14 @@ fn create_menu(dwg DrawContext) &Menu {
 	padding := 2
 	mut menu := &Menu{
 		items: []
-		item_width: 100-padding-1
-		item_height: 100-padding-1
+		item_width: 100 - padding - 1
+		item_height: 100 - padding - 1
 		item_padding: padding
 		current_item_index: 0
 		selection_change_sw: time.now()
 		need_update: true
 	}
 
-	// for _ in 0 .. 8 {
-	// 	menu.items << MenuItem{'App Name', 'icons/beeper-icon.png'}
-	// }
 	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', ''}
 	menu.items << MenuItem{'Settings', 'icons/settings-icon.png', ''}
 	menu.items << MenuItem{
@@ -122,7 +119,6 @@ fn create_menu(dwg DrawContext) &Menu {
 }
 
 fn (mut menu Menu) draw(mut app App) {
-
 	if !menu.need_update {
 		return
 	}
@@ -137,7 +133,6 @@ fn (mut menu Menu) draw(mut app App) {
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
 		app.dwg.draw_image(pos.x + 25, pos.y + 15, app.dwg.icons[item.icon], false)
 	}
-
 
 	// draw the shape where the selector should go
 	mut points := []Point{len: 4}
@@ -172,14 +167,12 @@ fn (mut menu Menu) update_selector_verts() {
 		mut vert := &menu.selector.verts[i]
 		mut vert_target := &menu.selector.target_verts[i]
 
-
 		current_pos := menu.loc_from_index(menu.current_item_index)
 		// give it some ferrofluid feel by delaying the motion of the furthest vertices
 		if vert.in_motion == false {
 			dt := f32(time.since(menu.selection_change_sw).nanoseconds()) / 1000000000
-			dist := vert.p.distance(vec.Vec2[f32]{current_pos.x +
-				menu.item_width / 2, current_pos.y +
-				menu.item_height / 2})
+			dist := vert.p.distance(vec.Vec2[f32]{current_pos.x + menu.item_width / 2,
+				current_pos.y + menu.item_height / 2})
 			// println("dist: ${int(dist)}, dt: ${dt}")
 			if dt * 2000 > dist {
 				vert.in_motion = true
@@ -251,6 +244,28 @@ fn (mut menu Menu) update_target_verts() {
 		target_h})
 	menu.selector.target_verts[3] = new_vertex(vec.Vec2[f32]{target_x, target_y + target_h})
 }
+
+fn menu_item_from_desktop_entry(entry DesktopEntry) MenuItem {
+	return MenuItem{
+		name: entry.name
+		icon: entry.icon
+		command: entry.exec
+	}
+}
+fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
+	mut items := []MenuItem{len: entries.len}
+	for i in 0 .. entries.len {
+		items[i] = menu_item_from_desktop_entry(entries[i])
+	}
+	return items
+}
+fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
+	items := menu_items_from_desktop_entries(entries)
+	for i in 0 .. items.len {
+		menu.items << items[i]
+	}
+}
+
 
 fn (mut menu Menu) next() {
 	// menu.current_item_index = (menu.current_item_index + 1) % 8
