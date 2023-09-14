@@ -36,6 +36,7 @@ pub mut:
 pub struct MenuItem {
 	name    string
 	icon    string
+	desc   	string
 	command string
 }
 
@@ -53,11 +54,12 @@ pub mut:
 }
 
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
+	y_origin := 25 //40
 	x_i := index % 4
 	y_i := index / 4
 	return vec.Vec2[int]{
 		x: x_i * (menu.item_width + menu.item_padding + 1) + menu.item_padding / 2
-		y: y_i * (menu.item_height + menu.item_padding + 1) + menu.item_padding / 2 + 40
+		y: y_i * (menu.item_height + menu.item_padding + 1) + menu.item_padding / 2 + y_origin
 	}
 }
 
@@ -68,7 +70,7 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 	for j in 0 .. 2 {
 		for i in 0 .. 4 {
 			x := i * item_width
-			y := j * item_height + 40
+			y := j * item_height + 25
 			dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
 			// dwg.draw_pixel_inv(x, y)
@@ -102,13 +104,15 @@ fn create_menu(dwg DrawContext) &Menu {
 		cached_icons: load_internal_icons()
 	}
 
-	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', ''}
-	menu.items << MenuItem{'Settings', 'icons/settings-icon.png', ''}
+	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', ''}
+	menu.items << MenuItem{'Settings', 'icons/settings-icon.png', '', ''}
 	menu.items << MenuItem{
 		name: 'ls'
 		icon: 'icons/terminal-icon.png'
+		desc: 'list files in current directory'
 		command: 'ls'
 	}
+	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', 'asdf'}
 
 	init := menu.loc_from_index(0)
 	init_x := init.x
@@ -128,7 +132,7 @@ fn (mut menu Menu) draw(mut app App) {
 		return
 	}
 
-	app.dwg.draw_rect_filled(0, 41, 400, 200, app.theme.statusbar_bg_color)
+	app.dwg.draw_rect_filled(0, 26, 400, 240 - 26, app.theme.statusbar_bg_color)
 
 	menu.update_target_verts()
 
@@ -137,7 +141,12 @@ fn (mut menu Menu) draw(mut app App) {
 		pos := menu.loc_from_index(i)
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
 		app.dwg.draw_image(pos.x + 25, pos.y + 15, menu.cached_icons[item.icon], false)
+		if i == menu.current_item_index {
+			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
+			app.dwg.draw_text(10, 240 - 25/2 - int(app.dwg.font.info.size / 2)+2, menu.items[menu.current_item_index].desc, false)
+		}
 	}
+
 
 	// draw the shape where the selector should go
 	mut points := []Point{len: 4}
@@ -254,6 +263,7 @@ fn menu_item_from_desktop_entry(entry DesktopEntry) MenuItem {
 	return MenuItem{
 		name: entry.name
 		icon: entry.icon
+		desc: entry.comment
 		command: entry.exec
 	}
 }

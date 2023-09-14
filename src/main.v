@@ -19,6 +19,9 @@ pub mut:
 
 fn draw(mut app App) {
 	app.dwg.begin()
+
+	// PLEASE IGNORE THESE, THEY ARE JUST FOR TESTING
+
 	// app.dwg.clear(app.theme.bg_color)
 	// app.dwg.draw_text_def(200, 20, 'hello world!')
 	// menu_draw_debug_outline(mut app.dwg)
