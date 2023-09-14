@@ -70,10 +70,10 @@ fn event_manager(mut ev hw.Event, mut app App) {
 			.right, .d {
 				app.menu.next()
 			}
-			.left, .a {
+			.left, .w {
 				app.menu.prev()
 			}
-			.up, .w {
+			.up, .e {
 				app.menu.up()
 			}
 			.down, .s {
