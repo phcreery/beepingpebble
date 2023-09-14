@@ -1,6 +1,6 @@
 [theme]
-bg_color="black"
-statusbar_bg_color="white"
+bg_color="white"
+statusbar_bg_color="black"
 
 [apps]
 de_location=".beepingpebble/apps"

@@ -132,7 +132,7 @@ fn (mut menu Menu) draw(mut app App) {
 		return
 	}
 
-	app.dwg.draw_rect_filled(0, 26, 400, 240 - 26, app.theme.statusbar_bg_color)
+	app.dwg.draw_rect_filled(0, 26, 400, 240 - 26, app.theme.bg_color)
 
 	menu.update_target_verts()
 

@@ -10,7 +10,7 @@ The launcher is written in V, which is a transpiled-to-C-then-compiled-to-binary
 
 Features:
 
-- [ ] load app config from text file
+- [x] load app config from text file
 - [ ] launch apps
 - [x] Battery status
 - [x] WIFI status
@@ -21,6 +21,11 @@ Features:
 - [ ] vsync (untested)
 - [x] direct framebuffer writing
 - [x] framebuffer emulation for development on windows & linux
+- [x] config file
+
+## Install
+
+_Coming Soon_
 
 ## Developing
 
