@@ -13,10 +13,10 @@ Name=Test
 Comment=Development app for Beepy
 
 # The path to the folder in which the executable is run
-Path=/opt/jmemorise
+Path=~
 
 # The executable of the application, possibly with arguments.
-Exec=jmemorize
+Exec=ls
 
 # The name of the icon that will be used to display this entry
 Icon=icons/cart.png

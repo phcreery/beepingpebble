@@ -111,7 +111,7 @@ fn create_menu(dwg DrawContext) &Menu {
 		desc: 'list files in current directory'
 		command: 'ls'
 	}
-	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', 'asdf'}
+	// menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', 'asdf'}
 
 	init := menu.loc_from_index(0)
 	init_x := init.x
