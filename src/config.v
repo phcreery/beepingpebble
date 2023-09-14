@@ -93,6 +93,6 @@ pub fn get_config() AppConfig {
 		}
 	}
 
-	println('Config: ${config}')
+	// println('Config: ${config}')
 	return config
 }
