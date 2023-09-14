@@ -91,7 +91,6 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 
 fn create_menu(dwg DrawContext) &Menu {
 
-
 	padding := 2
 	mut menu := &Menu{
 		items: []

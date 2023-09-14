@@ -105,7 +105,7 @@ fn event_manager(mut ev hw.Event, mut app App) {
 			}
 			.enter {
 				item := app.menu.get_selected()
-				println(item.command)
+				hw.send_command(item.command)
 				app.dwg.quit()
 				exit(0)
 			}
@@ -129,7 +129,7 @@ fn main() {
 	apps := get_desktop_entries(conf.apps.de_location)
 	app.menu.add_desktop_entries_to_menu(apps)
 
-	app.sb = create_statusbar()
+	app.sb = create_statusbar(conf.statusbar)
 	app.dwg = create_context(app, draw, event_manager)
 	app.dwg.run()
 }

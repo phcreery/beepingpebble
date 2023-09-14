@@ -4,3 +4,12 @@ statusbar_bg_color="black"
 
 [apps]
 de_location=".beepingpebble/apps"
+
+[general]
+tty="/dev/tty1"
+
+[statusbar]
+show_time=true
+show_date=true
+show_battery_percent=true
+show_battery_voltage=false
