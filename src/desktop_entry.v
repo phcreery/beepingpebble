@@ -60,8 +60,7 @@ fn parse_desktop_file(file string) &DesktopEntry {
 	// find line that starts with Type=
 }
 
-pub fn get_desktop_entries() []DesktopEntry {
-	apps_folder := './.beepingpebble/apps'
+pub fn get_desktop_entries(apps_folder string) []DesktopEntry {
 	files := os.ls(apps_folder) or { panic('Could not read apps directory') }
 	// println(files)
 	mut entries := []DesktopEntry{}

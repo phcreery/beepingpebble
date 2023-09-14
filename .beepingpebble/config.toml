@@ -1,0 +1,6 @@
+[theme]
+bg_color="black"
+statusbar_bg_color="white"
+
+[apps]
+de_location=".beepingpebble/apps"

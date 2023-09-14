@@ -114,14 +114,16 @@ fn event_manager(mut ev hw.Event, mut app App) {
 }
 
 fn main() {
+	// config initialize
+	conf := get_config()
+
 	mut app := App{}
 	app.theme = Theme{
-		bg_color: gx.black
-		statusbar_bg_color: gx.black
+		bg_color: gx.color_from_string(conf.theme.bg_color)
+		statusbar_bg_color: gx.color_from_string(conf.theme.statusbar_bg_color)
 	}
 	app.menu = create_menu(app.dwg)
-
-	apps := get_desktop_entries()
+	apps := get_desktop_entries(conf.apps.de_location)
 	app.menu.add_desktop_entries_to_menu(apps)
 
 	app.sb = create_statusbar()
