@@ -33,10 +33,10 @@ pub fn get_wifi_strength() string {
 	}
 }
 
-pub fn send_command(cmd string) {
+pub fn send_command(cmd string, tty string) {
 	$if emu ? {
-		println('sending command: ${cmd}')
+		println('sending command: ttyecho -n ${tty} ${cmd}')
 		return
 	}
-	os.execute('${cmd} > /dev/tty2')
+	os.execute('ttyecho -n ${tty} ${cmd}')
 }
