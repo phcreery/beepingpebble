@@ -67,7 +67,7 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 			text: text_item
 			pos: vec.Vec2[int]{
 				x: x
-				y: 25 / 2 - int(dwg.font.info.size / 2)
+				y: 20 / 2 - int(dwg.font.info.size / 2)
 			}
 		}
 		items << item
@@ -76,13 +76,15 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 }
 
 fn (mut sb StatusBar) draw(mut app App) {
-	sb_height := 25
+	sb_height := 20
 	if time.since(sb.sw).seconds() > 1 {
 		sb.sw = time.now()
 		sb.update(&app.dwg)
 		app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, sb_height, app.theme.statusbar_bg_color)
-		app.dwg.draw_line(sb.pos.x - 1, sb.pos.y + sb_height, width, sb.pos.y + sb_height,
+		if app.theme.bg_color == app.theme.statusbar_bg_color {
+			app.dwg.draw_line(sb.pos.x - 1, sb.pos.y + sb_height, width, sb.pos.y + sb_height,
 			false)
+		}
 		for item in sb.items {
 			app.dwg.draw_text(item.pos.x, item.pos.y, item.text, false)
 		}

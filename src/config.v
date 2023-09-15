@@ -8,7 +8,7 @@ const default_location = '~/.beepingpebble/config.toml'
 
 const default_config_text = '
 [theme]
-bg_color="black"
+bg_color="white"
 statusbar_bg_color="black"
 
 [apps]
@@ -93,6 +93,6 @@ pub fn get_config() AppConfig {
 		}
 	}
 
-	// println('Config: ${config}')
+	println('Config: ${config}')
 	return config
 }

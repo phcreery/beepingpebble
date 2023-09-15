@@ -166,6 +166,65 @@ pub fn (mut dwg DrawContext) draw_line(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TCo
 	}
 }
 
+pub fn (mut dwg DrawContext) draw_line_pattern(x_0 f32, y_0 f32, x_1 f32, y_1 f32, c TColor) {
+	n_on := 1
+	n_off := 1
+	mut drawing := true
+
+	mut x0 := int(x_0)
+	mut y0 := int(y_0)
+	mut x1 := int(x_1)
+	mut y1 := int(y_1)
+
+	dx := math.abs(x1 - x0)
+	sx := if x0 < x1 { 1 } else { -1 }
+	dy := math.abs(y1 - y0)
+	sy := if y0 < y1 { 1 } else { -1 }
+	mut err := (if dx > dy { dx } else { -dy }) / 2
+	mut e2 := f32(0)
+
+	mut n := 0
+	for {
+		if drawing == true {
+			if n < n_on {
+				if c is bool {
+					dwg.draw_pixel_inv(x0, y0)
+				} else if c is gx.Color {
+					dwg.draw_pixel(x0, y0, c)
+				}
+				n += 1
+			} else {
+				drawing = false
+				n = 0
+			}
+		} else {
+			if n < n_off {
+				n += 1
+			} else {
+				drawing = true
+				n = 0
+			}
+		}
+		// if c is bool {
+		// 	dwg.draw_pixel_inv(x0, y0)
+		// } else if c is gx.Color {
+		// 	dwg.draw_pixel(x0, y0, c)
+		// }
+		if x0 == x1 && y0 == y1 {
+			break
+		}
+		e2 = err
+		if e2 > -dx {
+			err -= dy
+			x0 += sx
+		}
+		if e2 < dy {
+			err += dx
+			y0 += sy
+		}
+	}
+}
+
 pub fn (mut dwg DrawContext) draw_rect_filled(x f32, y f32, w f32, h f32, c TColor) {
 	ix := int(x)
 	iy := int(y)
@@ -362,6 +421,26 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 			}
 			// println('')
 		}
+		xadvance_tracker += character.xadvance
+		xadvance_tracker += dwg.font.info.spacing[0]
+	}
+	return xadvance_tracker
+}
+
+// TODO: deprecate this function
+pub fn (mut dwg DrawContext) get_draw_text_width(text string) int {
+	mut xadvance_tracker := 0
+	mut yadvance_tracker := 0
+
+	for ru in text.runes() {
+		if ru == '\n'.bytes()[0] {
+			xadvance_tracker = 0
+			yadvance_tracker = yadvance_tracker + dwg.font.info.size + dwg.font.info.spacing[1]
+			continue
+		}
+
+		ch := int(ru.bytes().utf8_to_utf32() or { 0 })
+		character := dwg.font.chars[ch]
 		xadvance_tracker += character.xadvance
 		xadvance_tracker += dwg.font.info.spacing[0]
 	}

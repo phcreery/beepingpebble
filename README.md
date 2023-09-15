@@ -1,6 +1,6 @@
 # BEEPINGPEBBLE
 
-![Screenshot](doc/image.png)
+![Screenshot](image-2.png)
 
 ## About
 

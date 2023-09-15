@@ -54,7 +54,7 @@ pub mut:
 }
 
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
-	y_origin := 25 //40
+	y_origin := 20 //40
 	x_i := index % 4
 	y_i := index / 4
 	return vec.Vec2[int]{
@@ -70,7 +70,7 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 	for j in 0 .. 2 {
 		for i in 0 .. 4 {
 			x := i * item_width
-			y := j * item_height + 25
+			y := j * item_height + 20
 			dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
 			// OR
 			// dwg.draw_pixel_inv(x, y)
@@ -131,18 +131,24 @@ fn (mut menu Menu) draw(mut app App) {
 		return
 	}
 
-	app.dwg.draw_rect_filled(0, 26, 400, 240 - 26, app.theme.bg_color)
+	// Background
+	app.dwg.draw_rect_filled(0, 21, 400, 240 - 21, app.theme.bg_color)
 
 	menu.update_target_verts()
+
+	// Description Background
+	// app.dwg.draw_rect_filled(0, 240 - 21, 400, 21, false)
+	app.dwg.draw_line_pattern(30, 240 - 21, 360, 240 - 21, false)
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
 		pos := menu.loc_from_index(i)
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
-		app.dwg.draw_image(pos.x + 25, pos.y + 15, menu.cached_icons[item.icon], false)
+		app.dwg.draw_image(pos.x + 20, pos.y + 15, menu.cached_icons[item.icon], false)
 		if i == menu.current_item_index {
 			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
-			app.dwg.draw_text(10, 240 - 25/2 - int(app.dwg.font.info.size / 2)+2, menu.items[menu.current_item_index].desc, false)
+			w := app.dwg.get_draw_text_width(item.desc)
+			app.dwg.draw_text(400/2 - int(w/2), 240 - 20/2 - int(app.dwg.font.info.size / 2), menu.items[menu.current_item_index].desc, false)
 		}
 	}
 
