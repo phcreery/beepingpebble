@@ -1,0 +1,16 @@
+
+[theme]
+bg_color="white"
+statusbar_bg_color="black"
+
+[apps]
+de_location="~/.beepingpebble/apps"
+
+[general]
+tty="/dev/tty1"
+
+[statusbar]
+time=true
+date=true
+battery_percent=true
+battery_voltage=false

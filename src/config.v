@@ -53,6 +53,9 @@ struct AppConfig {
 
 pub fn init_config_file() {
 	println('Creating config file at ${default_location}')
+	os.mkdir_all('~/.beepingpebble/apps') or {
+		panic('Failed to create ~/.beepingpebble/apps folder')
+	}
 	os.write_file(default_location, default_config_text) or {
 		panic('Failed to create config file')
 	}

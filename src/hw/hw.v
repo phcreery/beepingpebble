@@ -1,6 +1,7 @@
 module hw
 
 import os
+import term.termios
 
 pub fn get_batt_percent() string {
 	percent := os.read_file('/sys/firmware/beepy/battery_percent') or { '0' }
@@ -38,5 +39,18 @@ pub fn send_command(cmd string, tty string) {
 		println('sending command: ttyecho -n ${tty} ${cmd}')
 		return
 	}
-	os.execute('ttyecho -n ${tty} ${cmd}')
+	// os.execute('ttyecho -n ${tty} ${cmd}')
+
+	tiocsti := 0x5412
+	file := os.open('/dev/tty1') or { panic('cant open tty') }
+	println(os.is_atty(file.fd))
+	if os.is_atty(file.fd) != 1 {
+		return
+	}
+	command := cmd + '\n'
+	chars := command.bytes()
+	println(chars)
+	for character in chars {
+		termios.ioctl(file.fd, termios.flag(tiocsti), character)
+	}
 }
