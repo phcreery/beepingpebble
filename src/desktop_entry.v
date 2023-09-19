@@ -61,7 +61,7 @@ fn parse_desktop_file(file string) &DesktopEntry {
 }
 
 pub fn get_desktop_entries(apps_folder string) []DesktopEntry {
-	files := os.ls(apps_folder) or { panic('Could not read apps directory') }
+	files := os.ls(apps_folder) or { panic('Could not read apps directory: "${apps_folder}" ') }
 	// println(files)
 	mut entries := []DesktopEntry{}
 	for file in files {

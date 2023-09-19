@@ -10,6 +10,7 @@ The launcher is written in V, which is a transpiled-to-C-then-compiled-to-binary
 
 Features:
 
+- [ ] launch on hotkey press
 - [x] load app config from text file
 - [x] launch apps (untested)
 - [x] Battery status

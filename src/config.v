@@ -4,7 +4,11 @@ import toml
 import os
 
 // TOML Template
-const default_location = '~/.beepingpebble/config.toml'
+const config_dir := os.config_dir() or { '' }
+
+const bp_config_dir := config_dir + '/.beepingpebble'
+const bp_config_location := bp_config_dir + '/config.toml'
+const bp_apps_location := bp_config_dir + '/apps'
 
 const default_config_text = '
 [theme]
@@ -12,7 +16,6 @@ bg_color="white"
 statusbar_bg_color="black"
 
 [apps]
-de_location="~/.beepingpebble/apps"
 
 [general]
 tty="/dev/tty1"
@@ -52,11 +55,14 @@ struct AppConfig {
 }
 
 pub fn init_config_file() {
-	println('Creating config file at ${default_location}')
-	os.mkdir_all('~/.beepingpebble/apps') or {
-		panic('Failed to create ~/.beepingpebble/apps folder')
+	println('Creating config file at ${bp_config_dir}')
+	os.mkdir_all(bp_config_dir) or {
+		panic('Failed to create ${bp_config_dir} folder')
 	}
-	os.write_file(default_location, default_config_text) or {
+	os.mkdir_all(bp_apps_location) or {
+		panic('Failed to create ${bp_apps_location} folder')
+	}
+	os.write_file(bp_config_location, default_config_text) or {
 		panic('Failed to create config file')
 	}
 }
@@ -69,7 +75,7 @@ pub fn get_config() AppConfig {
 			panic('Failed to open config file')
 		}
 	} $else {
-		config_text = os.read_file(default_location) or {
+		config_text = os.read_file(bp_config_location) or {
 			init_config_file()
 			// panic("Failed to open config file")
 			default_config_text
@@ -83,7 +89,7 @@ pub fn get_config() AppConfig {
 			statusbar_bg_color: config_toml.value('theme.statusbar_bg_color').default_to('white').string()
 		}
 		apps: AppsConfig{
-			de_location: config_toml.value('apps.de_location').default_to('~/.beepingpebble/apps').string()
+			de_location: config_toml.value('apps.de_location').default_to(bp_apps_location).string()
 		}
 		general: GeneralConfig{
 			tty: config_toml.value('general.tty').default_to('/dev/tty1').string()
