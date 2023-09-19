@@ -131,13 +131,13 @@ fn (mut menu Menu) draw(mut app App) {
 	}
 
 	// Background
-	app.dwg.draw_rect_filled(0, 21, 400, 240 - 21, app.theme.bg_color)
+	app.dwg.draw_rect_filled(0, 20, 400, 240 - 20, app.theme.bg_color)
 
 	menu.update_target_verts()
 
 	// Description Background
-	// app.dwg.draw_rect_filled(0, 240 - 21, 400, 21, false)
-	app.dwg.draw_line_pattern(30, 240 - 21, 360, 240 - 21, false)
+	// app.dwg.draw_rect_filled(0, 240 - 20, 400, 20, false)
+	app.dwg.draw_line_pattern(30, 240 - 20, 360, 240 - 20, false)
 
 	for i in 0 .. menu.items.len {
 		item := menu.items[i]
@@ -168,8 +168,8 @@ fn (mut menu Menu) draw(mut app App) {
 		points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 	}
 	// println(points)
-	app.dwg.draw_polygon_filled(points, false) // false
-	// dwg.draw_polygon(points, gx.black)
+	app.dwg.draw_polygon_filled(points, false)
+	app.dwg.draw_polygon(points, gx.black) // draw border since draw_polygon_filled does not fill the top, right, and bottom edges
 }
 
 fn (mut menu Menu) update_selector_verts() {
