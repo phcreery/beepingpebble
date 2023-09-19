@@ -12,7 +12,10 @@ const (
 
 pub type FNCb = fn (data voidptr)
 
-pub type FNEvent = fn (e &gg.Event, data voidptr)
+type Event = gg.Event
+
+// pub type FNEvent = fn (e &gg.Event, data voidptr)
+pub type FNEvent = fn (e &Event, data voidptr)
 
 pub struct Config {
 mut:
@@ -21,11 +24,8 @@ mut:
 	frame_fn  FNCb    = unsafe { nil }
 	init_fn   FNCb    = unsafe { nil }
 	event_fn  FNEvent = unsafe { nil }
-	// compability only (not used)
-	width         int
-	height        int
-	create_window bool
-	window_title  string
+	width     int
+	height    int
 }
 
 pub struct Context {
@@ -33,51 +33,19 @@ mut:
 	gg_ctx &gg.Context
 	img_id int
 pub mut:
-	bg_color gx.Color
-
-	width  int
-	height int
-	// width_extended int
-	// user_data voidptr
-	// frame_fn  FNCb = unsafe { nil }
-	// init_fn   FNCb = unsafe { nil }
-	// event_fn		FNEvent = unsafe { nil }
+	config Config
 }
 
-pub fn new_context(args Config) &Context {
+pub fn new_context(cfg Config) &Context {
 	mut context := &Context{
 		gg_ctx: &gg.Context{}
-		width: args.width
-		height: args.height
-		// width_extended: screen_width_ext
-		bg_color: args.bg_color
-		// user_data: args.user_data
-		// frame_fn: args.frame_fn
-		// init_fn: args.init_fn
-		// event_fn:		args.event_fn
+		config: cfg
 	}
-
-	// mut test_ctx := gg.new_context(
-	// 	bg_color: gx.white
-	// 	width: 400
-	// 	height: 240
-	// 	create_window: true
-	// 	window_title: 'BEEPINGPEBBLE'
-	// 	// init_fn: init_fn
-	// 	// init_fn: graphics_init
-	// 	// init_fn: fn [mut dwg] (_ voidptr) {
-	// 	// 	dwg.img_id = dwg.hw_ctx.new_streaming_image(width, height, components, pixel_format: .rgba8)
-	// 	// }
-	// 	// frame_fn: frame_fn
-	// 	// event_fn: event_fn
-	// 	// user_data: user_data
-	// )
-	// test_ctx.run()
 
 	gg_ctx := gg.new_context(
 		bg_color: gx.white
-		width: args.width
-		height: args.height
+		width: cfg.width
+		height: cfg.height
 		create_window: true
 		window_title: 'BEEPINGPEBBLE'
 		init_fn: fn [mut context] (_ voidptr) {
@@ -85,9 +53,9 @@ pub fn new_context(args Config) &Context {
 				pixel_format: .rgba8
 			)
 		}
-		frame_fn: args.frame_fn
-		event_fn: args.event_fn
-		user_data: args.user_data
+		frame_fn: cfg.frame_fn
+		event_fn: cfg.event_fn
+		user_data: cfg.user_data
 	)
 	context.gg_ctx = gg_ctx
 

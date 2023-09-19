@@ -86,7 +86,10 @@ pub fn (mut dwg DrawContext) run() {
 
 pub fn (mut dwg DrawContext) quit() {
 	dwg.draw_rect_filled(0, 0, width, height, gx.black)
-	dwg.blit()
+	// for sokol, there is only one update (sg_update_image) allowed per frame. https://floooh.github.io/2017/07/29/sokol-gfx-tour.html
+	$if !emu ? {
+		dwg.blit()
+	}
 	dwg.hw_ctx.quit()
 }
 
@@ -336,61 +339,6 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	}
 }
 
-// [deprecated: 'use draw_bmfont_text() instead']
-// [direct_array_access]
-// pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) {
-// 	mut c := 0
-// 	mut y_ := y
-
-// 	for i in 0 .. text.len {
-// 		glyph := text[i]
-
-// 		if glyph == ' '.bytes()[0] {
-// 			// draw a backdrop rectangle
-// 			// fbg_recta(fbg, x + c * fnt->glyph_width, y, fnt->glyph_width, fnt->glyph_height, fbg->text_background.r, fbg->text_background.g, fbg->text_background.b, fbg->text_alpha)
-// 			c += 1
-// 			continue
-// 		}
-
-// 		if glyph == '\n'.bytes()[0] {
-// 			c = 0
-// 			y_ += dwg.font.glyph_height
-// 			continue
-// 		}
-
-// 		font_glyph := glyph - dwg.font.first_char
-
-// 		gcoordx := dwg.font.glyph_coord_x[font_glyph]
-// 		gcoordy := dwg.font.glyph_coord_y[font_glyph]
-// 		// println("font_glyph ${glyph.ascii_str()} ${font_glyph} ${gcoordx} ${gcoordy}")
-
-// 		for gy in 0 .. dwg.font.glyph_height {
-// 			ly := gcoordy + gy
-// 			fly := ly * dwg.font.bitmap.stbiimg.width
-// 			py := y_ + gy
-
-// 			for gx in 0 .. dwg.font.glyph_width {
-// 				lx := gcoordx + gx
-// 				fl := dwg.font.bitmap.data[(fly + lx) * dwg.font.bitmap.stbiimg.nr_channels]
-
-// 				if fl == dwg.font.colorkey {
-// 					// draw a backdrop pixel
-// 					// fbg_pixela(fbg, x + gx + c * font.glyph_width, py, fbg.text_background.r, fbg.text_background.g, fbg.text_background.b, fbg.text_alpha)
-// 				} else {
-// 					// fbg_pixel(fbg, x + gx + c * font.glyph_width, py, r, g, b)
-// 					if color is bool {
-// 						dwg.draw_pixel_inv(x + gx + c * dwg.font.glyph_width, py)
-// 					} else if color is gx.Color {
-// 						dwg.draw_pixel(x + gx + c * dwg.font.glyph_width, py, color)
-// 					}
-// 				}
-// 			}
-// 		}
-
-// 		c += 1
-// 	}
-// }
-
 [direct_array_access]
 pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) int {
 	mut xadvance_tracker := 0
@@ -418,10 +366,8 @@ pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) 
 							y + local_y + character.yoffset + yadvance_tracker, color)
 					}
 				} else {
-					// print(' ')
 				}
 			}
-			// println('')
 		}
 		xadvance_tracker += character.xadvance
 		xadvance_tracker += dwg.font.info.spacing[0]
