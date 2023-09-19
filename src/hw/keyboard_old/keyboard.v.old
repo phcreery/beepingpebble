@@ -1,6 +1,43 @@
+module keyboard
+
 import term
 
 fn C.getchar() u8
+
+pub struct Config {
+pub mut:
+	keyboard_fn fn (KeyCode) = unsafe { nil }
+}
+
+pub struct Manager {
+pub mut:
+	keyboard_fn fn (KeyCode) = unsafe { nil }
+}
+
+fn (mut manager Manager) controller() {
+	for ; true; {
+		key := wait_key()
+		// if key == 27 {
+		// 	unsafe {
+		// 		wait_key()
+		// 		x_key := {65:KeyCode(265),66:.down,67:.right,68:.left}[wait_key()]
+		// 		manager.keyboard_fn(x_key)
+		// 	}
+		// } else {
+		unsafe {
+			manager.keyboard_fn(KeyCode(key))
+		}
+		// }
+	}
+}
+
+pub fn new_manager(args Config) &Manager {
+	mut manager := &Manager{
+		keyboard_fn: args.keyboard_fn
+	}
+	go manager.controller()
+	return manager
+}
 
 // https://modules.vlang.io/gg.html#KeyCode
 pub enum KeyCode {
@@ -129,17 +166,56 @@ pub enum KeyCode {
 	menu = 348
 }
 
+// https://github.com/malisipi/mfb
+// pub enum KeyCode {
+// 	right	= 262
+// 	left	= 263
+// 	down	= 264
+// 	up		= 265
+// 	a		= 97
+// 	b
+// 	c
+// 	d
+// 	e
+// 	f
+// 	g
+// 	h
+// 	i
+// 	j
+// 	k
+// 	l
+// 	m
+// 	n
+// 	o
+// 	p
+// 	q
+// 	r
+// 	s
+// 	t
+// 	u
+// 	v
+// 	w
+// 	x
+// 	y
+// 	z
+// 	enter	= 13
+// 	backspace = 127
+// 	space   = 32
+// 	escape	= 27
+// 	tab		= 9
+// 	menu	= -99
+// 	delete
+// }
+
+
 fn translate_alternate_keys(key u8) int {
-	// The ASCII value of A is 65 and Z is 90
-	println('-${key}-')
 	match int(key) {
 		10, 13 { return 257 } // enter
 		// 27 { return 256 } // esc
 		27 {
 			// ANSI escape code https://en.wikipedia.org/wiki/ANSI_escape_code
-			seq1 := C.getchar() // left_bracket = 91
+			seq1 := C.getchar()
 			if seq1 == 10 { return 256 } // escape
-			// if seq1 == 27 { return 256 } // escape
 			seq2 := C.getchar()
 			x_key := unsafe { {
 				65:265, // up
@@ -147,7 +223,6 @@ fn translate_alternate_keys(key u8) int {
 				67:262, // right
 				68:263  // left
 			}[seq2] }
-			println('seq1 ${seq1}, seq2 ${seq2} = xkey ${x_key}')
 			return x_key
 		}
 		// 65...90 { return key + 32 } // A-Z to a-z
@@ -156,17 +231,9 @@ fn translate_alternate_keys(key u8) int {
 	}
 }
 
-println('running...')
-for {
-	mut output := term.utf8_getchar() or {
-		''.runes()[0]
-	}
-	// mut output := C.getchar()
-
+fn wait_key() int {
+	keyboard.optimise_term()
+	mut output := C.getchar()
 	output2 := translate_alternate_keys(output)
-	println('rune ${output2}')
-	code := unsafe {
-		KeyCode(output2)
-	}
-	println('KeyCode ${code}')
+	return output2
 }

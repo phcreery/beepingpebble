@@ -6,17 +6,17 @@ import hw.keyboard
 
 pub type FNCb = fn (data voidptr)
 
-pub type FNEvent = fn (e &Event, data voidptr)
+// pub type FNEvent = fn (e &Event, data voidptr)
 
-pub type FNMove = fn (x f32, y f32, data voidptr)
+// pub type FNMove = fn (x f32, y f32, data voidptr)
 
 // pub type FNUnClick = fn (x f32, y f32, button MouseButton, data voidptr)
 // pub type FNClick = fn (x f32, y f32, button MouseButton, data voidptr)
-pub type FNKeyDown = fn (c KeyCode, m Modifier, data voidptr)
+// pub type FNKeyDown = fn (c KeyCode, m Modifier, data voidptr)
 
-pub type FNChar = fn (c u32, data voidptr)
+// pub type FNChar = fn (c u32, data voidptr)
 
-pub type KeyCode = keyboard.KeyCode
+// pub type KeyCode = keyboard.KeyCode
 
 // pub type Image = vpng.PngFile
 
@@ -81,19 +81,19 @@ pub type KeyCode = keyboard.KeyCode
 // 	key_modifiers Modifier
 // }
 
-pub struct Size {
-pub mut:
-	width  int
-	height int
-}
+// pub struct Size {
+// pub mut:
+// 	width  int
+// 	height int
+// }
 
-pub struct Rect {
-pub mut:
-	x      int
-	y      int
-	width  int
-	height int
-}
+// pub struct Rect {
+// pub mut:
+// 	x      int
+// 	y      int
+// 	width  int
+// 	height int
+// }
 
 // pub enum EventType {
 // 	key_down
@@ -113,57 +113,57 @@ pub mut:
 // 	// files_dropped // compability only (not used)
 // }
 
-pub enum EventType {
-	invalid
-	key_down
-	key_up
-	char
-	mouse_down
-	mouse_up
-	mouse_scroll
-	mouse_move
-	mouse_enter
-	mouse_leave
-	touches_began
-	touches_moved
-	touches_ended
-	touches_cancelled
-	resized
-	iconified
-	restored
-	focused
-	unfocused
-	suspended
-	resumed
-	quit_requested
-	clipboard_pasted
-	files_dropped
-	num
-	files_droped  [deprecated: 'use files_dropped instead'; deprecated_after: '2023-08-21']
-}
+// pub enum EventType {
+// 	invalid
+// 	key_down
+// 	key_up
+// 	char
+// 	mouse_down
+// 	mouse_up
+// 	mouse_scroll
+// 	mouse_move
+// 	mouse_enter
+// 	mouse_leave
+// 	touches_began
+// 	touches_moved
+// 	touches_ended
+// 	touches_cancelled
+// 	resized
+// 	iconified
+// 	restored
+// 	focused
+// 	unfocused
+// 	suspended
+// 	resumed
+// 	quit_requested
+// 	clipboard_pasted
+// 	files_dropped
+// 	num
+// 	files_droped  [deprecated: 'use files_dropped instead'; deprecated_after: '2023-08-21']
+// }
 
-pub struct Event {
-pub mut:
-	frame_count u64
-	typ         EventType
-	key_code    KeyCode
-	char_code   u32
-	key_repeat  bool
-	modifiers   u32
-	//	mouse_button       MouseButton
-	mouse_x     f32
-	mouse_y     f32
-	mouse_dx    f32
-	mouse_dy    f32
-	scroll_x    f32
-	scroll_y    f32
-	num_touches int
-	// touches            [8]TouchPoint
-	window_width       int
-	window_height      int
-	framebuffer_width  int
-	framebuffer_height int
-}
+// pub struct Event {
+// pub mut:
+// 	frame_count u64
+// 	typ         EventType
+// 	key_code    KeyCode
+// 	char_code   u32
+// 	key_repeat  bool
+// 	modifiers   u32
+// 	//	mouse_button       MouseButton
+// 	mouse_x     f32
+// 	mouse_y     f32
+// 	mouse_dx    f32
+// 	mouse_dy    f32
+// 	scroll_x    f32
+// 	scroll_y    f32
+// 	num_touches int
+// 	// touches            [8]TouchPoint
+// 	window_width       int
+// 	window_height      int
+// 	framebuffer_width  int
+// 	framebuffer_height int
+// }
 
 // pub struct TouchPoint { // compability only (not used)
 // pub mut:
@@ -178,9 +178,9 @@ pub mut:
 // 	invalid = 256
 // }
 
-pub enum Modifier {
-	shift // (1<<0)
-	ctrl // (1<<1)
-	alt // (1<<2)
-	super // (1<<3)
-}
+// pub enum Modifier {
+// 	shift // (1<<0)
+// 	ctrl // (1<<1)
+// 	alt // (1<<2)
+// 	super // (1<<3)
+// }

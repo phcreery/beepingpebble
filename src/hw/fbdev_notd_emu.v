@@ -7,7 +7,7 @@ import time
 // import vpng
 // built-in
 // import fbdev.mouse
-import hw.keyboard
+// import hw.keyboard
 
 // pub type FNCb = fn (data voidptr)
 // pub type FNEvent = fn (e &Event, data voidptr)
@@ -18,33 +18,53 @@ pub struct Config {
 	frame_fn  FNCb    = unsafe { nil }
 	init_fn   FNCb    = unsafe { nil }
 	event_fn  FNEvent = unsafe { nil }
-	// compability only (not used)
 	width         int
 	height        int
-	create_window bool
-	window_title  string
+	// compability only (not used)
+	// create_window bool
+	// window_title  string
+
+	// Keyboard related config
+	buffer_size int = 256
+	hide_cursor          bool
+	capture_events       bool
+	use_alternate_buffer bool = true
+	skip_init_checks     bool
+	// All kill signals to set up exit listeners on:
+	reset []os.Signal = [.hup, .int, .quit, .ill, .abrt, .bus, .fpe, .kill, .segv, .pipe, .alrm, .term,
+	.stop]
 }
 
 pub struct Context {
 pub mut:
 	framebuffer os.File
-	bg_color    gx.Color
+	// bg_color    gx.Color
 
 	width          int
 	height         int
 	width_extended int
 
-	user_data voidptr
-	frame_fn  FNCb    = unsafe { nil }
-	init_fn   FNCb    = unsafe { nil }
-	event_fn  FNEvent = unsafe { nil }
+	config Config
 
-	keyboard_manager &keyboard.Manager = unsafe { nil }
-	keydown_fn       FNKeyDown = unsafe { nil }
-	char_fn          FNChar    = unsafe { nil }
+	// user_data voidptr
+	// frame_fn  FNCb    = unsafe { nil }
+	// init_fn   FNCb    = unsafe { nil }
+	// event_fn  FNEvent = unsafe { nil }
+
+	// keyboard_manager &keyboard.Manager = unsafe { nil }
+	// keydown_fn       FNKeyDown = unsafe { nil }
+	// char_fn          FNChar    = unsafe { nil }
+
+	// Keyboard related information
+	print_buf  []u8
+	// *nix only implemenationtion information, see: https://github.com/vlang/v/blob/77219de1734e59700aafa12698ac90cc8b359d82/vlib/term/ui/input_nix.c.v
+	read_buf []u8
+	// read_all_bytes causes all the raw bytes to be read as one event unit.
+	// This is cruicial for UTF-8 support since Unicode codepoints can span several bytes.
+	read_all_bytes bool = true
 }
 
-pub fn new_context(args Config) &Context {
+pub fn new_context(cfg Config) &Context {
 	if !(os.exists('/dev/fb1') && os.exists('/sys/class/graphics/fb1/virtual_size')
 		&& os.exists('/sys/class/graphics/fb1/stride')) {
 		panic('Framebuffer output is not supported')
@@ -66,33 +86,43 @@ pub fn new_context(args Config) &Context {
 		width: screen_width
 		height: screen_height
 		width_extended: screen_width_ext
-		bg_color: args.bg_color
-		user_data: args.user_data
-		frame_fn: args.frame_fn
-		init_fn: args.init_fn
-		event_fn: args.event_fn
+		config: cfg
+		// bg_color: args.bg_color
+		// user_data: args.user_data
+		// frame_fn: args.frame_fn
+		// init_fn: args.init_fn
+		// event_fn: args.event_fn
 	}
 
-	context.keyboard_manager = keyboard.new_manager(
-		keyboard_fn: fn [context] (key keyboard.KeyCode) {
-			// println('key ${key}')
-			if context.event_fn != unsafe { nil } {
-				context.event_fn(&Event{
-					typ: .key_down
-					key_code: key
-				}, context.user_data)
-			}
-			if context.keydown_fn != unsafe { nil } {
-				context.keydown_fn(key, unsafe { Modifier(0) }, context.user_data)
-			}
-			if context.char_fn != unsafe { nil } {
-				if key != .escape && key != .enter && key != .backspace && key != .left
-					&& key != .right && key != .up && key != .down {
-					context.char_fn(u32(key), context.user_data)
-				}
-			}
-		}
-	)
+	context.read_buf = []u8{cap: cfg.buffer_size}
+	context.termios_setup() or {
+		panic('could not setup termios')
+	}
+
+	// context.keyboard_manager = keyboard.new_manager(
+	// 	keyboard_fn: fn [context] (event &Event) {
+	// 		// println('event ${event}')
+	// 		if ctx.config.event_fn != unsafe { nil } {
+	// 			context.event_fn(event, ctx.user_data)
+	// 		}
+	// 		// println('key ${key}')
+	// 		// if context.event_fn != unsafe { nil } {
+	// 		// 	context.event_fn(&Event{
+	// 		// 		typ: .key_down
+	// 		// 		key_code: key
+	// 		// 	}, context.user_data)
+	// 		// }
+	// 		// if context.keydown_fn != unsafe { nil } {
+	// 		// 	context.keydown_fn(key, unsafe { Modifier(0) }, context.user_data)
+	// 		// }
+	// 		// if context.char_fn != unsafe { nil } {
+	// 		// 	if key != .escape && key != .enter && key != .backspace && key != .left
+	// 		// 		&& key != .right && key != .up && key != .down {
+	// 		// 		context.char_fn(u32(key), context.user_data)
+	// 		// 	}
+	// 		// }
+	// 	}
+	// )
 
 	return context
 }
@@ -109,14 +139,15 @@ pub fn (mut context Context) blit(virtualbuffer []u8) {
 }
 
 pub fn (mut context Context) run() {
-	if context.init_fn != unsafe { nil } {
-		context.init_fn(context.user_data)
+	if context.config.init_fn != unsafe { nil } {
+		context.config.init_fn(context.config.user_data)
 	}
 	unlimited_fps := true
 	fps_limit := 60
 	for {
 		start_time := time.now()
-		context.frame_fn(context.user_data)
+		context.config.frame_fn(context.config.user_data)
+		context.fetch_events()
 		end_time := time.now()
 		$if !unlimited_fps ? {
 			frame_draw_time := end_time - start_time
@@ -126,7 +157,8 @@ pub fn (mut context Context) run() {
 }
 
 pub fn (mut context Context) quit() {
-	keyboard.restore_term()
+	// keyboard.restore_term()
 	// context.framebuffer.close()
-	exit(0)
+	termios_reset()
+	// exit(0)
 }
