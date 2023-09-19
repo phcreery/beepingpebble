@@ -26,7 +26,7 @@ pub struct Config {
 
 	// Keyboard related config
 	buffer_size int = 256
-	hide_cursor          bool
+	hide_cursor          bool = true
 	capture_events       bool
 	use_alternate_buffer bool = true
 	skip_init_checks     bool

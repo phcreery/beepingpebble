@@ -14,12 +14,27 @@ fn get_termios() termios.Termios {
 	return t
 }
 
+fn termios_reset() {
+	// C.TCSANOW ??
+	mut startup := termios_at_startup
+	termios.tcsetattr(C.STDIN_FILENO, C.TCSAFLUSH, mut startup)
+	// print('\x1b[?1003l\x1b[?1006l\x1b[?25h')
+	print('\x1b[?25h') // restore hidden cursor
+	flush_stdout()
+	// c := ctx_ptr
+	// if unsafe { c != 0 } && c.cfg.use_alternate_buffer {
+	// 	print('\x1b[?1049l')
+	// }
+	os.flush()
+}
+
 fn restore_terminal_state_signal(_ os.Signal) {
 	restore_terminal_state()
 }
 
 fn restore_terminal_state() {
 	termios_reset()
+	// os.system('tput cnorm') // blinking cursor
 	os.flush()
 }
 
@@ -46,7 +61,9 @@ fn (mut ctx Context) termios_setup() ! {
 	if ctx.config.hide_cursor {
 		// ctx.hide_cursor()
 		// ctx.flush()
-		print('\x1b[?25l')
+		print('\x1b[?25l') // hide
+		// print('\033[?12l') // stop blinking
+		// os.system('tput civis') // stop blinking
 		flush_stdout()
 	}
 
@@ -64,19 +81,6 @@ fn (mut ctx Context) termios_setup() ! {
 	// os.signal_opt(.tstp, restore_terminal_state_signal) or {}
 	
 
-}
-
-fn termios_reset() {
-	// C.TCSANOW ??
-	mut startup := termios_at_startup
-	termios.tcsetattr(C.STDIN_FILENO, C.TCSAFLUSH, mut startup)
-	print('\x1b[?1003l\x1b[?1006l\x1b[?25h')
-	flush_stdout()
-	// c := ctx_ptr
-	// if unsafe { c != 0 } && c.cfg.use_alternate_buffer {
-	// 	print('\x1b[?1049l')
-	// }
-	os.flush()
 }
 
 ///////////////////////////////////////////
