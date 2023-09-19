@@ -6,12 +6,12 @@
 
 A launcher for the beepy (formerly beepberry) with a pebble watch PebbleUI inspiration
 
-The launcher is written in V, which is a transpiled-to-C-then-compiled-to-binary language which minimizes battery usage and increases application speed.
+The launcher is written in V, which is a transpiled-to-C-then-compiled-to-binary language which minimizes battery usage and increases speed.
 
 Features:
 
 - [x] load app config from text file
-- [ ] launch apps (untested)
+- [x] launch apps (untested)
 - [x] Battery status
 - [x] WIFI status
 - [x] Light/Dark mode
