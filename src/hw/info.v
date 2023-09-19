@@ -14,23 +14,23 @@ pub fn get_batt_volts() string {
 }
 
 pub fn get_wifi_strength() string {
+	$if emu ? {
+		return '\u2022\u2022\u2022\u2027'
+	}
 	info := os.read_file('/proc/net/wireless') or { return 'xxxx' }
 	lines := info.split_into_lines()
-	// println(lines[2])
 	percent_s := lines[2][14..18].replace('.', '').replace(' ', '')
-	// println('-${percent_s}-')
 	percent := percent_s.parse_int(10, 8) or { return '????' }
-	// println(percent)
 	if percent > 75 {
-		return '****'
+		return '\u2022\u2022\u2022\u2022' // '▁▃▅▇' // ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▉
 	} else if percent > 50 && percent <= 75 {
-		return '-***'
+		return '\u2022\u2022\u2022\u2027'
 	} else if percent > 25 && percent <= 50 {
-		return '--**'
+		return '\u2022\u2022\u2027\u2027'
 	} else if percent > 0 && percent <= 25 {
-		return '---*'
+		return '\u2022\u2027\u2027\u2027'
 	} else {
-		return '----'
+		return '\u2027\u2027\u2027\u2027'
 	}
 }
 

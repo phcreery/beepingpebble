@@ -48,12 +48,12 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 		text_array << time.now().custom_format('M/D')
 	}
 	if sb.config.show_battery_percent {
-		text_array << '${hw.get_batt_percent()}%'
+		text_array << '${hw.get_batt_percent()}%' // \uf578  battery icon
 	}
 	if sb.config.show_battery_voltage {
 		text_array << '${hw.get_batt_volts()}V'
 	}
-	text_array << '${hw.get_wifi_strength()}'
+	text_array << '\ufaa8 ${hw.get_wifi_strength()}' // \ufaa8 and \ufaa9 for wifi
 	$if emu ? {
 		text_array << get_fps(dwg)
 	}
@@ -62,7 +62,8 @@ fn (mut sb StatusBar) update(dwg &DrawContext) {
 	mut x := width
 	for text_item in text_array {
 		x -= 8 // padding
-		x -= text_item.len * 8 // 8 = font width
+		x -= text_item.runes().len * 8 // 8 = font width
+		// println('${text_item}, ${text_item.runes().len}')
 		item := StatusBarTextItem{
 			text: text_item
 			pos: vec.Vec2[int]{
