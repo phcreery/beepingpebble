@@ -91,8 +91,6 @@ pub fn new_context(args Config) &Context {
 	)
 	context.gg_ctx = gg_ctx
 
-	// println("gg_ctx ${gg_ctx}")
-
 	return context
 }
 

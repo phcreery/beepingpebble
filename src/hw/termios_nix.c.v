@@ -16,15 +16,11 @@ fn get_termios() termios.Termios {
 
 fn termios_reset() {
 	// C.TCSANOW ??
-	mut startup := termios_at_startup
+	mut startup := hw.termios_at_startup
 	termios.tcsetattr(C.STDIN_FILENO, C.TCSAFLUSH, mut startup)
-	// print('\x1b[?1003l\x1b[?1006l\x1b[?25h')
-	print('\x1b[?25h') // restore hidden cursor
+	// print('\x1b[?25h') // restore hidden cursor
+	os.system('tput cnorm') // restore blinking cursor
 	flush_stdout()
-	// c := ctx_ptr
-	// if unsafe { c != 0 } && c.cfg.use_alternate_buffer {
-	// 	print('\x1b[?1049l')
-	// }
 	os.flush()
 }
 
@@ -34,13 +30,10 @@ fn restore_terminal_state_signal(_ os.Signal) {
 
 fn restore_terminal_state() {
 	termios_reset()
-	// os.system('tput cnorm') // blinking cursor
 	os.flush()
 }
 
 fn (mut ctx Context) termios_setup() ! {
-	// println('termios_setup')
-
 	if !ctx.config.skip_init_checks && !(os.is_atty(C.STDIN_FILENO) != 0
 		&& os.is_atty(C.STDOUT_FILENO) != 0) {
 		return error('not running under a TTY')
@@ -59,74 +52,28 @@ fn (mut ctx Context) termios_setup() ! {
 	}
 
 	if ctx.config.hide_cursor {
-		// ctx.hide_cursor()
-		// ctx.flush()
 		print('\x1b[?25l') // hide
 		// print('\033[?12l') // stop blinking
 		// os.system('tput civis') // stop blinking
 		flush_stdout()
 	}
 
-	// println('Prevent stdin from blocking by making its read time 0')
 	// Prevent stdin from blocking by making its read time 0
 	tios.c_cc[C.VTIME] = 0
 	tios.c_cc[C.VMIN] = 0
 	termios.tcsetattr(C.STDIN_FILENO, C.TCSAFLUSH, mut tios)
 	flush_stdout()
-	// println('tios ${tios.c_cc[C.VTIME]} ${tios.c_cc[C.VMIN]}')
-
 
 	// Reset console on exit
+	// for some reason this blocks sending commands to tty though....
 	// C.atexit(restore_terminal_state)
 	// os.signal_opt(.tstp, restore_terminal_state_signal) or {}
-	
-
 }
 
-///////////////////////////////////////////
-// TODO: do multiple sleep/read cycles, rather than one big one
-// fn (mut ctx Context) termios_loop() {
-// 	frame_time := 1_000_000 / ctx.cfg.frame_rate
-// 	mut init_called := false
-// 	mut sw := time.new_stopwatch(auto_start: false)
-// 	mut sleep_len := 0
-// 	for {
-// 		if !init_called {
-// 			ctx.init()
-// 			init_called = true
-// 		}
-// 		// println('SLEEPING: $sleep_len')
-// 		if sleep_len > 0 {
-// 			time.sleep(sleep_len * time.microsecond)
-// 		}
-// 		if !ctx.paused {
-// 			sw.restart()
-// 			if ctx.cfg.event_fn != unsafe { nil } {
-// 				unsafe {
-// 					len := C.read(C.STDIN_FILENO, &u8(ctx.read_buf.data) + ctx.read_buf.len,
-// 						ctx.read_buf.cap - ctx.read_buf.len)
-// 					ctx.resize_arr(ctx.read_buf.len + len)
-// 				}
-// 				if ctx.read_buf.len > 0 {
-// 					ctx.parse_events()
-// 				}
-// 			}
-// 			ctx.frame()
-// 			sw.pause()
-// 			e := sw.elapsed().microseconds()
-// 			sleep_len = frame_time - int(e)
-
-// 			ctx.frame_count++
-// 		}
-// 	}
-// }
-
 fn (mut ctx Context) fetch_events() {
-	// println('fetch_events')
 	if ctx.config.event_fn != unsafe { nil } {
 		unsafe {
-			len := C.read(C.STDIN_FILENO, &u8(ctx.read_buf.data) + ctx.read_buf.len,
-				ctx.read_buf.cap - ctx.read_buf.len)
+			len := C.read(C.STDIN_FILENO, &u8(ctx.read_buf.data) + ctx.read_buf.len, ctx.read_buf.cap - ctx.read_buf.len)
 			ctx.resize_arr(ctx.read_buf.len + len)
 		}
 		if ctx.read_buf.len > 0 {
@@ -301,7 +248,7 @@ fn escape_sequence(buf_ string) (&Event, int) {
 			modifiers: modifiers
 		}, 2
 	}
-	
+
 	// ----------------------------
 	//   Special key combinations
 	// ----------------------------

@@ -1,8 +1,6 @@
-module hw
+module main
 
-pub type FNCb = fn (data voidptr)
-
-pub type FNEvent = fn (e &Event, data voidptr)
+import os
 
 pub enum KeyCode {
 	null = 0
@@ -152,33 +150,88 @@ pub struct Event {
 pub:
 	typ EventType
 	// Mouse event info
-	// x         int
-	// y         int
-	// button    MouseButton
+	x         int
+	y         int
+	button    MouseButton
+	direction Direction
 	// Keyboard event info
-	key_code  KeyCode
+	code      KeyCode
 	modifiers Modifiers
 	ascii     u8
 	utf8      string
-	direction Direction
+	// Resized event info
+	width  int
+	height int
 }
 
-// shifts the array left, to remove any data that was just read, and updates its len
-// TODO: remove
+pub struct Context {
+	ExtraContext // contains fields specific to an implementation
+pub:
+	cfg Config // the initial configuration, passed to ui.init()
+mut:
+	print_buf  []u8
+	paused     bool
+	enable_su  bool
+	enable_rgb bool
+pub mut:
+	frame_count   u64
+	window_width  int
+	window_height int
+}
+
+pub struct Config {
+	user_data  voidptr
+	init_fn    fn (voidptr)
+	frame_fn   fn (voidptr)
+	cleanup_fn fn (voidptr)
+	event_fn   fn (&Event, voidptr)
+	fail_fn    fn (string)
+
+	buffer_size int = 256
+	frame_rate  int = 30
+	use_x11     bool
+
+	window_title         string
+	hide_cursor          bool = true
+	capture_events       bool
+	use_alternate_buffer bool = true
+	skip_init_checks     bool
+	// All kill signals to set up exit listeners on:
+	reset []os.Signal = [.hup, .int, .quit, .ill, .abrt, .bus, .fpe, .kill, .segv, .pipe, .alrm, .term,
+	.stop]
+}
+
 [inline]
-fn (mut ctx Context) shift(len int) {
-	unsafe {
-		C.memmove(ctx.read_buf.data, &u8(ctx.read_buf.data) + len, ctx.read_buf.cap - len)
-		ctx.resize_arr(ctx.read_buf.len - len)
+fn (ctx &Context) init() {
+	if ctx.cfg.init_fn != unsafe { nil } {
+		ctx.cfg.init_fn(ctx.cfg.user_data)
 	}
 }
 
-// TODO: don't actually do this, lmao
 [inline]
-fn (mut ctx Context) resize_arr(size int) {
-	mut l := unsafe { &ctx.read_buf.len }
-	unsafe {
-		*l = size
-		_ = l
+fn (ctx &Context) frame() {
+	if ctx.cfg.frame_fn != unsafe { nil } {
+		ctx.cfg.frame_fn(ctx.cfg.user_data)
+	}
+}
+
+[inline]
+fn (ctx &Context) cleanup() {
+	if ctx.cfg.cleanup_fn != unsafe { nil } {
+		ctx.cfg.cleanup_fn(ctx.cfg.user_data)
+	}
+}
+
+[inline]
+fn (ctx &Context) fail(error string) {
+	if ctx.cfg.fail_fn != unsafe { nil } {
+		ctx.cfg.fail_fn(error)
+	}
+}
+
+[inline]
+fn (ctx &Context) event(event &Event) {
+	if ctx.cfg.event_fn != unsafe { nil } {
+		ctx.cfg.event_fn(event, ctx.cfg.user_data)
 	}
 }

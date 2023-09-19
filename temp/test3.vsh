@@ -29,7 +29,7 @@ fn peekchar() int {
 	println('c eof ${c}, ${C.EOF}')
     if(c != C.EOF) { 
 		println('ungetc')
-		C.ungetc(c, C.stdin) }      /* puts it back */
+		C.ungetc(c, C.stdin) }      // puts it back
 	return c
 }
 

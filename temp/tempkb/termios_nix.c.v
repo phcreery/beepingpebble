@@ -15,7 +15,6 @@ fn get_termios() termios.Termios {
 	return t
 }
 
-
 fn restore_terminal_state_signal(_ os.Signal) {
 	restore_terminal_state()
 }
@@ -32,7 +31,6 @@ pub fn (mut ctx Context) hide_cursor() {
 }
 
 fn (mut ctx Context) termios_setup() ! {
-
 	if !ctx.cfg.skip_init_checks && !(os.is_atty(C.STDIN_FILENO) != 0
 		&& os.is_atty(C.STDOUT_FILENO) != 0) {
 		return error('not running under a TTY')
@@ -104,7 +102,7 @@ fn (mut ctx Context) termios_setup() ! {
 	// Reset console on exit
 	C.atexit(restore_terminal_state)
 	os.signal_opt(.tstp, restore_terminal_state_signal) or {}
-	
+
 	// os.signal_opt(.cont, fn (_ os.Signal) {
 	// 	mut c := unsafe { ctx_ptr }
 	// 	if unsafe { c != 0 } {
@@ -480,7 +478,6 @@ fn escape_sequence(buf_ string) (&Event, int) {
 	// 		}
 	// 	}
 	// }
-
 
 	// ----------------------------
 	//   Special key combinations

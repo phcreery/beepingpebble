@@ -2,15 +2,7 @@ module hw
 
 import os
 import gx
-// import gg
 import time
-// import vpng
-// built-in
-// import fbdev.mouse
-// import hw.keyboard
-
-// pub type FNCb = fn (data voidptr)
-// pub type FNEvent = fn (e &Event, data voidptr)
 
 pub struct Config {
 	bg_color  gx.Color
@@ -18,14 +10,10 @@ pub struct Config {
 	frame_fn  FNCb    = unsafe { nil }
 	init_fn   FNCb    = unsafe { nil }
 	event_fn  FNEvent = unsafe { nil }
-	width         int
-	height        int
-	// compability only (not used)
-	// create_window bool
-	// window_title  string
-
+	width     int
+	height    int
 	// Keyboard related config
-	buffer_size int = 256
+	buffer_size          int  = 256
 	hide_cursor          bool = true
 	capture_events       bool
 	use_alternate_buffer bool = true
@@ -38,25 +26,14 @@ pub struct Config {
 pub struct Context {
 pub mut:
 	framebuffer os.File
-	// bg_color    gx.Color
 
 	width          int
 	height         int
 	width_extended int
 
 	config Config
-
-	// user_data voidptr
-	// frame_fn  FNCb    = unsafe { nil }
-	// init_fn   FNCb    = unsafe { nil }
-	// event_fn  FNEvent = unsafe { nil }
-
-	// keyboard_manager &keyboard.Manager = unsafe { nil }
-	// keydown_fn       FNKeyDown = unsafe { nil }
-	// char_fn          FNChar    = unsafe { nil }
-
 	// Keyboard related information
-	print_buf  []u8
+	print_buf []u8
 	// *nix only implemenationtion information, see: https://github.com/vlang/v/blob/77219de1734e59700aafa12698ac90cc8b359d82/vlib/term/ui/input_nix.c.v
 	read_buf []u8
 	// read_all_bytes causes all the raw bytes to be read as one event unit.
@@ -87,48 +64,15 @@ pub fn new_context(cfg Config) &Context {
 		height: screen_height
 		width_extended: screen_width_ext
 		config: cfg
-		// bg_color: args.bg_color
-		// user_data: args.user_data
-		// frame_fn: args.frame_fn
-		// init_fn: args.init_fn
-		// event_fn: args.event_fn
 	}
 
 	context.read_buf = []u8{cap: cfg.buffer_size}
-	context.termios_setup() or {
-		panic('could not setup termios')
-	}
-
-	// context.keyboard_manager = keyboard.new_manager(
-	// 	keyboard_fn: fn [context] (event &Event) {
-	// 		// println('event ${event}')
-	// 		if ctx.config.event_fn != unsafe { nil } {
-	// 			context.event_fn(event, ctx.user_data)
-	// 		}
-	// 		// println('key ${key}')
-	// 		// if context.event_fn != unsafe { nil } {
-	// 		// 	context.event_fn(&Event{
-	// 		// 		typ: .key_down
-	// 		// 		key_code: key
-	// 		// 	}, context.user_data)
-	// 		// }
-	// 		// if context.keydown_fn != unsafe { nil } {
-	// 		// 	context.keydown_fn(key, unsafe { Modifier(0) }, context.user_data)
-	// 		// }
-	// 		// if context.char_fn != unsafe { nil } {
-	// 		// 	if key != .escape && key != .enter && key != .backspace && key != .left
-	// 		// 		&& key != .right && key != .up && key != .down {
-	// 		// 		context.char_fn(u32(key), context.user_data)
-	// 		// 	}
-	// 		// }
-	// 	}
-	// )
+	context.termios_setup() or { panic('could not setup termios') }
 
 	return context
 }
 
 pub fn (context &Context) begin() {
-	// context.draw_rect_filled(0, 0, context.width, context.height, context.bg_color)
 }
 
 pub fn (mut context Context) end() {
@@ -157,8 +101,6 @@ pub fn (mut context Context) run() {
 }
 
 pub fn (mut context Context) quit() {
-	// keyboard.restore_term()
 	// context.framebuffer.close()
 	termios_reset()
-	// exit(0)
 }

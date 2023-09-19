@@ -36,7 +36,7 @@ pub mut:
 pub struct MenuItem {
 	name    string
 	icon    string
-	desc   	string
+	desc    string
 	command string
 }
 
@@ -50,11 +50,11 @@ pub mut:
 	current_item_index  int
 	need_update         bool
 	selection_change_sw time.Time = time.now()
-	cached_icons		map[string]stbi.Image
+	cached_icons        map[string]stbi.Image
 }
 
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
-	y_origin := 20 //40
+	y_origin := 20 // 40
 	x_i := index % 4
 	y_i := index / 4
 	return vec.Vec2[int]{
@@ -90,7 +90,6 @@ fn menu_draw_debug_outline(mut dwg DrawContext) {
 }
 
 fn create_menu(dwg DrawContext) &Menu {
-
 	padding := 2
 	mut menu := &Menu{
 		items: []
@@ -148,10 +147,10 @@ fn (mut menu Menu) draw(mut app App) {
 		if i == menu.current_item_index {
 			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
 			w := app.dwg.get_draw_text_width(item.desc)
-			app.dwg.draw_text(400/2 - int(w/2), 240 - 20/2 - int(app.dwg.font.info.size / 2), menu.items[menu.current_item_index].desc, false)
+			app.dwg.draw_text(400 / 2 - int(w / 2), 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
+				menu.items[menu.current_item_index].desc, false)
 		}
 	}
-
 
 	// draw the shape where the selector should go
 	mut points := []Point{len: 4}
@@ -282,7 +281,6 @@ fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
 }
 
 fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
-
 	items := menu_items_from_desktop_entries(entries)
 	for item in items {
 		// TODO: check if icon exists, if not, load default

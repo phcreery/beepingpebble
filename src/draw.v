@@ -85,6 +85,8 @@ pub fn (mut dwg DrawContext) run() {
 }
 
 pub fn (mut dwg DrawContext) quit() {
+	dwg.draw_rect_filled(0, 0, width, height, gx.black)
+	dwg.blit()
 	dwg.hw_ctx.quit()
 }
 

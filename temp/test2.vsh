@@ -133,34 +133,43 @@ fn translate_alternate_keys(key u8) int {
 	// The ASCII value of A is 65 and Z is 90
 	println('-${key}-')
 	match int(key) {
-		10, 13 { return 257 } // enter
+		10, 13 {
+			return 257
+		} // enter
 		// 27 { return 256 } // esc
 		27 {
 			// ANSI escape code https://en.wikipedia.org/wiki/ANSI_escape_code
 			seq1 := C.getchar() // left_bracket = 91
-			if seq1 == 10 { return 256 } // escape
+			if seq1 == 10 {
+				return 256
+			}
+			// escape
 			// if seq1 == 27 { return 256 } // escape
 			seq2 := C.getchar()
-			x_key := unsafe { {
-				65:265, // up
-				66:264, // down
-				67:262, // right
-				68:263  // left
-			}[seq2] }
+			x_key := unsafe {
+				{
+					65: 265 // up
+					66: 264 // down
+					67: 262 // right
+					68: 263 // left
+				}[seq2]
+			}
 			println('seq1 ${seq1}, seq2 ${seq2} = xkey ${x_key}')
 			return x_key
 		}
 		// 65...90 { return key + 32 } // A-Z to a-z
-		97...122 { return key - 32 } // a-z to A-Z
-		else { return key }
+		97...122 {
+			return key - 32
+		} // a-z to A-Z
+		else {
+			return key
+		}
 	}
 }
 
 println('running...')
 for {
-	mut output := term.utf8_getchar() or {
-		''.runes()[0]
-	}
+	mut output := term.utf8_getchar() or { ''.runes()[0] }
 	// mut output := C.getchar()
 
 	output2 := translate_alternate_keys(output)

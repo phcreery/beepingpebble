@@ -12,7 +12,7 @@ fn peekchar(mut r readline.Readline) int {
 	r.disable_raw_mode()
 	
 	println('peeked ${c}')
-    if(c != C.EOF) { C.ungetc(c, C.stdin) }      /* puts it back */
+    if(c != C.EOF) { C.ungetc(c, C.stdin) }      // puts it back
 	return c
 }
 
