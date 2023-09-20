@@ -67,6 +67,7 @@ fn event_manager(mut ev hw.Event, mut app App) {
 			.escape, .q {
 				app.dwg.quit()
 				println('escape')
+				exit(0)
 			}
 			.right, .d {
 				app.menu.next()
