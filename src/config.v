@@ -27,7 +27,7 @@ battery_percent=true
 battery_voltage=false
 '
 
-default_apps := {
+const default_apps := {
 		'welcome.desktop': $embed_file('.beepingpebble/apps/welcome.desktop')
 		'beepy-config.desktop': $embed_file('.beepingpebble/apps/beepy-config.desktop')
 	}
@@ -76,7 +76,7 @@ pub fn init_config_file() {
 	// 	panic('Failed to copy default apps')
 	// }
 	for app_name, app_content in default_apps {
-		os.write_file(bp_apps_location + '/' + app_name, app_content) or {
+		os.write_file(bp_apps_location + '/' + app_name, app_content.to_string()) or {
 			panic('Failed to create default app ${app_name}')
 		}
 	}
