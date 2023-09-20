@@ -114,14 +114,6 @@ fn create_menu(dwg DrawContext) &Menu {
 		desc: 'list files in current directory'
 		command: 'ls'
 	}
-	menu.items << MenuItem{'Beeper1', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper2', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper3', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper4', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper5', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper6', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper7', 'icons/beeper-icon.png', '', 'asdf'}
-	menu.items << MenuItem{'Beeper8', 'icons/beeper-icon.png', '', 'asdf'}
 
 	init := menu.loc_from_index(0)
 	init_x := init.x
@@ -157,13 +149,17 @@ fn (mut menu Menu) draw(mut app App) {
 		}
 		item := menu.items[index]
 		pos := menu.loc_from_index(i)
-		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
-		app.dwg.draw_image(pos.x + 20, pos.y + 15, menu.cached_icons[item.icon], false)
+		name := item.name.limit(int(400/4/8))
+		name_w := app.dwg.get_draw_text_width(name)
+		icon := menu.cached_icons[item.icon]
+		app.dwg.draw_text(pos.x + menu.item_width/2 - int(name_w / 2), pos.y + menu.item_height - 16, name, false)
+		app.dwg.draw_image(pos.x + menu.item_width/2 - int(icon.width/2), pos.y + 15, menu.cached_icons[item.icon], false)
 		if index == menu.current_item_index {
+			desc := item.desc.limit(int(370/8))
 			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
-			w := app.dwg.get_draw_text_width(item.desc)
-			app.dwg.draw_text(400 / 2 - int(w / 2), 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
-				menu.items[menu.current_item_index].desc, false)
+			desc_w := app.dwg.get_draw_text_width(desc)
+			app.dwg.draw_text(400 / 2 - int(desc_w / 2), 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
+				desc, false)
 		}
 	}
 	// draw page indicators
