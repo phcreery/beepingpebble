@@ -1,7 +1,6 @@
 module main
 
 import os
-import hw
 
 // https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#recognized-keys
 

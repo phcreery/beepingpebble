@@ -6,7 +6,7 @@ import os
 // TOML Template
 const config_dir := os.config_dir() or { '' }
 
-const bp_config_dir := config_dir + '/.beepingpebble'
+const bp_config_dir := config_dir + '/beepingpebble'
 const bp_config_location := bp_config_dir + '/config.toml'
 const bp_apps_location := bp_config_dir + '/apps'
 
@@ -64,6 +64,10 @@ pub fn init_config_file() {
 	}
 	os.write_file(bp_config_location, default_config_text) or {
 		panic('Failed to create config file')
+	}
+	// copy apps
+	os.cp_all('.beepingpebble/apps/', bp_apps_location, false) or {
+		panic('Failed to copy default apps')
 	}
 }
 
