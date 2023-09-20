@@ -1,6 +1,6 @@
 # BEEPINGPEBBLE
 
-![Screenshot](doc/image-2.png)
+![Screenshot](doc/image.png)
 
 A launcher for the beepy (formerly beepberry) with a pebble watch PebbleUI inspiration
 
@@ -26,8 +26,6 @@ Features:
 
 ## Install
 
-0 Dependencies.
-
 _Coming Soon_
 
 ## Documentation
@@ -42,7 +40,7 @@ chmod +x beepingpebble
 
 Configuration is stored at `~/.config/beepingpebble/`. See `.beepingpebble/config.toml` for configuration options.
 
-Applications are stored as desktop entry files in `~/.config/beepingpebble/apps/`. To add apps, simply create or copy desktop entry files. Note: see `icons` folder to list available icons
+Applications are stored as desktop entry files in `~/.config/beepingpebble/apps/`. To add apps, simply create or copy desktop entry files. Note: see `icons` folder to list available icons that are embedded in the binary. Any provided icons must be roughly 50x50 and 32 (4) or 8 (1) bit depth.
 
 ## Developing
 
