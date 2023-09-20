@@ -2,9 +2,9 @@
 
 ![Screenshot](doc/image-2.png)
 
-## About
-
 A launcher for the beepy (formerly beepberry) with a pebble watch PebbleUI inspiration
+
+## About
 
 The launcher is written in V, which is a transpiled-to-C-then-compiled-to-binary language which minimizes battery usage and increases speed.
 
@@ -26,13 +26,27 @@ Features:
 
 ## Install
 
+0 Dependencies.
+
 _Coming Soon_
+
+## Documentation
+
+Try it out yourself:
+
+```
+curl https://raw.githubusercontent.com/phcreery/beepingpebble/master/beepingpebble --output beepingpebble
+chmod +x beepingpebble
+./beepingpebble
+```
+
+Configuration is stored at `~/.config/beepingpebble/`. See `.beepingpebble/config.toml` for configuration options.
+
+Applications are stored as desktop entry files in `~/.config/beepingpebble/apps/`. To add apps, simply create or copy desktop entry files. Note: see `icons` folder to list available icons
 
 ## Developing
 
-Dependencies: vlang installed
-
-Emulation on Windows/Mac/Linux:
+Framebuffer emulation on Windows/Mac/Linux:
 
 ```
 v -d emu run .

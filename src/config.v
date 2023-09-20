@@ -27,6 +27,12 @@ battery_percent=true
 battery_voltage=false
 '
 
+default_apps := {
+		'welcome.desktop': $embed_file('.beepingpebble/apps/welcome.desktop')
+		'beepy-config.desktop': $embed_file('.beepingpebble/apps/beepy-config.desktop')
+	}
+
+
 struct ThemeConfig {
 	bg_color           string
 	statusbar_bg_color string
@@ -66,8 +72,13 @@ pub fn init_config_file() {
 		panic('Failed to create config file')
 	}
 	// copy apps
-	os.cp_all('.beepingpebble/apps/', bp_apps_location, false) or {
-		panic('Failed to copy default apps')
+	// os.cp_all('.beepingpebble/apps/', bp_apps_location, false) or {
+	// 	panic('Failed to copy default apps')
+	// }
+	for app_name, app_content in default_apps {
+		os.write_file(bp_apps_location + '/' + app_name, app_content) or {
+			panic('Failed to create default app ${app_name}')
+		}
 	}
 }
 
