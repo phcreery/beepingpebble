@@ -81,28 +81,28 @@ fn event_manager(mut ev hw.Event, mut app App) {
 				app.menu.down()
 			}
 			.y {
-				app.menu.goto_index(0)
+				app.menu.goto_index_on_page(0)
 			}
 			.u {
-				app.menu.goto_index(1)
+				app.menu.goto_index_on_page(1)
 			}
 			.i {
-				app.menu.goto_index(2)
+				app.menu.goto_index_on_page(2)
 			}
 			.o {
-				app.menu.goto_index(3)
+				app.menu.goto_index_on_page(3)
 			}
 			.h {
-				app.menu.goto_index(4)
+				app.menu.goto_index_on_page(4)
 			}
 			.j {
-				app.menu.goto_index(5)
+				app.menu.goto_index_on_page(5)
 			}
 			.k {
-				app.menu.goto_index(6)
+				app.menu.goto_index_on_page(6)
 			}
 			.l {
-				app.menu.goto_index(7)
+				app.menu.goto_index_on_page(7)
 			}
 			.enter {
 				item := app.menu.get_selected()

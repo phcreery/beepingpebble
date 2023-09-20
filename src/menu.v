@@ -43,6 +43,8 @@ pub struct MenuItem {
 pub struct Menu {
 pub mut:
 	items               []MenuItem
+	page				int
+	page_size			int
 	item_width          int
 	item_height         int
 	item_padding        int
@@ -93,6 +95,8 @@ fn create_menu(dwg DrawContext) &Menu {
 	padding := 2
 	mut menu := &Menu{
 		items: []
+		page: 0
+		page_size: 8
 		item_width: 100 - padding - 1
 		item_height: 100 - padding - 1
 		item_padding: padding
@@ -110,7 +114,14 @@ fn create_menu(dwg DrawContext) &Menu {
 		desc: 'list files in current directory'
 		command: 'ls'
 	}
-	// menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper1', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper2', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper3', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper4', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper5', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper6', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper7', 'icons/beeper-icon.png', '', 'asdf'}
+	menu.items << MenuItem{'Beeper8', 'icons/beeper-icon.png', '', 'asdf'}
 
 	init := menu.loc_from_index(0)
 	init_x := init.x
@@ -139,17 +150,35 @@ fn (mut menu Menu) draw(mut app App) {
 	// app.dwg.draw_rect_filled(0, 240 - 20, 400, 20, false)
 	app.dwg.draw_line_pattern(30, 240 - 20, 360, 240 - 20, false)
 
-	for i in 0 .. menu.items.len {
-		item := menu.items[i]
+	for i in 0 .. menu.page_size {
+		index := menu.page * menu.page_size + i
+		if index >= menu.items.len {
+			break
+		}
+		item := menu.items[index]
 		pos := menu.loc_from_index(i)
 		app.dwg.draw_text(pos.x + 10, pos.y + menu.item_height - 16, item.name, false)
 		app.dwg.draw_image(pos.x + 20, pos.y + 15, menu.cached_icons[item.icon], false)
-		if i == menu.current_item_index {
+		if index == menu.current_item_index {
 			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
 			w := app.dwg.get_draw_text_width(item.desc)
 			app.dwg.draw_text(400 / 2 - int(w / 2), 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
 				menu.items[menu.current_item_index].desc, false)
 		}
+	}
+	// draw page indicators
+	// for i in 0 .. 2 {
+	// 	if i == menu.page {
+	// 		app.dwg.draw_text(400 / 2 - 8, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf111', false) // circle
+	// 	} else {
+	// 		app.dwg.draw_text(400 / 2 - 8, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf10c', false) // circle-o
+	// 	}
+	// }
+	if menu.page < menu.items.len / menu.page_size {
+		app.dwg.draw_text(400 - 5 - 8, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf054', false) // >
+	}
+	if menu.page > 0 {
+		app.dwg.draw_text(5, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf053', false) // <
 	}
 
 	// draw the shape where the selector should go
@@ -157,10 +186,9 @@ fn (mut menu Menu) draw(mut app App) {
 	for j in 0 .. menu.selector.target_verts.len {
 		points[j] = Point{menu.selector.target_verts[j].p.x, menu.selector.target_verts[j].p.y}
 	}
-	// app.dwg.draw_polygon(points, gx.orange)
+	// app.dwg.draw_polygon(points, gx.orange) // debug
 
 	// draw the selector
-
 	// sw := time.new_stopwatch()
 	menu.update_selector_verts()
 	// println('update_selector_verts took: ${f32(sw.elapsed().nanoseconds())/ 1_000_000}ms')
@@ -250,7 +278,6 @@ fn (mut menu Menu) update_selector_verts() {
 }
 
 fn (mut menu Menu) update_target_verts() {
-	// target := menu.items[menu.current_item_index]
 	pos := menu.loc_from_index(menu.current_item_index)
 	target_x := pos.x
 	target_y := pos.y
@@ -296,6 +323,10 @@ fn (mut menu Menu) next() {
 	menu.current_item_index = (menu.current_item_index + 1)
 	if menu.current_item_index % (8 / 2) == 0 {
 		menu.current_item_index = menu.current_item_index - 1
+		menu.page += 1
+		if menu.page * menu.page_size >= menu.items.len {
+			menu.page -= 1
+		}
 	}
 	menu.need_update = true
 	menu.selection_change_sw = time.now()
@@ -309,32 +340,46 @@ fn (mut menu Menu) prev() {
 	// no roll over
 	if menu.current_item_index % (8 / 2) == 3 || menu.current_item_index < 0 {
 		menu.current_item_index = menu.current_item_index + 1
+		menu.page -= 1
+		if menu.page < 0 {
+			menu.page = 0
+		}
 	}
 	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
 fn (mut menu Menu) down() {
-	menu.current_item_index = (menu.current_item_index + 4) % 8
-	menu.need_update = true
-	menu.selection_change_sw = time.now()
-}
-
-fn (mut menu Menu) up() {
-	menu.current_item_index = (menu.current_item_index - 4)
-	if menu.current_item_index < 0 {
-		menu.current_item_index += 8
+	// menu.current_item_index = (menu.current_item_index + 4) % 8
+	// no roll over
+	menu.current_item_index = (menu.current_item_index + 4)
+	if menu.current_item_index >= menu.page_size {
+		menu.current_item_index -= 4
 	}
 	menu.need_update = true
 	menu.selection_change_sw = time.now()
 }
 
-fn (mut menu Menu) goto_index(i int) {
-	menu.current_item_index = i
+fn (mut menu Menu) up() {
+	// menu.current_item_index = (menu.current_item_index - 4)
+	// if menu.current_item_index < 0 {
+	// 	menu.current_item_index += 8
+	// }
+	// no roll over
+	menu.current_item_index = (menu.current_item_index - 4)
+	if menu.current_item_index < 0 {
+		menu.current_item_index += 4
+	}
+	menu.need_update = true
+	menu.selection_change_sw = time.now()
+}
+
+fn (mut menu Menu) goto_index_on_page(i int) {
+	menu.current_item_index = i + menu.page * menu.page_size
 	menu.need_update = true
 	// menu.selection_change_sw = time.now() // disabled to prevent the fluid animation
 }
 
 fn (mut menu Menu) get_selected() MenuItem {
-	return menu.items[menu.current_item_index]
+	return menu.items[menu.current_item_index + menu.page * menu.page_size]
 }
