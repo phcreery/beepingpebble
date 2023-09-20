@@ -1,6 +1,7 @@
 module main
 
 import os
+import hw
 
 // https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#recognized-keys
 
@@ -27,7 +28,7 @@ struct DesktopEntry {
 	// keywords []string
 	// startup_notify bool
 	// startup_wm_class string
-	// url string
+	url string
 	// prefers_non_default_gpu bool
 	// single_main_window bool
 }
@@ -55,6 +56,7 @@ fn parse_desktop_file(file string) &DesktopEntry {
 		path: get_value('Path', file_contents)
 		terminal: get_value('Terminal', file_contents) == 'true'
 		categories: get_value('Categories', file_contents).split(';')
+		url: get_value('URL', file_contents)
 	}
 	return de
 	// find line that starts with Type=

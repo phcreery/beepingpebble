@@ -107,7 +107,7 @@ fn create_menu(dwg DrawContext) &Menu {
 	}
 
 	menu.items << MenuItem{'Beeper', 'icons/beeper-icon.png', '', ''}
-	menu.items << MenuItem{'Settings', 'icons/settings-icon.png', '', ''}
+	// menu.items << MenuItem{'Settings', 'icons/settings-icon.png', '', ''}
 	menu.items << MenuItem{
 		name: 'ls'
 		icon: 'icons/terminal-icon.png'
@@ -287,11 +287,24 @@ fn (mut menu Menu) update_target_verts() {
 }
 
 fn menu_item_from_desktop_entry(entry DesktopEntry) MenuItem {
+	mut command := ''
+	if !entry.terminal {
+		panic('Only terminal apps are supported')
+	}
+	if entry.type_ == 'Application' {
+		command = entry.exec
+	} else if entry.type_ == 'Link' {
+		command = 'open ' + entry.url
+	} else if entry.type_ == 'Directory' {
+		command = 'cd ' + entry.path
+	} else {
+		panic('Unknown Desktop Entry type: ' + entry.type_)
+	}
 	return MenuItem{
 		name: entry.name
 		icon: entry.icon
 		desc: entry.comment
-		command: entry.exec
+		command: command
 	}
 }
 

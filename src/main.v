@@ -108,6 +108,7 @@ fn event_manager(mut ev hw.Event, mut app App) {
 				item := app.menu.get_selected()
 				app.dwg.quit()
 				hw.send_command(item.command, app.tty)
+				// item.launch(app.tty)
 				exit(0)
 			}
 			else {
