@@ -50,6 +50,11 @@ Framebuffer emulation on Windows/Mac/Linux:
 
 ```
 v -d emu run .
+```
+
+Profiling
+
+```
 v -d emu -profile profile.txt -keepc -showcc run .
 v -d emu -printfn blit -o ./dbg.c .
 ```

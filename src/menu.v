@@ -43,8 +43,8 @@ pub struct MenuItem {
 pub struct Menu {
 pub mut:
 	items               []MenuItem
-	page				int
-	page_size			int
+	page                int
+	page_size           int
 	item_width          int
 	item_height         int
 	item_padding        int
@@ -149,13 +149,15 @@ fn (mut menu Menu) draw(mut app App) {
 		}
 		item := menu.items[index]
 		pos := menu.loc_from_index(i)
-		name := item.name.limit(int(400/4/8))
+		name := item.name.limit(int(400 / 4 / 8))
 		name_w := app.dwg.get_draw_text_width(name)
 		icon := menu.cached_icons[item.icon]
-		app.dwg.draw_text(pos.x + menu.item_width/2 - int(name_w / 2), pos.y + menu.item_height - 16, name, false)
-		app.dwg.draw_image(pos.x + menu.item_width/2 - int(icon.width/2), pos.y + 15, menu.cached_icons[item.icon], false)
+		app.dwg.draw_text(pos.x + menu.item_width / 2 - int(name_w / 2), pos.y + menu.item_height - 16,
+			name, false)
+		app.dwg.draw_image(pos.x + menu.item_width / 2 - int(icon.width / 2), pos.y + 15,
+			menu.cached_icons[item.icon], false)
 		if index == menu.current_item_index {
-			desc := item.desc.limit(int(370/8))
+			desc := item.desc.limit(int(370 / 8))
 			// app.dwg.draw_rect_empty(pos.x, pos.y, menu.item_width, menu.item_height, gx.white)
 			desc_w := app.dwg.get_draw_text_width(desc)
 			app.dwg.draw_text(400 / 2 - int(desc_w / 2), 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
@@ -171,10 +173,12 @@ fn (mut menu Menu) draw(mut app App) {
 	// 	}
 	// }
 	if menu.page < menu.items.len / menu.page_size {
-		app.dwg.draw_text(400 - 5 - 8, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf054', false) // >
+		app.dwg.draw_text(400 - 5 - 8, 240 - 20 / 2 - int(app.dwg.font.info.size / 2),
+			'\uf054', false) // >
 	}
 	if menu.page > 0 {
-		app.dwg.draw_text(5, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf053', false) // <
+		app.dwg.draw_text(5, 240 - 20 / 2 - int(app.dwg.font.info.size / 2), '\uf053',
+			false) // <
 	}
 
 	// draw the shape where the selector should go
@@ -319,9 +323,10 @@ fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
 fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
 	items := menu_items_from_desktop_entries(entries)
 	for item in items {
-		// TODO: check if icon exists, if not, load default
-		icon := load_image(item.icon)
-		menu.cached_icons[item.icon] = icon
+		if item.icon !in menu.cached_icons {
+			icon := load_image(item.icon)
+			menu.cached_icons[item.icon] = icon
+		}
 		menu.items << item
 	}
 }

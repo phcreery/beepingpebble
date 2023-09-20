@@ -88,7 +88,6 @@ pub fn load_internal_icons() map[string]stbi.Image {
 		$embed_file('icons/download-icon.png'),
 		$embed_file('icons/settings-icon.png'),
 		$embed_file('icons/terminal-icon.png'),
-
 		$embed_file('icons/rocket.png'),
 	]
 

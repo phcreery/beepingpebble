@@ -4,11 +4,13 @@ import toml
 import os
 
 // TOML Template
-const config_dir := os.config_dir() or { '' }
+const config_dir = os.config_dir() or { '' }
 
-const bp_config_dir := config_dir + '/beepingpebble'
-const bp_config_location := bp_config_dir + '/config.toml'
-const bp_apps_location := bp_config_dir + '/apps'
+const bp_config_dir = config_dir + '/beepingpebble'
+
+const bp_config_location = bp_config_dir + '/config.toml'
+
+const bp_apps_location = bp_config_dir + '/apps'
 
 const default_config_text = '
 [theme]
@@ -27,11 +29,10 @@ battery_percent=true
 battery_voltage=false
 '
 
-const default_apps := {
-		'welcome.desktop': $embed_file('.beepingpebble/apps/welcome.desktop')
-		'beepy-config.desktop': $embed_file('.beepingpebble/apps/beepy-config.desktop')
-	}
-
+const default_apps = {
+	'welcome.desktop':      $embed_file('.beepingpebble/apps/welcome.desktop')
+	'beepy-config.desktop': $embed_file('.beepingpebble/apps/beepy-config.desktop')
+}
 
 struct ThemeConfig {
 	bg_color           string
@@ -62,12 +63,8 @@ struct AppConfig {
 
 pub fn init_config_file() {
 	println('Creating config file at ${bp_config_dir}')
-	os.mkdir_all(bp_config_dir) or {
-		panic('Failed to create ${bp_config_dir} folder')
-	}
-	os.mkdir_all(bp_apps_location) or {
-		panic('Failed to create ${bp_apps_location} folder')
-	}
+	os.mkdir_all(bp_config_dir) or { panic('Failed to create ${bp_config_dir} folder') }
+	os.mkdir_all(bp_apps_location) or { panic('Failed to create ${bp_apps_location} folder') }
 	os.write_file(bp_config_location, default_config_text) or {
 		panic('Failed to create config file')
 	}

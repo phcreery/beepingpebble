@@ -4,6 +4,7 @@ import os
 import time
 
 fn C.getchar() int
+
 // fn C.getch() int
 fn C.ungetc(int, voidptr) int
 
@@ -19,7 +20,7 @@ fn peekchar() int {
 	termios.tcsetattr(0, C.TCSANOW, mut state)
 
 	c := C.getchar()
-	
+
 	mut restate := termios.Termios{}
 	termios.tcgetattr(0, mut restate)
 	restate.c_cc[C.VMIN] = u8(1)
@@ -27,9 +28,11 @@ fn peekchar() int {
 
 	println('peeked ${c}')
 	println('c eof ${c}, ${C.EOF}')
-    if(c != C.EOF) { 
+	if (c != C.EOF) {
 		println('ungetc')
-		C.ungetc(c, C.stdin) }      // puts it back
+		C.ungetc(c, C.stdin)
+	}
+	// puts it back
 	return c
 }
 
@@ -46,7 +49,6 @@ fn peekchar() int {
 // 	// 	termios.tcsetattr(0, C.TCSANOW, mut old_state)
 // 	// }
 
-	
 // 	// vmemcpy(&state, &old_state, sizeof(state))
 // 	// termios.tcgetattr(0, mut state)
 // 	mut state := old_state
@@ -64,7 +66,6 @@ fn peekchar() int {
 // 	old_state.c_lflag |= (u32(C.ICANON) | u32(C.ECHO))
 // 	termios.tcsetattr(0, C.TCSANOW, mut old_state)
 
-	
 // 	if (c != C.EOF) { C.ungetc(c, C.stdin) }
 // 	if (c != -1) {
 // 		println('not -1')
@@ -75,26 +76,25 @@ fn peekchar() int {
 
 // fn kbhit() bool {
 //     byteswaiting := u32(0)
-	
+
 // 	// mut state := termios.Termios{}
 // 	// termios.tcgetattr(0, mut state)
 // 	// state.c_lflag &= termios.invert(u32(C.ICANON) | u32(C.ECHO))
 // 	// termios.tcsetattr(0, C.TCSANOW, mut state)
 
 //     termios.ioctl(0, termios.flag(C.FIONREAD), byteswaiting)
-	
+
 // 	// mut restate := termios.Termios{}
 // 	// termios.tcgetattr(0, mut restate)
 // 	// restate.c_lflag |= u32(C.ICANON) | u32(C.ECHO)
 // 	// termios.tcsetattr(0, C.TCSANOW, mut restate)
 
 // 	println('byteswaiting ${byteswaiting}')
-//     if byteswaiting > 0 { 
+//     if byteswaiting > 0 {
 // 		println('kbd still going')
 // 		return true }
 // 	return false
 // }
-
 
 // https://stackoverflow.com/questions/34474627/linux-equivalent-for-conio-h-getch
 // fn kbhit() bool {
@@ -114,7 +114,7 @@ fn peekchar() int {
 //     println('reading buf...')
 // 	buf, len := os.fd_read(0, 1)
 // 	println('buf ${buf}')
-//     state.c_lflag |= (u32(C.ICANON) | u32(C.ECHO))    // local modes = Canonical mode // local modes = Enable echo. 
+//     state.c_lflag |= (u32(C.ICANON) | u32(C.ECHO))    // local modes = Canonical mode // local modes = Enable echo.
 //     if termios.tcsetattr(0, C.TCSADRAIN, mut state) != 0 {
 // 		println('err')
 // 		return false // os.last_error()
@@ -138,7 +138,6 @@ fn kbesc() int {
 		println('nah, just escape seq')
 	}
 	return c
-
 }
 
 println('running...')
@@ -163,10 +162,8 @@ for {
 		println('esc??')
 		actual_c := kbesc()
 		println('actually: ${actual_c}')
-		
 	} else {
 		println(c)
 	}
 	time.sleep(100000000)
-
 }
