@@ -102,5 +102,5 @@ pub fn (mut context Context) run() {
 
 pub fn (mut context Context) quit() {
 	// context.framebuffer.close()
-	termios_reset()
+	restore_terminal_state()
 }

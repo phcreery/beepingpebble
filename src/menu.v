@@ -323,10 +323,10 @@ fn menu_items_from_desktop_entries(entries []DesktopEntry) []MenuItem {
 fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
 	items := menu_items_from_desktop_entries(entries)
 	for item in items {
-		if item.icon !in menu.cached_icons {
-			icon := load_image(item.icon)
-			menu.cached_icons[item.icon] = icon
-		}
+		// if item.icon !in menu.cached_icons {
+		// 	icon := load_image(item.icon)
+		// 	menu.cached_icons[item.icon] = icon
+		// }
 		menu.items << item
 	}
 }

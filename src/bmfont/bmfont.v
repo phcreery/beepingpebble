@@ -73,7 +73,7 @@ pub:
 
 pub fn load_fnt(font_file string) &Font {
 	mut embedded_font_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont.fnt')
-	// mut embedded_bitmap_file := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont_0.png')
+	mut embedded_font_img := $embed_file('thirdparty/CozetteFonts-v-1-22-2/CozetteFonts/cozette_bmfont_0.png')
 
 	path := embedded_font_file.path.rsplit_nth('/', 2)[1]
 	fnt := embedded_font_file.to_string()
@@ -122,12 +122,18 @@ pub fn load_fnt(font_file string) &Font {
 	page_line := lines[2].trim('\r')
 	mut pages := map[int]FontPage{}
 	page_file := page_line.split('file=')[1].split(' ')[0].trim('"')
-	mut img := stbi.load('${path}/${page_file}', stbi.LoadParams{
-		desired_channels: 1
-	}) or { panic('failed to load image') }
-	// println('img.width:  ${img.width}')
-	// println('img.height: ${img.height}')
-	// println('img.nr_channels: ${img.nr_channels}')
+
+	// for loacal loading if file is present
+	// mut img := stbi.load('${path}/${page_file}', stbi.LoadParams{
+	// 	desired_channels: 1
+	// }) or { panic('failed to load image') }
+
+	// for embedding
+	mut img := stbi.load_from_memory(embedded_font_img.data(), embedded_font_img.len, stbi.LoadParams{
+			desired_channels: 1
+		}) or { panic('failed to load image') }
+
+
 	d := unsafe {
 		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
 	}
