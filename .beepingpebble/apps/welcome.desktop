@@ -7,22 +7,22 @@ Type=Application
 Version=1.0
 
 # The name of the application
-Name=Test
+Name=Hello!
 
 # A comment which can/will be used as a tooltip
-Comment=Development app for Beepy
+Comment=Thank you for trying out BEEPINGPEBBLE
 
 # The path to the folder in which the executable is run
 Path=~
 
 # The executable of the application, possibly with arguments.
-Exec=ls
+Exec=echo "Thank you for trying out BEEPINGPEBBLE"
 
 # The name of the icon that will be used to display this entry
-Icon=icons/cart.png
+Icon=icons/rocket.png
 
 # Describes whether this application needs to be run in a terminal or not
 Terminal=true
 
 # Describes the categories in which this entry should be shown
-Categories=Education;Languages;Java;
+Categories=
