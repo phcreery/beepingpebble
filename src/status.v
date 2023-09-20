@@ -83,7 +83,7 @@ fn (mut sb StatusBar) draw(mut app App) {
 		sb.update(&app.dwg)
 		app.dwg.draw_rect_filled(sb.pos.x, sb.pos.y, width, sb_height - 1, app.theme.statusbar_bg_color)
 		if app.theme.bg_color == app.theme.statusbar_bg_color {
-			app.dwg.draw_line(sb.pos.x - 1, sb.pos.y + sb_height, width, sb.pos.y + sb_height,
+			app.dwg.draw_line(sb.pos.x - 1, sb.pos.y + sb_height - 1, width, sb.pos.y + sb_height - 1,
 				false)
 		}
 		for item in sb.items {
