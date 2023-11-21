@@ -6,6 +6,8 @@ https://github.com/k5njm/beepy-hacks
 
 https://github.com/TheMediocritist/beepy_setup/
 
+https://github.com/nwithan8/beepy-config
+
 
 ### Hardware
 
