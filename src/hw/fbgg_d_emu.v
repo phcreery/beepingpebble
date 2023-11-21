@@ -30,7 +30,7 @@ mut:
 
 pub struct Context {
 mut:
-	gg_ctx &gg.Context
+	gg_ctx &gg.Context = unsafe { nil }
 	img_id int
 pub mut:
 	config Config
@@ -70,7 +70,7 @@ pub fn (mut context Context) end() {
 	context.gg_ctx.end()
 }
 
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut context Context) blit(virtualbuffer []u8) {
 	// convert from []BGRA8 to [][]RGBA32
 	mut buffer := [hw.height][width]u32{}

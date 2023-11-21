@@ -129,10 +129,10 @@ pub fn load_fnt(font_file string) &Font {
 	// }) or { panic('failed to load image') }
 
 	// for embedding
-	mut img := stbi.load_from_memory(embedded_font_img.data(), embedded_font_img.len, stbi.LoadParams{
-			desired_channels: 1
-		}) or { panic('failed to load image') }
-
+	mut img := stbi.load_from_memory(embedded_font_img.data(), embedded_font_img.len,
+		stbi.LoadParams{
+		desired_channels: 1
+	}) or { panic('failed to load image') }
 
 	d := unsafe {
 		arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)

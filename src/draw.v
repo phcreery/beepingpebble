@@ -37,7 +37,7 @@ mut:
 
 pub fn create_context(user_data voidptr, frame_fn fn (voidptr), event_fn fn (voidptr, voidptr)) &DrawContext { //, event_fn fn (&hw.Event, voidptr)
 
-	// ---- genaric ----
+	// genaric
 	hw_ctx := hw.new_context(
 		bg_color: gx.white
 		width: width
@@ -93,7 +93,7 @@ pub fn (mut dwg DrawContext) quit() {
 	dwg.hw_ctx.quit()
 }
 
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut dwg DrawContext) clear(c gx.Color) {
 	for y in 0 .. height {
 		for x in 0 .. width {
@@ -106,7 +106,7 @@ pub fn (mut dwg DrawContext) blit() {
 	dwg.hw_ctx.blit(dwg.pixel_buffer)
 }
 
-[direct_array_access; inline]
+@[direct_array_access; inline]
 pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	x := int(x_)
 	y := int(y_)
@@ -121,7 +121,7 @@ pub fn (mut dwg DrawContext) draw_pixel(x_ f32, y_ f32, c gx.Color) {
 	dwg.pixel_buffer[pos + 3] = u8(255)
 }
 
-[direct_array_access; inline]
+@[direct_array_access; inline]
 pub fn (mut dwg DrawContext) draw_pixel_inv(x_ f32, y_ f32) {
 	x := int(x_)
 	y := int(y_)
@@ -263,7 +263,7 @@ pub fn (mut dwg DrawContext) draw_polygon(points []Point, c TColor) {
 
 // https://stackoverflow.com/questions/34794720/filling-a-polygon-in-c-with-point-in-polygon-algorithm
 // http://alienryderflex.com/polygon_fill/
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	// draw the outline since the filling algorith does not draw the outline
 	// dwg.draw_polygon(points, c)
@@ -271,8 +271,8 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	mut vx := []f32{}
 	mut vy := []f32{}
 	for p in points {
-		vx << p.x // int(p.x)
-		vy << p.y // int(p.y)
+		vx << p.x
+		vy << p.y
 	}
 	bot := arrays.max(vy) or { 0 }
 	top := arrays.min(vy) or { 0 }
@@ -297,9 +297,6 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 			}
 			j = i
 		}
-		// if py == 1 {
-		// println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
-		// }
 		// bubble sort, smallest to largest
 		mut i := 0
 		for i < nodes - 1 {
@@ -314,7 +311,6 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 				i += 1
 			}
 		}
-		// println("py ${py}, nodes ${nodes}, nodes_x ${nodes_x}")
 		// filling pixels between nodes
 		for i = 0; i < nodes; i += 2 {
 			if nodes_x[i] >= right {
@@ -339,13 +335,11 @@ pub fn (mut dwg DrawContext) draw_polygon_filled(points []Point, c TColor) {
 	}
 }
 
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut dwg DrawContext) draw_text(x int, y int, text string, color TColor) int {
 	mut xadvance_tracker := 0
 	mut yadvance_tracker := 0
 
-	// println('asdf'.bytes().bytestr())
-	// for ch in text.bytes() {
 	for ru in text.runes() {
 		if ru == '\n'.bytes()[0] {
 			xadvance_tracker = 0
@@ -395,7 +389,7 @@ pub fn (mut dwg DrawContext) get_draw_text_width(text string) int {
 	return xadvance_tracker
 }
 
-// [direct_array_access]
+// @[direct_array_access]
 pub fn (mut dwg DrawContext) draw_image(x int, y int, img &stbi.Image, color TColor) {
 	// TODO: make it faster with a memcpy?
 	// See https://github.com/grz0zrg/fbg/blob/master/src/fbgraphics.c#L1520C11-L1520C11

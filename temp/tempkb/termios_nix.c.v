@@ -8,7 +8,7 @@ import term.termios
 
 const termios_at_startup = get_termios()
 
-[inline]
+@[inline]
 fn get_termios() termios.Termios {
 	mut t := termios.Termios{}
 	termios.tcgetattr(C.STDIN_FILENO, mut t)
@@ -25,7 +25,7 @@ fn restore_terminal_state() {
 }
 
 // hide_cursor will make the cursor invisible
-[inline]
+@[inline]
 pub fn (mut ctx Context) hide_cursor() {
 	ctx.write('\x1b[?25l')
 }

@@ -7,7 +7,7 @@ import term.termios
 
 const termios_at_startup = get_termios()
 
-[inline]
+@[inline]
 fn get_termios() termios.Termios {
 	mut t := termios.Termios{}
 	termios.tcgetattr(C.STDIN_FILENO, mut t)

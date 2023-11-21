@@ -101,10 +101,6 @@ pub fn load_internal_icons() map[string]stbi.Image {
 		icons[icon.path] = img
 	}
 
-	// println("icons ${icons}")
-	// d := arrays.carray_to_varray[u8](img.data, img.width * img.height * img.nr_channels)
-	// println("image ${img}")
-
 	return icons
 }
 

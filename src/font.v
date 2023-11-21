@@ -16,7 +16,7 @@ mut:
 	bitmap        &STBIImageWrapper // &stbi.Image
 }
 
-[deprecated: 'use bmfont.load_fnt() instead']
+@[deprecated: 'use bmfont.load_fnt() instead']
 pub fn default_font() &Font {
 	mut embedded_font_file := $embed_file('thirdparty/bbmode1_8x8.png')
 	data := embedded_font_file.data()

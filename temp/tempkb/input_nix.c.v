@@ -22,7 +22,7 @@ pub fn (mut ctx Context) run() ! {
 
 // shifts the array left, to remove any data that was just read, and updates its len
 // TODO: remove
-[inline]
+@[inline]
 fn (mut ctx Context) shift(len int) {
 	unsafe {
 		C.memmove(ctx.read_buf.data, &u8(ctx.read_buf.data) + len, ctx.read_buf.cap - len)
@@ -31,7 +31,7 @@ fn (mut ctx Context) shift(len int) {
 }
 
 // TODO: don't actually do this, lmao
-[inline]
+@[inline]
 fn (mut ctx Context) resize_arr(size int) {
 	mut l := unsafe { &ctx.read_buf.len }
 	unsafe {

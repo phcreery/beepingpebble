@@ -131,9 +131,7 @@ fn main() {
 	app.menu = create_menu(app.dwg)
 	apps := get_desktop_entries(conf.apps.de_location)
 	app.menu.add_desktop_entries_to_menu(apps)
-
 	app.tty = conf.general.tty
-
 	app.sb = create_statusbar(conf.statusbar)
 	app.dwg = create_context(app, draw, event_manager)
 	app.dwg.run()
