@@ -36,13 +36,12 @@ pub fn get_wifi_strength() string {
 
 pub fn send_command(cmd string, tty string) {
 	$if emu ? {
-		println('sending command: ttyecho -n ${tty} ${cmd}')
+		println('sending command: ${tty} ${cmd}')
 		return
 	}
-	// os.execute('ttyecho -n ${tty} ${cmd}')
 
 	tiocsti := 0x5412
-	file := os.open('/dev/tty1') or { panic('cant open tty') }
+	file := os.open(tty) or { panic('cant open tty') }
 	println(os.is_atty(file.fd))
 	if os.is_atty(file.fd) != 1 {
 		return
