@@ -26,10 +26,6 @@ Features:
 
 ## Install
 
-_Coming Soon_
-
-## Documentation
-
 Try it out yourself:
 
 ```
@@ -37,6 +33,8 @@ curl https://raw.githubusercontent.com/phcreery/beepingpebble/master/beepingpebb
 chmod +x beepingpebble
 ./beepingpebble
 ```
+
+## Documentation
 
 Configuration is stored at `~/.config/beepingpebble/`. See `.beepingpebble/config.toml` for configuration options.
 
