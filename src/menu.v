@@ -5,6 +5,7 @@ import math.vec
 import time
 import math
 import stbi
+import hw
 
 pub struct Vertex {
 pub mut:
@@ -56,38 +57,12 @@ pub mut:
 }
 
 fn (mut menu Menu) loc_from_index(index int) vec.Vec2[int] {
-	y_origin := 20 // 40
+	y_origin := 20
 	x_i := index % 4
 	y_i := index / 4
 	return vec.Vec2[int]{
 		x: x_i * (menu.item_width + menu.item_padding + 1) + menu.item_padding / 2
 		y: y_i * (menu.item_height + menu.item_padding + 1) + menu.item_padding / 2 + y_origin
-	}
-}
-
-fn menu_draw_debug_outline(mut dwg DrawContext) {
-	item_width := 100
-	item_height := 100
-
-	for j in 0 .. 2 {
-		for i in 0 .. 4 {
-			x := i * item_width
-			y := j * item_height + 20
-			dwg.draw_rect_empty(x, y, item_width - 1, item_height - 1, gx.red)
-			// OR
-			// dwg.draw_pixel_inv(x, y)
-			// dwg.draw_pixel_inv(x + item_width - 1, y)
-			// dwg.draw_pixel_inv(x, y + item_height - 1)
-			// dwg.draw_pixel_inv(x + item_width - 1, y + item_height - 1)
-			// OR
-			// dwg.draw_line(x-2, y, x + 2, y, gx.black)
-			// dwg.draw_line(x, y-2, x, y + 2, gx.black)
-			// dwg.draw_line(x + item_width-1 - 2, y, x + item_width-1 + 2, y, gx.black)
-			// dwg.draw_line(x + item_width-1, y-2, x + item_width-1, y + 2, gx.black)
-			// dwg.draw_line(x-2, y + item_height-1, x + 2, y + item_height-1, gx.black)
-			// dwg.draw_line(x, y + item_height-1 - 2, x, y + item_height-1 + 2, gx.black)
-			// OR
-		}
 	}
 }
 
@@ -195,9 +170,9 @@ fn (mut menu Menu) draw(mut app App) {
 	for j in 0 .. menu.selector.verts.len {
 		points[j] = Point{menu.selector.verts[j].p.x, menu.selector.verts[j].p.y}
 	}
-	// println(points)
 	app.dwg.draw_polygon_filled(points, false)
 	app.dwg.draw_polygon(points, gx.black) // draw border since draw_polygon_filled does not fill the top, right, and bottom edges
+
 }
 
 fn (mut menu Menu) update_selector_verts() {
@@ -332,8 +307,6 @@ fn (mut menu Menu) add_desktop_entries_to_menu(entries []DesktopEntry) {
 }
 
 fn (mut menu Menu) next() {
-	// menu.current_item_index = (menu.current_item_index + 1) % 8
-	// no roll over
 	menu.current_item_index = (menu.current_item_index + 1)
 	if menu.current_item_index % (8 / 2) == 0 {
 		menu.current_item_index = menu.current_item_index - 1
@@ -348,10 +321,6 @@ fn (mut menu Menu) next() {
 
 fn (mut menu Menu) prev() {
 	menu.current_item_index = (menu.current_item_index - 1)
-	// if menu.current_item_index < 0 {
-	// 	menu.current_item_index = 8 - 1
-	// }
-	// no roll over
 	if menu.current_item_index % (8 / 2) == 3 || menu.current_item_index < 0 {
 		menu.current_item_index = menu.current_item_index + 1
 		menu.page -= 1
@@ -364,8 +333,6 @@ fn (mut menu Menu) prev() {
 }
 
 fn (mut menu Menu) down() {
-	// menu.current_item_index = (menu.current_item_index + 4) % 8
-	// no roll over
 	menu.current_item_index = (menu.current_item_index + 4)
 	if menu.current_item_index >= menu.page_size {
 		menu.current_item_index -= 4
@@ -375,11 +342,6 @@ fn (mut menu Menu) down() {
 }
 
 fn (mut menu Menu) up() {
-	// menu.current_item_index = (menu.current_item_index - 4)
-	// if menu.current_item_index < 0 {
-	// 	menu.current_item_index += 8
-	// }
-	// no roll over
 	menu.current_item_index = (menu.current_item_index - 4)
 	if menu.current_item_index < 0 {
 		menu.current_item_index += 4
@@ -396,4 +358,48 @@ fn (mut menu Menu) goto_index_on_page(i int) {
 
 fn (mut menu Menu) get_selected() MenuItem {
 	return menu.items[menu.current_item_index + menu.page * menu.page_size]
+}
+
+fn (mut menu Menu) handle_key_event(mut ev hw.Event) {
+	match ev.key_code {
+		.right, .d {
+			menu.next()
+		}
+		.left, .w {
+			menu.prev()
+		}
+		.up, .e {
+			menu.up()
+		}
+		.down, .s {
+			menu.down()
+		}
+		.y {
+			menu.goto_index_on_page(0)
+		}
+		.u {
+			menu.goto_index_on_page(1)
+		}
+		.i {
+			menu.goto_index_on_page(2)
+		}
+		.o {
+			menu.goto_index_on_page(3)
+		}
+		.h {
+			menu.goto_index_on_page(4)
+		}
+		.j {
+			menu.goto_index_on_page(5)
+		}
+		.k {
+			menu.goto_index_on_page(6)
+		}
+		.l {
+			menu.goto_index_on_page(7)
+		}
+		else {
+			println('unused key: ${ev} ${ev.key_code} ${ev.key_code}')
+		}
+	}
 }

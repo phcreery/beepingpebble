@@ -31,15 +31,6 @@ pub fn create_statusbar(config StatusBarConfig) &StatusBar {
 }
 
 fn (mut sb StatusBar) update(dwg &DrawContext) {
-	// text_array := [
-	// 	// time.now().hhmm12(),
-	// 	time.now().custom_format('M/D/YY hh:mm'),
-	// 	'${hw.get_batt_percent()}%', //'100%',
-	// 	'${hw.get_batt_volts()}V', //'4.2V',
-	// 	'${hw.get_wifi_strength()}', //'-***',
-	// 	// get_loading_status_text(),
-	// 	get_fps(dwg),
-	// ]
 	mut text_array := []string{}
 	if sb.config.show_time {
 		text_array << time.now().custom_format('h:mm')
