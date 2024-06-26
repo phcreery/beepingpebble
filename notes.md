@@ -2,12 +2,11 @@
 
 ## Beepy Apps and Configuration
 
-https://github.com/k5njm/beepy-hacks
-
-https://github.com/TheMediocritist/beepy_setup/
-
-https://github.com/nwithan8/beepy-config
-
+- https://github.com/k5njm/beepy-hacks
+- https://github.com/TheMediocritist/beepy_setup/
+- https://github.com/nwithan8/beepy-config
+- https://github.com/TheMediocritist/beepy-fun
+- https://github.com/abdallahnatsheh/BEEPY-TUI-APPS/tree/main/wifi_manager
 
 ### Hardware
 
